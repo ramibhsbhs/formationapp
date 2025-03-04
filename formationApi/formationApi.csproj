@@ -11,6 +11,37 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="7.0.20" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="7.0.20" />
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="7.0.18" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="7.0.20" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="7.0.20">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="7.0.20" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning" Version="5.1.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Remove="data\" />
+    <None Remove="services\" />
+    <None Remove="dtos\" />
+    <None Remove="dtos\request\" />
+    <None Remove="dtos\response\" />
+    <None Remove="Extensions\" />
+    <None Remove="data\Entities\" />
+    <None Remove="services\TokenService\" />
+    <None Remove="Exceptions\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="data\" />
+    <Folder Include="services\" />
+    <Folder Include="dtos\" />
+    <Folder Include="dtos\request\" />
+    <Folder Include="dtos\response\" />
+    <Folder Include="Extensions\" />
+    <Folder Include="data\Entities\" />
+    <Folder Include="services\TokenService\" />
+    <Folder Include="Exceptions\" />
+  </ItemGroup>
 </Project>
