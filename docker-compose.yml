@@ -1,0 +1,8 @@
+version: '3.4'
+
+services:
+  formationapi:
+    image: ${DOCKER_REGISTRY-}formationapi
+    build:
+      context: .
+      dockerfile: formationApi/Dockerfile
