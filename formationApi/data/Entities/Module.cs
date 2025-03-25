@@ -1,0 +1,17 @@
+﻿using System;
+using System.ComponentModel.DataAnnotations.Schema;
+
+namespace formationApi.data.Entities
+{
+    [Table("Modules")]
+    public class Module : BaseEntity
+	{
+        public string Discription { get; set; } 
+        public string Title { get; set; }
+        public int Position { get; set; } 
+        public int FormationId { get; set; }
+        public Formation Formation { get; set; }
+        public ICollection<Attachment> Attachments { get; set; } = new List<Attachment>();
+    }
+}
+

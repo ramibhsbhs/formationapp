@@ -1,7 +1,8 @@
 # Use the .NET runtime image as the base
 FROM mcr.microsoft.com/dotnet/aspnet:7.0 AS base
 WORKDIR /app
-EXPOSE 80  # Adjust if your app uses a different port (e.g., 5000)
+EXPOSE 80
+EXPOSE 443
 
 # Use the SDK image to build the app
 FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build
@@ -17,7 +18,7 @@ RUN dotnet build "formationApi.csproj" -c Release -o /app/build
 
 # Publish the app
 FROM build AS publish
-RUN dotnet publish "formationApi.csproj" -c Release -o /app/publish
+RUN dotnet publish "formationApi.csproj"  -c Release -o /app/publish /p:UseAppHost=false
 
 # Final runtime image
 FROM base AS final

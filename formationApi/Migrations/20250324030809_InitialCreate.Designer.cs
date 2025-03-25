@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using formationApi.data;
@@ -11,9 +12,11 @@ using formationApi.data;
 namespace formationApi.Migrations
 {
     [DbContext(typeof(ApplicationContext))]
-    partial class ApplicationContextModelSnapshot : ModelSnapshot
+    [Migration("20250324030809_InitialCreate")]
+    partial class InitialCreate
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -154,42 +157,6 @@ namespace formationApi.Migrations
                     b.ToTable("AspNetUserRoles", (string)null);
                 });
 
-            modelBuilder.Entity("formationApi.data.Entities.Attachment", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<bool>("Enable")
-                        .HasColumnType("boolean");
-
-                    b.Property<string>("Lien")
-                        .HasColumnType("text");
-
-                    b.Property<int>("ModuleId")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("Type")
-                        .HasColumnType("text");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ModuleId");
-
-                    b.ToTable("Attachments");
-                });
-
             modelBuilder.Entity("formationApi.data.Entities.Feedback", b =>
                 {
                     b.Property<int>("Id")
@@ -205,6 +172,7 @@ namespace formationApi.Migrations
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Description")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<bool>("Enable")
@@ -223,7 +191,7 @@ namespace formationApi.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("feedbacks");
+                    b.ToTable("Feedbacks");
                 });
 
             modelBuilder.Entity("formationApi.data.Entities.Formation", b =>
@@ -235,6 +203,7 @@ namespace formationApi.Migrations
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Content")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<DateTime>("CreatedAt")
@@ -244,12 +213,14 @@ namespace formationApi.Migrations
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Description")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<bool>("Enable")
                         .HasColumnType("boolean");
 
                     b.Property<string>("Title")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<DateTime?>("UpdatedAt")
@@ -258,74 +229,6 @@ namespace formationApi.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Formations");
-                });
-
-            modelBuilder.Entity("formationApi.data.Entities.Group", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<bool>("Enable")
-                        .HasColumnType("boolean");
-
-                    b.Property<string>("Name")
-                        .HasColumnType("text");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("groups");
-                });
-
-            modelBuilder.Entity("formationApi.data.Entities.Module", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("Discription")
-                        .HasColumnType("text");
-
-                    b.Property<bool>("Enable")
-                        .HasColumnType("boolean");
-
-                    b.Property<int>("FormationId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("Position")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("Title")
-                        .HasColumnType("text");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("FormationId", "Position")
-                        .IsUnique();
-
-                    b.ToTable("Modules");
                 });
 
             modelBuilder.Entity("formationApi.data.Entities.Notification", b =>
@@ -337,6 +240,7 @@ namespace formationApi.Migrations
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Body")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<DateTime>("CreatedAt")
@@ -355,6 +259,7 @@ namespace formationApi.Migrations
                         .HasColumnType("boolean");
 
                     b.Property<string>("Title")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<DateTime?>("UpdatedAt")
@@ -367,7 +272,7 @@ namespace formationApi.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("notifications");
+                    b.ToTable("Notifications");
                 });
 
             modelBuilder.Entity("formationApi.data.Entities.Session", b =>
@@ -387,16 +292,17 @@ namespace formationApi.Migrations
                     b.Property<bool>("Enable")
                         .HasColumnType("boolean");
 
-                    b.Property<DateOnly>("EndDate")
-                        .HasColumnType("date");
+                    b.Property<DateTime>("EndDate")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<int>("FormationId")
                         .HasColumnType("integer");
 
-                    b.Property<DateOnly>("StartDate")
-                        .HasColumnType("date");
+                    b.Property<DateTime>("StartDate")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Title")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<DateTime?>("UpdatedAt")
@@ -406,7 +312,7 @@ namespace formationApi.Migrations
 
                     b.HasIndex("FormationId");
 
-                    b.ToTable("Sessions");
+                    b.ToTable("Session");
                 });
 
             modelBuilder.Entity("formationApi.data.models.AppUser", b =>
@@ -431,10 +337,8 @@ namespace formationApi.Migrations
                     b.Property<bool>("EmailConfirmed")
                         .HasColumnType("boolean");
 
-                    b.Property<int?>("GroupId")
-                        .HasColumnType("integer");
-
                     b.Property<string>("ImageUrl")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<bool>("LockoutEnabled")
@@ -471,8 +375,6 @@ namespace formationApi.Migrations
                         .HasColumnType("character varying(256)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("GroupId");
 
                     b.HasIndex("NormalizedEmail")
                         .HasDatabaseName("EmailIndex");
@@ -539,17 +441,6 @@ namespace formationApi.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("formationApi.data.Entities.Attachment", b =>
-                {
-                    b.HasOne("formationApi.data.Entities.Module", "Module")
-                        .WithMany("Attachments")
-                        .HasForeignKey("ModuleId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Module");
-                });
-
             modelBuilder.Entity("formationApi.data.Entities.Feedback", b =>
                 {
                     b.HasOne("formationApi.data.models.AppUser", "User")
@@ -559,17 +450,6 @@ namespace formationApi.Migrations
                         .IsRequired();
 
                     b.Navigation("User");
-                });
-
-            modelBuilder.Entity("formationApi.data.Entities.Module", b =>
-                {
-                    b.HasOne("formationApi.data.Entities.Formation", "Formation")
-                        .WithMany("Modules")
-                        .HasForeignKey("FormationId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Formation");
                 });
 
             modelBuilder.Entity("formationApi.data.Entities.Notification", b =>
@@ -594,15 +474,6 @@ namespace formationApi.Migrations
                     b.Navigation("Formation");
                 });
 
-            modelBuilder.Entity("formationApi.data.models.AppUser", b =>
-                {
-                    b.HasOne("formationApi.data.Entities.Group", "Group")
-                        .WithMany("Users")
-                        .HasForeignKey("GroupId");
-
-                    b.Navigation("Group");
-                });
-
             modelBuilder.Entity("formationApi.data.Entities.AppRole", b =>
                 {
                     b.Navigation("UserRoles");
@@ -610,19 +481,7 @@ namespace formationApi.Migrations
 
             modelBuilder.Entity("formationApi.data.Entities.Formation", b =>
                 {
-                    b.Navigation("Modules");
-
                     b.Navigation("Sessions");
-                });
-
-            modelBuilder.Entity("formationApi.data.Entities.Group", b =>
-                {
-                    b.Navigation("Users");
-                });
-
-            modelBuilder.Entity("formationApi.data.Entities.Module", b =>
-                {
-                    b.Navigation("Attachments");
                 });
 
             modelBuilder.Entity("formationApi.data.models.AppUser", b =>

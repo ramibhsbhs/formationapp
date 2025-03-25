@@ -13,11 +13,16 @@ namespace formationApi.data
             if (await userManager.Users.AnyAsync()) return;
 
             var roles = new List<AppRole>
-                {
-                    new() {Name = "Member"},
-                    new() {Name = "Admin"},
-                    new() {Name = "Moderator"},
-                };
+            {
+                new AppRole { Name = UserRole.Administrator.ToString() },        
+                new AppRole { Name = UserRole.HierarchicalLeader.ToString() },  
+                new AppRole { Name = UserRole.TeamLeader.ToString() }  ,
+                new AppRole { Name = UserRole.PostLeader.ToString() }  ,
+                new AppRole { Name = UserRole.QualityAgent.ToString() }  ,
+                new AppRole { Name = UserRole.Manager.ToString() }  ,
+                new AppRole { Name = UserRole.Employee.ToString() }  ,
+
+            };
 
             foreach (var role in roles)
             {
@@ -26,10 +31,11 @@ namespace formationApi.data
             var admin = new AppUser
                 {
                     UserName = "admin",
+                    Email = "admin@gmail.com"
                    
                 };
             await userManager.CreateAsync(admin, "Pa$$w0rd");
-            await userManager.AddToRolesAsync(admin,new List<string>(){"Admin", "Moderator"});
+            await userManager.AddToRolesAsync(admin,new List<string>() { "Administrator"});
         }
     }
 }

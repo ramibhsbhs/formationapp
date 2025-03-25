@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using formationApi.data;
@@ -11,9 +12,11 @@ using formationApi.data;
 namespace formationApi.Migrations
 {
     [DbContext(typeof(ApplicationContext))]
-    partial class ApplicationContextModelSnapshot : ModelSnapshot
+    [Migration("20250325043410_updatetablesnames")]
+    partial class updatetablesnames
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -223,7 +226,7 @@ namespace formationApi.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("feedbacks");
+                    b.ToTable("Feedbacks");
                 });
 
             modelBuilder.Entity("formationApi.data.Entities.Formation", b =>
@@ -325,7 +328,7 @@ namespace formationApi.Migrations
                     b.HasIndex("FormationId", "Position")
                         .IsUnique();
 
-                    b.ToTable("Modules");
+                    b.ToTable("modules");
                 });
 
             modelBuilder.Entity("formationApi.data.Entities.Notification", b =>
@@ -406,7 +409,7 @@ namespace formationApi.Migrations
 
                     b.HasIndex("FormationId");
 
-                    b.ToTable("Sessions");
+                    b.ToTable("sessions");
                 });
 
             modelBuilder.Entity("formationApi.data.models.AppUser", b =>

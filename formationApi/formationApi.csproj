@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>net7.0</TargetFramework>
-    <Nullable>enable</Nullable>
+    <Nullable>disable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <DockerComposeProjectPath>../docker-compose.dcproj</DockerComposeProjectPath>
     <UserSecretsId>b6079dc0-b681-4ae4-9f29-ae082ce01969</UserSecretsId>
@@ -22,6 +22,7 @@
     </PackageReference>
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="7.0.20" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning" Version="5.1.0" />
+    <PackageReference Include="CloudinaryDotNet" Version="1.27.4" />
   </ItemGroup>
 
   <ItemGroup>
@@ -34,6 +35,15 @@
     <None Remove="data\Entities\" />
     <None Remove="services\TokenService\" />
     <None Remove="Exceptions\" />
+    <None Remove="services\EmailService\" />
+    <None Remove="services\CloudService\" />
+    <None Remove="data\Repositories\" />
+    <None Remove="data\Repositories\FormationRepo\" />
+    <None Remove="data\Repositories\SessionRepo\" />
+    <None Remove="Helper\" />
+    <None Remove="data\Repositories\GroupRepo\" />
+    <None Remove="data\Repositories\ModuleRepo\" />
+    <None Remove="data\Repositories\AttatchmentRepo\" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="data\" />
@@ -45,5 +55,20 @@
     <Folder Include="data\Entities\" />
     <Folder Include="services\TokenService\" />
     <Folder Include="Exceptions\" />
+    <Folder Include="services\EmailService\" />
+    <Folder Include="wwwroot\" />
+    <Folder Include="wwwroot\Templates\" />
+    <Folder Include="services\CloudService\" />
+    <Folder Include="data\Repositories\" />
+    <Folder Include="data\Repositories\FormationRepo\" />
+    <Folder Include="data\Repositories\SessionRepo\" />
+    <Folder Include="Helper\" />
+    <Folder Include="data\Repositories\GroupRepo\" />
+    <Folder Include="data\Repositories\ModuleRepo\" />
+    <Folder Include="data\Repositories\AttatchmentRepo\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Remove="wwwroot\" />
+    <Content Remove="wwwroot\Templates\" />
   </ItemGroup>
 </Project>

@@ -77,12 +77,25 @@ namespace formationApi.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginDto dto)
         {
+
+            // Normalize the input for lookup
+            string normalizedInput = dto.Username.ToUpper();
+
+
             var user = await _userManager.Users
-                   .FirstOrDefaultAsync(x => x.NormalizedUserName == dto.Username.ToUpper());
+                  .FirstOrDefaultAsync(x =>
+                      x.NormalizedUserName == normalizedInput ||
+                      x.NormalizedEmail == normalizedInput);
 
-            if (user == null || user.UserName == null) return Unauthorized("Invalid UserName");
+            if (user == null || (user.UserName == null && user.Email == null))
+            {
+                return Unauthorized("Invalid username or email.");
+            }
 
-            if (!await _userManager.CheckPasswordAsync(user, dto.Password)) return Unauthorized("Invalid username or password");
+            if (!await _userManager.CheckPasswordAsync(user, dto.Password))
+            {
+                return Unauthorized("Invalid username/email or password.");
+            }
 
 
 
@@ -90,6 +103,7 @@ namespace formationApi.Controllers
             return Ok(new
             {
                 Username = user.UserName,
+                Email = user.Email,
                 Token = await _tokenService.CreateToken(user),
                
             });
