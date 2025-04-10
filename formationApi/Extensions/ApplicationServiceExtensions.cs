@@ -3,7 +3,9 @@ using formationApi.data.Repositories;
 using formationApi.data.Repositories.FormationRepo;
 using formationApi.services.CloudService;
 using formationApi.services.EmailService;
+using formationApi.services.NotificationService;
 using formationApi.services.TokenService;
+using formationApi.SignalR;
 using Microsoft.EntityFrameworkCore;
 
 namespace formationApi.Extensions
@@ -32,6 +34,10 @@ namespace formationApi.Extensions
             services.AddScoped<ICloudService, CloudinaryService>();
 
             services.AddScoped<IRepositoryWrapper,RepositoryWrapper>();
+
+            services.AddSingleton<PresenceTracker>();
+
+            services.AddScoped<INotificationService, NotificationService>();
 
             return services;
         }

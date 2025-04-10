@@ -4,14 +4,24 @@ using formationApi.data.Entities;
 using formationApi.data.models;
 using formationApi.Exceptions;
 using formationApi.Extensions;
-using formationApi.Helper;
+using formationApi.SignalR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-// Add services to the container
+builder.Services.AddSignalR();
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowClient", policy =>
+    {
+        policy.WithOrigins("http://localhost:5500", "http://localhost:4200") 
+              .AllowAnyMethod()
+              .AllowAnyHeader()
+              .AllowCredentials();
+    });
+});
+
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
     {
@@ -23,16 +33,11 @@ builder.Services.AddIdentityServices(builder.Configuration);
 
 builder.Services.AddAuthorization();
 builder.Services.AddEndpointsApiExplorer();
-//builder.Services.AddSwaggerGen();
+
 
 var app = builder.Build();
+app.UseCors("AllowClient");
 
-// Configure the HTTP request pipeline.
-//if (app.Environment.IsDevelopment())
-//{
-//    app.UseSwagger();
-//    app.UseSwaggerUI();
-//}
 app.UseMiddleware<ExceptionMiddleware>();
 
 app.UseHttpsRedirection();
@@ -40,6 +45,8 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.MapControllers();
+app.MapHub<PresenceHub>("hubs/presence");
+
 
 using var scope = app.Services.CreateScope();
 var services = scope.ServiceProvider;

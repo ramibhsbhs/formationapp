@@ -23,6 +23,7 @@
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="7.0.20" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning" Version="5.1.0" />
     <PackageReference Include="CloudinaryDotNet" Version="1.27.4" />
+    <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="7.0.20" />
   </ItemGroup>
 
   <ItemGroup>
@@ -44,6 +45,9 @@
     <None Remove="data\Repositories\GroupRepo\" />
     <None Remove="data\Repositories\ModuleRepo\" />
     <None Remove="data\Repositories\AttatchmentRepo\" />
+    <None Remove="SignalR\" />
+    <None Remove="data\Repositories\NotificationRepo\" />
+    <None Remove="services\NotificationService\" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="data\" />
@@ -66,6 +70,9 @@
     <Folder Include="data\Repositories\GroupRepo\" />
     <Folder Include="data\Repositories\ModuleRepo\" />
     <Folder Include="data\Repositories\AttatchmentRepo\" />
+    <Folder Include="SignalR\" />
+    <Folder Include="data\Repositories\NotificationRepo\" />
+    <Folder Include="services\NotificationService\" />
   </ItemGroup>
   <ItemGroup>
     <Content Remove="wwwroot\" />

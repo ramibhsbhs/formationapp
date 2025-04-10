@@ -4,6 +4,7 @@ using formationApi.data.Repositories.AttachmentRepo;
 using formationApi.data.Repositories.FormationRepo;
 using formationApi.data.Repositories.GroupRepo;
 using formationApi.data.Repositories.ModuleRepo;
+using formationApi.data.Repositories.NotificationRepo;
 using formationApi.data.Repositories.SessionRepo;
 using Microsoft.AspNetCore.Identity;
 
@@ -17,6 +18,8 @@ namespace formationApi.data.Repositories
         UserManager<AppUser> UserManager { get; }
         IModuleRepository Module { get; }
         IAttachmentRepository Attachment { get; }
+
+        INotificationRepository Notification { get; }
     }
 }
 
