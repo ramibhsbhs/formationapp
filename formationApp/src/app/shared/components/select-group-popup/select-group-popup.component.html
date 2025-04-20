@@ -1,0 +1,28 @@
+<div class="select-group-popup">
+    <h2>Select Group</h2>
+
+    <div class="dialog-content">
+        <div class="loading-container" *ngIf="loading">
+            <div class="spinner"></div>
+        </div>
+
+        <div class="groups-list" *ngIf="!loading">
+            <ul class="selection-list">
+                <li *ngFor="let group of groups" [class.selected]="selectedGroup?.id === group.id"
+                    (click)="onSelect(group)">
+                    <div class="group-item">
+                        <span class="group-name">{{group.name}}</span>
+                        <span class="group-description" *ngIf="group.description">{{group.description}}</span>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="dialog-actions">
+        <button class="cancel-button" (click)="onCancel()">Cancel</button>
+        <button class="confirm-button" (click)="onConfirm()" [disabled]="!selectedGroup">
+            Confirm
+        </button>
+    </div>
+</div>

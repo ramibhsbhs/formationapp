@@ -13,6 +13,7 @@ namespace formationApi.data
         IdentityUserToken<int>>
     {
         public DbSet<AppUser> Users { get; set; }
+        public DbSet<Session> Sessions { get; set; }
         public DbSet<Notification> Notifications { get; set; }
         public DbSet<Feedback> Feedbacks { get; set; }
         public DbSet<Formation> Formations { get; set; }
@@ -66,6 +67,9 @@ namespace formationApi.data
                 .WithOne(m => m.Formation)
                 .HasForeignKey(m => m.FormationId)
                 .IsRequired();
+            builder.Entity<Formation>()
+              .HasMany(f => f.Groups)
+              .WithMany(g => g.Formations);
             builder.Entity<Module>()
                 .HasMany(m => m.Attachments)
                 .WithOne(a => a.Module)

@@ -8,9 +8,9 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace formationApi.Controllers
 {
-	public class GroupController : BaseApiController
-	{
-		private readonly IRepositoryWrapper _repositoryWrapper;
+    public class GroupController : BaseApiController
+    {
+        private readonly IRepositoryWrapper _repositoryWrapper;
 
         public GroupController(IRepositoryWrapper repository)
         {
@@ -28,6 +28,15 @@ namespace formationApi.Controllers
             return Ok(groups.ToDtoList());
         }
 
+        /// <summary>
+        /// Get all groups
+        /// </summary>
+        /// <returns>A list of all groups</returns>
+        [HttpGet("{id}")]
+        public async Task<ActionResult<Group>> Get(int id)
+        {
+            return Ok(await _repositoryWrapper.Group.Get(id));
+        }
         /// <summary>
         /// Create a new group (Admin only)
         /// </summary>
@@ -51,11 +60,11 @@ namespace formationApi.Controllers
                 if (user != null)
                 {
                     user.GroupId = group.Id;
-                    user.Group = group; 
+                    user.Group = group;
                     group.Users.Add(user);
                     var result = await _repositoryWrapper.UserManager.UpdateAsync(user);
                 }
-              
+
             }
 
             await _repositoryWrapper.Group.Create(group);

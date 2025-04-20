@@ -1,0 +1,31 @@
+.select-group-popup {
+    width: 400px;
+    max-width: 90vw;
+
+    .loading-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 200px;
+    }
+
+    .groups-list {
+        max-height: 400px;
+        overflow-y: auto;
+
+        .group-item {
+            display: flex;
+            flex-direction: column;
+            padding: 8px 0;
+
+            .group-name {
+                font-weight: 500;
+            }
+
+            .group-description {
+                font-size: 0.9em;
+                color: rgba(0, 0, 0, 0.6);
+            }
+        }
+    }
+}

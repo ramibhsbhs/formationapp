@@ -1,0 +1,71 @@
+:host {
+    display: block;
+}
+
+.mat-dialog-container {
+    padding: 0 !important;
+    border-radius: 0.5rem;
+    overflow: hidden;
+}
+
+// Focus ring styles
+input:focus,
+button:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
+}
+
+// Switch animation
+.transform {
+    transition-property: transform;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-duration: 200ms;
+}
+
+// Loading spinner animation
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.animate-spin {
+    animation: spin 1s linear infinite;
+}
+
+.form-checkbox {
+    border-color: #d1d5db;
+    border-radius: 0.25rem;
+    transition: all 0.2s ease-in-out;
+
+    &:checked {
+        background-color: #2563eb;
+        border-color: #2563eb;
+    }
+
+    &:focus {
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    }
+}
+
+input[type="text"],
+textarea {
+    transition: all 0.2s ease-in-out;
+
+    &:focus {
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    }
+
+    &.border-red-500 {
+        border-color: #ef4444;
+
+        &:focus {
+            box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+        }
+    }
+}

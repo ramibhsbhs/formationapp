@@ -9,6 +9,8 @@ namespace formationApi.data.Entities
 	{
         public string Name { get; set; }
         public ICollection<AppUser> Users { get; set; } = new List<AppUser>();
+
+        public ICollection<Formation> Formations { get; set; } = new List<Formation>();
     }
 }
 

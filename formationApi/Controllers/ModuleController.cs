@@ -42,7 +42,7 @@ namespace formationApi.Controllers
 
             var module = new Module
             {
-                Discription = moduleDto.Description,
+                Description = moduleDto.Description,
                 Title = moduleDto.Title,
                 Position = moduleDto.Position,
                 FormationId = formation.Id,

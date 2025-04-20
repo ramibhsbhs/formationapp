@@ -1,0 +1,72 @@
+
+<div class="animate-fade-in container mx-auto p-6">
+    <div class="flex justify-between items-center mb-8">
+        <h1 class="text-3xl font-bold text-gray-800">Gestion des formations</h1>
+
+        <button [routerLink]="'create'"
+            class="px-4 py-2 bg-primary text-white rounded-lg shadow-sm text-sm font-medium hover:bg-primary-dark flex items-center space-x-2 transition-colors">
+            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd"
+                    d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z"
+                    clip-rule="evenodd" />
+            </svg>
+            <span>Nouvelle formation</span>
+        </button>
+    </div>
+
+    <div *ngIf="isFormOpen" class="mb-8">
+        <h2 class="text-2xl font-semibold mb-4">
+            {{ currentTraining ? 'Modifier la formation' : 'Nouvelle formation' }}
+        </h2>
+        <!-- <app-training-form [initialData]="currentTraining" (submit)="handleFormSubmit($event)"
+            (cancel)="closeForm()"></app-training-form> -->
+    </div>
+
+    <div *ngIf="!isFormOpen" class="space-y-6">
+        <div class="flex flex-col md:flex-row space-y-3 md:space-y-0 md:space-x-4">
+            <div class="relative flex-grow">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <svg class="w-5 h-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd"
+                            d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
+                            clip-rule="evenodd" />
+                    </svg>
+                </div>
+                <input type="text" placeholder="Rechercher une formation..."
+                    class="pl-10 w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                    [(ngModel)]="searchTerm" (input)="onSearch($event)" />
+            </div>
+
+            <div class="relative">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <svg class="w-5 h-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd"
+                            d="M3 3a1 1 0 011-1h12a1 1 0 011 1v3a1 1 0 01-.293.707L12 11.414V15a1 1 0 01-1 1h-2a1 1 0 01-1-1v-3.586L3.293 6.707A1 1 0 013 6V3z"
+                            clip-rule="evenodd" />
+                    </svg>
+                </div>
+                <select
+                    class="pl-10 w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                    [(ngModel)]="filterCategory" (change)="onFilterCategory($event)">
+                    <option value="">Toutes les catégories</option>
+                    <option value="technical">Technique</option>
+                    <option value="safety">Sécurité</option>
+                    <option value="quality">Qualité</option>
+                    <option value="management">Management</option>
+                    <option value="communication">Communication</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div *ngFor="let training of filteredTrainings" class="col-span-1">
+                <app-training-card [training]="training" (edit)="handleEditTraining($event)"
+                    (delete)="handleDeleteTraining($event)" (addSession)="handleAddSession($event)"></app-training-card>
+            </div>
+        </div>
+
+        <div *ngIf="filteredTrainings.length === 0" class="text-center py-10">
+            <p class="text-gray-500 text-lg">Aucune formation ne correspond à votre recherche.</p>
+        </div>
+    </div>
+</div>

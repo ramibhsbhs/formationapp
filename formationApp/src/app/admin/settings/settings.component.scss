@@ -1,0 +1,27 @@
+.form-input {
+    @apply w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent;
+}
+
+.animate-fade-in {
+    animation: fadeIn 0.5s ease-in;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+.primary {
+    background-color: #4a90e2;
+    /* Example primary color */
+}
+
+.primary-dark {
+    background-color: #357abd;
+    /* Darker shade for hover */
+}

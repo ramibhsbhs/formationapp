@@ -1,0 +1,62 @@
+<!-- Mobile menu button -->
+<button class="md:hidden fixed top-4 left-4 z-50 p-2 rounded-md bg-primary text-white" (click)="toggleSidebar()"
+    aria-label="Toggle menu">
+    <i [ngClass]="isOpen ? 'fas fa-times' : 'fas fa-bars'" style="font-size: 20px;"></i>
+</button>
+
+<!-- Sidebar backdrop for mobile -->
+<div *ngIf="isOpen" class="md:hidden fixed inset-0 bg-black bg-opacity-50 z-40" (click)="toggleSidebar()"></div>
+
+<!-- Sidebar -->
+<aside class="h-full z-40 w-64 bg-sidebar transform transition-transform duration-300 ease-in-out 
+      {{ isOpen ? 'translate-x-0' : '-translate-x-full' }} md:translate-x-0 flex flex-col shadow-lg">
+    <div class="p-4 border-b border-sidebar-border">
+        <div class="flex items-center" routerLink="/">
+            <div class="!h-10 !w-10 bg-white rounded-md flex items-center justify-center mr-3 ">
+                <i class="fas fa-graduation-cap text-sidebar-primary" style="font-size: 24px;"></i>
+            </div>
+            <div>
+                <h1 class="text-xl font-bold text-white !m-0">FormationPilot</h1>
+                <p class="text-xs text-white text-opacity-80 !m-0">SUMITOMO ELECTRIC</p>
+            </div>
+        </div>
+    </div>
+
+    <nav class="flex-1 overflow-y-auto py-4">
+        <ul class="space-y-1 px-2">
+            <li *ngFor="let item of menuItems">
+                <a [routerLink]="item.path" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}"
+                    class="sidebar-item flex items-center p-2 rounded-md text-white hover:bg-sidebar-hover ">
+                    <i [ngClass]="item.icon" class="" style="font-size: 20px;" class="w-8 h-8 text-center"></i>
+                    <span>{{ item.name }}</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+
+    <!-- User Profile Section -->
+    <div *ngIf="(auth.currentUser$ |async ) as user" class="p-4 border-t border-sidebar-border cursor-pointer"
+        (click)="togglePopup()">
+        <div class="flex items-center">
+            <div class="h-8 w-8 rounded-full bg-white flex items-center justify-center mr-3">
+                <span class="text-sidebar-primary font-medium">AD</span>
+            </div>
+            <div class="text-sm">
+                <p class="text-white font-medium !mb-0">{{user.username}}</p>
+                <p class="text-white text-opacity-70 text-xs !mb-0">{{user.email}}</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Popup Menu -->
+    <div *ngIf="showPopup"
+        class="absolute bottom-4 right-[-160px] bg-gray-100  text-white rounded-md shadow-lg p-2 w-48 z-50 border border-primary"
+        (click)="$event.stopPropagation()">
+        <ul class="space-y-1">
+            <li *ngFor="let item of popupMenuItems" class="flex items-center p-2 hover:bg-background/50 rounded">
+                <i [ngClass]="item.icon" class="mr-2 text-primary" style="font-size: 16px;"></i>
+                <span (click)="handlePopupAction(item)" class="text-primary">{{ item.name }}</span>
+            </li>
+        </ul>
+    </div>
+</aside>

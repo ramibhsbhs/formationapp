@@ -28,7 +28,7 @@ namespace formationApi.data.Repositories.ModuleRepo
                 .Select(m => new Module
                 {
                     Id = m.Id,
-                    Discription = m.Discription,
+                    Description = m.Description,
                     Title = m.Title,
                     Position = m.Position,
                     CreatedAt = m.CreatedAt,

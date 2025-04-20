@@ -403,3 +403,8 @@ ASALocalRun/
 
 # Local History for Visual Studio
 .localhistory/
+
+# formationApp specific ignores
+formationApp/node_modules/
+formationApp/.vscode/
+formationApp/.angular/

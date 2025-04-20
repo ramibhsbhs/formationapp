@@ -1,0 +1,76 @@
+<div class="animate-fade-in container mx-auto p-6">
+    <div class="mb-8 flex justify-between items-center">
+        <h1 class="text-3xl font-bold text-gray-800 !mb-0">Sessions de formation</h1>
+        <div class="flex gap-3">
+            <button (click)="reloadSessions()" [disabled]="isLoading"
+                class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg shadow-sm text-sm font-medium hover:bg-gray-200 transition-colors flex items-center disabled:opacity-50 disabled:cursor-not-allowed">
+                <i *ngIf="!isLoading" class="fa-solid fa-rotate-right mr-2"></i>
+
+                <svg *ngIf="isLoading" class="animate-spin h-4 w-4 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none"
+                    viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor"
+                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                    </path>
+                </svg>
+
+                {{ isLoading ? 'Actualisation...' : 'Actualiser' }}
+            </button>
+            <button
+                class="px-4 py-2 bg-primary text-white rounded-lg shadow-sm text-sm font-medium hover:bg-primary/90 transition-colors">
+                Ajouter une session
+            </button>
+        </div>
+    </div>
+
+    <div class="rounded-lg border shadow-md">
+        <table class="w-full">
+            <thead>
+                <tr class="bg-gray-100">
+                    <th class="py-4 px-6 text-left text-sm font-medium text-gray-700">ID</th>
+                    <th class="py-4 px-6 text-left text-sm font-medium text-gray-700">Nom de la session</th>
+                    <th class="py-4 px-6 text-left text-sm font-medium text-gray-700">Formation</th>
+                    <th class="py-4 px-6 text-left text-sm font-medium text-gray-700">Date de début</th>
+                    <th class="py-4 px-6 text-left text-sm font-medium text-gray-700">Date de fin</th>
+                    <th class="py-4 px-6 text-left text-sm font-medium text-gray-700">Statut</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let session of paginatedSessions" class="border-t">
+                    <td class="py-4 px-6 font-medium">{{ session.id }}</td>
+                    <td class="py-4 px-6">{{ session.title }}</td>
+                    <td class="py-4 px-6">{{ session.formation.title }}</td>
+                    <td class="py-4 px-6">{{ formatDate(session.startDate) }}</td>
+                    <td class="py-4 px-6">{{ formatDate(session.endDate) }}</td>
+                    <td class="py-4 px-6">
+                        <span class="flex items-center" [ngClass]="{
+                                'text-green-500': session.status === 'Terminée',
+                                'text-yellow-500': session.status === 'En cours',
+                                'text-gray-500': session.status === 'Pas encore'
+                            }">
+                            <span class="mr-2" *ngIf="session.status === 'Terminée'">✓</span>
+                            <span class="mr-2" *ngIf="session.status === 'En cours'">⟳</span>
+                            <span class="mr-2" *ngIf="session.status === 'Pas encore'">⏰</span>
+                            {{ session.status }}
+                        </span>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Pagination controls -->
+    <div class="flex items-center justify-end space-x-4 py-6">
+        <button (click)="previousPage()" [disabled]="currentPage === 0"
+            class="px-3 py-1 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors">
+            <span class="inline-block">&lt;</span>
+        </button>
+        <span class="text-sm font-medium text-gray-700">
+            Page {{ currentPage + 1 }} sur {{ pageCount }}
+        </span>
+        <button (click)="nextPage()" [disabled]="currentPage >= pageCount - 1"
+            class="px-3 py-1 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors">
+            <span class="inline-block">&gt;</span>
+        </button>
+    </div>
+</div>

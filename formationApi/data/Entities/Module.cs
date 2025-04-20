@@ -6,7 +6,7 @@ namespace formationApi.data.Entities
     [Table("Modules")]
     public class Module : BaseEntity
 	{
-        public string Discription { get; set; } 
+        public string Description { get; set; } 
         public string Title { get; set; }
         public int Position { get; set; } 
         public int FormationId { get; set; }

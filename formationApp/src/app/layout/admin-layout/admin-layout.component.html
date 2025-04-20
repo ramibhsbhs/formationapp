@@ -1,0 +1,7 @@
+<div class="min-h-screen min-w-full flex flex-row">
+    <app-sidebar [menuItems]="sidebarMenuItems" (sidebarToggled)="onSidebarToggle($event)"></app-sidebar>
+    <div class="flex-1 max-h-screen overflow-y-auto">
+        <router-outlet></router-outlet>
+    </div>
+
+</div>
