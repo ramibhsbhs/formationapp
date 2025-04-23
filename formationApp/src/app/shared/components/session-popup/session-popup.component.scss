@@ -1,0 +1,159 @@
+:host {
+    display: block;
+}
+
+// Custom styles for the popup
+.popup-container {
+    background-color: white;
+    border-radius: 0.5rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+// Custom styles for form inputs
+input,
+select {
+    transition: all 0.2s ease-in-out;
+    background-color: #f9fafb;
+    border-color: #e5e7eb;
+    color: #111827;
+
+    &:hover {
+        border-color: #d1d5db;
+        background-color: #f3f4f6;
+    }
+
+    &:focus {
+        border-color: #3b82f6;
+        background-color: white;
+        box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5);
+    }
+
+    &:disabled {
+        background-color: #f3f4f6;
+        color: #9ca3af;
+        cursor: not-allowed;
+    }
+
+    &::placeholder {
+        color: #9ca3af;
+    }
+}
+
+// Custom styles for select
+select {
+    background-image: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    cursor: pointer;
+
+    option {
+        padding: 0.5rem;
+        background-color: white;
+    }
+
+    option:disabled {
+        color: #9ca3af;
+    }
+}
+
+// Custom styles for date inputs
+input[type="date"] {
+    &::-webkit-calendar-picker-indicator {
+        cursor: pointer;
+        opacity: 0.7;
+
+        &:hover {
+            opacity: 1;
+        }
+    }
+}
+
+// Custom styles for error messages
+.error-message {
+    color: #ef4444;
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+}
+
+// Custom styles for buttons
+button {
+    transition: all 0.2s ease-in-out;
+
+    &:focus {
+        outline: none;
+        box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5);
+    }
+
+    &:disabled {
+        opacity: 0.7;
+        cursor: not-allowed;
+    }
+}
+
+::ng-deep {
+    .mat-mdc-dialog-container {
+        --mdc-dialog-container-color: white;
+    }
+
+    .mat-mdc-form-field {
+        width: 100%;
+    }
+
+    .mat-mdc-form-field-subscript-wrapper {
+        display: none;
+    }
+
+    .mat-mdc-form-field-infix {
+        padding-top: 8px !important;
+        padding-bottom: 8px !important;
+    }
+
+    .mat-mdc-text-field-wrapper {
+        background-color: white !important;
+    }
+
+    .mat-mdc-form-field-flex {
+        background-color: white !important;
+    }
+
+    .mat-mdc-form-field-outline {
+        color: #e5e7eb !important;
+    }
+
+    .mat-mdc-form-field-outline-thick {
+        color: #3b82f6 !important;
+    }
+
+    .mat-mdc-form-field:hover .mat-mdc-form-field-outline {
+        color: #d1d5db !important;
+    }
+
+    .mat-mdc-form-field.mat-focused .mat-mdc-form-field-outline-thick {
+        color: #3b82f6 !important;
+    }
+
+    .mat-mdc-form-field.mat-focused .mat-mdc-form-field-label {
+        color: #3b82f6 !important;
+    }
+
+    .mat-mdc-form-field-error {
+        color: #ef4444 !important;
+    }
+
+    .mat-mdc-raised-button {
+        --mdc-protected-button-container-color: #3b82f6;
+        --mdc-protected-button-label-text-color: white;
+    }
+
+    .mat-mdc-raised-button:hover {
+        --mdc-protected-button-container-color: #2563eb;
+    }
+
+    .mat-mdc-raised-button:disabled {
+        --mdc-protected-button-container-color: #93c5fd;
+        --mdc-protected-button-label-text-color: white;
+    }
+}
+
+// Add any custom styles here if needed 

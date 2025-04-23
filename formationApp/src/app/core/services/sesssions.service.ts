@@ -27,6 +27,17 @@ export class SesssionsService {
     );
   }
 
+  createSession(model: any) {
+    return this.http.post<Session>(this.apiUrl, model).pipe(
+      map(session => ({
+        ...session,
+        startDate: new Date(session.startDate),
+        endDate: new Date(session.endDate),
+        status: this.getSessionStatus(session)
+      }))
+    );
+  }
+
   getSessionStatus(session: Session): SessionStatus {
     const now = new Date();
     const startDate = new Date(session.startDate);

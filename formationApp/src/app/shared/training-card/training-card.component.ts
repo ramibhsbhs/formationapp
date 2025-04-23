@@ -1,4 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Formation } from 'src/app/core/models/formation.model';
 import Training from 'src/app/core/models/training';
 
 @Component({
@@ -7,13 +8,18 @@ import Training from 'src/app/core/models/training';
   styleUrls: ['./training-card.component.scss']
 })
 export class TrainingCardComponent implements OnInit {
-  @Input() training!: Training;
+  @Input() training!: Formation;
   @Output() edit = new EventEmitter<number>();
   @Output() delete = new EventEmitter<number>();
   @Output() addSession = new EventEmitter<number>();
+
+  usersCount: number = 0;
   constructor() { }
 
   ngOnInit(): void {
+    this.training.groups.forEach(group => {
+      this.usersCount += group.users?.length || 0;
+    });
   }
 
   getCategoryColor(category: string): string {

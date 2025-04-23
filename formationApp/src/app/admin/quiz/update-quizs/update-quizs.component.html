@@ -1,0 +1,112 @@
+<div class="max-w-4xl p-6">
+    <form [formGroup]="quizForm" (ngSubmit)="onSubmit()" class="space-y-6">
+        <!-- Title Field -->
+        <div class="space-y-2">
+            <label class="block font-medium text-gray-700">Titre du quiz</label>
+            <input type="text" formControlName="title"
+                class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                placeholder="Entrez le titre du quiz">
+            <div *ngIf="quizForm.get('title')?.invalid && quizForm.get('title')?.touched" class="text-red-500 text-sm">
+                Le titre doit contenir au moins 3 caractères
+            </div>
+        </div>
+
+        <!-- Questions Section -->
+        <div class="space-y-4">
+            <div class="flex items-center justify-between">
+                <h3 class="text-lg font-medium">Questions</h3>
+                <button type="button" (click)="addQuestion()"
+                    class="inline-flex items-center px-3 py-1 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                    <i class="fas fa-plus-circle mr-2"></i>
+                    Ajouter une question
+                </button>
+            </div>
+
+            <div formArrayName="questions" class="space-y-4">
+                <div *ngFor="let question of questions.controls; let questionIndex = index"
+                    [formGroupName]="questionIndex" class="p-4 border rounded-md space-y-4">
+                    <div class="flex justify-between items-center">
+                        <h4 class="font-medium">Question {{questionIndex + 1}}</h4>
+                        <button *ngIf="questions.length > 1" type="button" (click)="removeQuestion(questionIndex)"
+                            class="text-red-500 hover:text-red-700">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+
+                    <!-- Points and Title Fields -->
+                    <div class="flex gap-4">
+                        <div class="space-y-2 w-3/4">
+                            <label class="block text-sm font-medium text-gray-700">Titre de la question</label>
+                            <input type="text" formControlName="title"
+                                class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                                placeholder="Entrez le titre de la question">
+                            <div *ngIf="questions.at(questionIndex).get('title')?.invalid && questions.at(questionIndex).get('title')?.touched"
+                                class="text-red-500 text-sm">
+                                Le titre ne peut pas être vide
+                            </div>
+                        </div>
+                        <div class="space-y-2 w-1/4">
+                            <label class="block text-sm font-medium text-gray-700">Points</label>
+                            <input type="number" formControlName="points" min="1"
+                                class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
+                            <div *ngIf="questions.at(questionIndex).get('points')?.invalid && questions.at(questionIndex).get('points')?.touched"
+                                class="text-red-500 text-sm">
+                                Le nombre de points doit être supérieur à 0
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Answers Section -->
+                    <div class="space-y-4">
+                        <div class="flex items-center justify-between">
+                            <h5 class="font-medium">Réponses</h5>
+                            <button type="button" (click)="addAnswer(questionIndex)"
+                                class="inline-flex items-center px-3 py-1 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                                <i class="fas fa-plus-circle mr-2"></i>
+                                Ajouter une réponse
+                            </button>
+                        </div>
+
+                        <div formArrayName="answers" class="space-y-2">
+                            <div *ngFor="let answer of getAnswers(questionIndex).controls; let answerIndex = index"
+                                [formGroupName]="answerIndex" class="flex items-start space-x-4">
+                                <div class="flex-1">
+                                    <input type="text" formControlName="text"
+                                        class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                                        [placeholder]="'Réponse ' + (answerIndex + 1)">
+                                    <div *ngIf="getAnswers(questionIndex).at(answerIndex).get('text')?.invalid && getAnswers(questionIndex).at(answerIndex).get('text')?.touched"
+                                        class="text-red-500 text-sm">
+                                        La réponse ne peut pas être vide
+                                    </div>
+                                </div>
+
+                                <div class="flex items-center h-5">
+                                    <input type="checkbox" formControlName="isCorrect"
+                                        class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                                </div>
+
+                                <button *ngIf="getAnswers(questionIndex).length > 2" type="button"
+                                    (click)="removeAnswer(questionIndex, answerIndex)"
+                                    class="text-red-500 hover:text-red-700">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Submit Button -->
+        <div class="flex justify-end">
+            <button type="submit"
+                [disabled]="quizForm.invalid || isLoading"
+                class="inline-flex items-center px-4 py-2.5 text-sm font-medium 
+                    rounded-md shadow-sm text-white bg-primary hover:bg-blue-600 
+                    disabled:bg-primary/50  disabled:cursor-not-allowed">
+                <i *ngIf="isLoading" class="fa-solid fa-rotate mr-2 animate-spin"></i>
+                {{ isLoading ? 'Mise à jour...' : 'Mettre à jour le quiz' }}
+            </button>
+        </div>
+    </form>
+</div> 

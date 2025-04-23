@@ -10,8 +10,8 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace formationApi.Extensions
 {
-	public static class IdentityServiceExtensions
-	{
+    public static class IdentityServiceExtensions
+    {
         public static IServiceCollection AddIdentityServices(this IServiceCollection services,
         IConfiguration config)
         {
@@ -20,9 +20,10 @@ namespace formationApi.Extensions
             {
                 opt.Password.RequireNonAlphanumeric = false;
                 opt.Password.RequiredLength = 8;
-                opt.Password.RequireNonAlphanumeric = true;
+                opt.Password.RequireDigit = false;
                 opt.Password.RequireLowercase = false;
-
+                opt.Password.RequireUppercase = false;       // Optional
+                opt.Password.RequireLowercase = false;       // Optional
                 opt.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(10);
                 opt.Lockout.MaxFailedAccessAttempts = 5;
             })
@@ -46,6 +47,6 @@ namespace formationApi.Extensions
                 });
             return services;
         }
-	}
+    }
 }
 

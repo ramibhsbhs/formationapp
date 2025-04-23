@@ -4,6 +4,7 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Group } from '../../../core/models/group.model';
 import { User } from '../../../core/models/user.model';
 import { UserRole, USER_ROLES } from '../../../core/constants/roles.constants';
+import { GroupService } from 'src/app/core/services/group.service';
 
 @Component({
     selector: 'app-create-user-dialog',
@@ -14,10 +15,11 @@ export class CreateUserDialogComponent implements OnInit {
     form!: FormGroup;
     isLoading = false;
     roles = USER_ROLES;
-    UserRole = UserRole; 
+    UserRole = UserRole;
     constructor(
         private dialogRef: MatDialogRef<CreateUserDialogComponent>,
         private fb: FormBuilder,
+        private groupService: GroupService,
         @Inject(MAT_DIALOG_DATA) public data: { selectedGroup: Group }
     ) { }
 
@@ -40,7 +42,18 @@ export class CreateUserDialogComponent implements OnInit {
                 role: formValue.role,
                 groupId: this.data.selectedGroup.id
             };
-            this.dialogRef.close(newUser);
+            this.groupService.createUser(newUser).subscribe({
+                next: (user) => {
+                    this.isLoading = false;
+                    this.dialogRef.close(user);
+                },
+                error: (error) => {
+                    this.isLoading = false;
+                    console.error('Error creating user:', error);
+                }
+            }
+
+            );
         }
     }
 

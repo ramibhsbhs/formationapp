@@ -103,12 +103,12 @@ namespace formationApi.Controllers
                 {
                     ToEmail = request.Email,
                     Subject = "Bienvenue chez Votre Entreprise !",
-                    TemplatePath = "wwwroot/Templates/WelcomeEmail.html",
+                    TemplatePath = "templates/WelcomeEmail.html",
                     Variables = emailVariables
                 };
 
                 await _emailService.SendWithTemplate(emailRequest);
-                return Ok("User created successfully and welcome email sent!");
+                return Ok(newUser.ToDto());
             }
             catch (Exception ex)
             {

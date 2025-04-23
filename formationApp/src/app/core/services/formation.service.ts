@@ -16,7 +16,7 @@ export class FormationService {
         return this.http.post<Formation>(this.apiUrl, formation);
     }
 
-    getFormations(): Observable<Formation[]> {
+    getFormations() {
         return this.http.get<Formation[]>(this.apiUrl);
     }
 

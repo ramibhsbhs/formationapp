@@ -4,6 +4,7 @@ using formationApi.data.Repositories.AttachmentRepo;
 using formationApi.data.Repositories.GroupRepo;
 using formationApi.data.Repositories.ModuleRepo;
 using formationApi.data.Repositories.NotificationRepo;
+using formationApi.data.Repositories.QuizsRepo;
 using formationApi.data.Repositories.SessionRepo;
 using Microsoft.AspNetCore.Identity;
 
@@ -19,6 +20,9 @@ namespace formationApi.data.Repositories.FormationRepo
         private IAttachmentRepository _attachmentRepository;
         private IGroupRepository _group;
         private INotificationRepository _notification;
+        private IQuizRepository _quiz;
+        private IQuestionRepository _question;
+        private IAnswerRepository _answer;
 
 
 
@@ -41,6 +45,12 @@ namespace formationApi.data.Repositories.FormationRepo
         public IModuleRepository Module => _module ??= new ModuleRepository(_context);
 
         public INotificationRepository Notification => _notification ??= new NotificationRepository(_context);
+
+        public IQuizRepository Quiz => _quiz ??= new QuizRepository(_context);
+
+        public IQuestionRepository Question => _question ??= new QuestionRepository(_context);
+
+        public IAnswerRepository Answer => _answer ??= new AnswerRepository(_context);
     }
 }
 

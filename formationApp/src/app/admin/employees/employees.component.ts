@@ -21,12 +21,6 @@ export class EmployeesComponent implements OnInit {
   loading = true;
   error: string | null = null;
 
-  // newUser: Partial<User> = {
-  //   userName: '',
-  //   email: '',
-  //   role: undefined
-  // };
-
 
   constructor(
     private groupService: GroupService,
@@ -68,10 +62,8 @@ export class EmployeesComponent implements OnInit {
     });
     dialogRef.afterClosed().subscribe((user: User) => {
       if (user) {
-        // this.groups.push(user);
-        // this.selectedGroup = user;
         console.log(user);
-        
+        this.groups.find(g => g.id === this.selectedGroup?.id)?.users.push(user);
       }
     });
   }

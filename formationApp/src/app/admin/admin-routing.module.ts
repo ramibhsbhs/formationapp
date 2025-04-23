@@ -7,6 +7,10 @@ import { SessionComponent } from './session/session.component';
 import { SettingsComponent } from './settings/settings.component';
 import { TestComponent } from './test/test.component';
 import { CreateFormationComponent } from './create-formation/create-formation.component';
+import { QuizsComponent } from './quiz/quizs/quizs.component';
+import { CreateQuizsComponent } from './quiz/create-quizs/create-quizs.component';
+import { QuizDetailsComponent } from './quiz/quiz-details/quiz-details.component';
+import { UpdateQuizsComponent } from './quiz/update-quizs/update-quizs.component';
 
 const routes: Routes = [
   { path: "", component: HomeComponent },
@@ -15,7 +19,10 @@ const routes: Routes = [
   { path: "employees", component: EmployeesComponent },
   { path: "sessions", component: SessionComponent },
   { path: "settings", component: SettingsComponent },
-  { path: "test", component: TestComponent },
+  { path: "quizs", component: QuizsComponent },
+  { path: "quizs/create", component: CreateQuizsComponent },
+  { path: "quizs/:id", component: QuizDetailsComponent },
+  { path: "quizs/edit/:id", component: UpdateQuizsComponent },
 ];
 
 @NgModule({

@@ -11,6 +11,7 @@ export class AdminLayoutComponent implements OnInit {
     { path: '/admin', name: 'Tableau de bord', icon: 'fas fa-chart-bar' },
     { path: '/admin/formations', name: 'Formations', icon: 'fas fa-graduation-cap' },
     { path: '/admin/employees', name: 'Employés', icon: 'fas fa-users' },
+    { path: '/admin/quizs', name: 'Quizs', icon: 'fas fa-question' },
     { path: '/admin/sessions', name: 'Sessions', icon: 'fas fa-calendar' },
     { path: '/admin/settings', name: 'Paramètres', icon: 'fas fa-cog' },
     // { path: "/admin/test", name: "Tests", icon: "fas fa-cog" },

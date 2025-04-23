@@ -22,6 +22,10 @@ namespace formationApi.data
         public DbSet<Module> Modules { get; set; }
         public DbSet<Attachment> Attachments { get; set; }
 
+        public DbSet<Quiz> Quizzes { get; set; }
+        public DbSet<Question> Questions { get; set; }
+        public DbSet<Answer> Answers { get; set; }
+
 
         public ApplicationContext(DbContextOptions<ApplicationContext> options) : base(options) { }
 
@@ -81,6 +85,21 @@ namespace formationApi.data
                 .HasIndex(m => new { m.FormationId, m.Position })
                 .IsUnique();
 
+            // Configure Quiz and Question relationship
+            builder.Entity<Quiz>()
+                .HasMany(q => q.Questions)
+                .WithOne(q => q.Quiz)
+                .HasForeignKey(q => q.QuizId)
+                .IsRequired();
+
+            // Configure Question and Answer relationship
+            builder.Entity<Question>()
+                .HasMany(q => q.Answers)
+                .WithOne(a => a.Question)
+                .HasForeignKey(a => a.QuestionId)
+                .IsRequired();
+        
+            
         }
     }
 	

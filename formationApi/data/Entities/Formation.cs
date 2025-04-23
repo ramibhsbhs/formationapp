@@ -9,7 +9,7 @@ namespace formationApi.data.Entities
         public string Title { get; set; } 
         public string Description { get; set; }
         public string Content { get; set; }
-
+        public string Category { get; set; } = "safety";
         public ICollection<Group> Groups { get; set; } = new List<Group>();
         public ICollection<Session> Sessions { get; set; } = new List<Session>();
 

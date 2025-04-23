@@ -1,0 +1,72 @@
+/* Custom styles that can't be achieved with Tailwind */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* Custom checkbox styling */
+input[type="checkbox"] {
+    border: 1px solid #e5e7eb;
+    border-radius: 0.25rem;
+}
+
+input[type="checkbox"]:checked {
+    background-color: #3b82f6;
+    border-color: #3b82f6;
+}
+
+/* Custom transitions for buttons */
+button {
+    transition: all 0.2s ease-in-out;
+}
+
+button:hover {
+    transform: translateY(-1px);
+}
+
+/* Custom focus states for inputs */
+input[type="text"]:focus,
+input[type="number"]:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+/* Ensure proper spacing for form elements */
+.space-y-6>*+* {
+    margin-top: 1.5rem;
+}
+
+.space-y-4>*+* {
+    margin-top: 1rem;
+}
+
+.space-y-2>*+* {
+    margin-top: 0.5rem;
+}
+
+/* Style for form inputs */
+input[type="text"],
+input[type="number"] {
+    padding: 0.5rem;
+    border: 1px solid #e5e7eb;
+    border-radius: 0.375rem;
+    width: 100%;
+}
+
+/* Style for error messages */
+.text-red-500 {
+    color: #ef4444;
+}
+
+/* Style for form sections */
+.border {
+    border: 1px solid #e5e7eb;
+    border-radius: 0.375rem;
+    padding: 1rem;
+}
+
+/* Style for icons */
+.fas {
+    font-size: 1rem;
+}

@@ -1,6 +1,6 @@
 import { User } from "./user.model";
 
-export interface Group {
+export class Group {
     id: number;
     name: string;
     description?: string;
@@ -9,5 +9,16 @@ export interface Group {
     deletedAt?: Date;
     enable: boolean;
     users: User[];
-    count: number;
+
+    constructor(id: number, name: string, createdAt: Date, enable: boolean, users: User[] = []) {
+        this.id = id;
+        this.name = name;
+        this.createdAt = createdAt;
+        this.enable = enable;
+        this.users = users;
+    }
+
+    get count(): number {
+        return this.users.length;
+    }
 } 

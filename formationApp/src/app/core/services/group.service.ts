@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Group } from '../models/group.model';
 import { environment } from '../../../environments/environment';
+import { User } from '../models/user.model';
 
 @Injectable({
     providedIn: 'root'
@@ -23,5 +24,9 @@ export class GroupService {
 
     createGroup(newGroup: Partial<Group>) {
        return this.http.post<Group>(this.apiUrl, newGroup);
+    }
+
+    createUser(model: any) {
+        return this.http.post<User>(`${environment.baseUrl}/users/create-user`, model);
     }
 } 

@@ -2,6 +2,7 @@
 using formationApi.data.Entities;
 using formationApi.data.Repositories;
 using formationApi.dtos.request;
+using formationApi.dtos.response;
 using formationApi.Extensions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -9,9 +10,9 @@ using static formationApi.dtos.request.FormationCreateDto;
 
 namespace formationApi.Controllers
 {
-	public class FormationController : BaseApiController
-	{
-		private readonly IRepositoryWrapper _repositoryWrapper;
+    public class FormationController : BaseApiController
+    {
+        private readonly IRepositoryWrapper _repositoryWrapper;
 
         public FormationController(IRepositoryWrapper repositoryWrapper)
         {
@@ -19,9 +20,10 @@ namespace formationApi.Controllers
         }
 
 
-        public async Task<ICollection<Formation>> FindAll()
+        public async Task<ICollection<FormationDto>> FindAll()
         {
-            return await _repositoryWrapper.Formation.GetAll();
+            var result = await _repositoryWrapper.Formation.GetAll();
+            return result.ToDtoList();
         }
 
         [HttpPost]
@@ -34,6 +36,7 @@ namespace formationApi.Controllers
                 Title = formationCreateDto.Title,
                 Description = formationCreateDto.Description,
                 Content = formationCreateDto.Content,
+                Category = formationCreateDto.Category,
                 CreatedAt = DateTime.UtcNow,
                 UpdatedAt = DateTime.UtcNow,
                 Sessions = new List<Session>(),
@@ -77,14 +80,14 @@ namespace formationApi.Controllers
                 Title = dto.Title,
                 Position = dto.Position,
                 FormationId = formation.Id,
-             }).ToList();
+            }).ToList();
 
             if (modules.Any())
             {
                 await _repositoryWrapper.Module.InsertMany(modules);
-            } 
+            }
 
-            
+
             return CreatedAtAction(nameof(CreateFormation), new { id = formation.Id }, formation);
         }
     }

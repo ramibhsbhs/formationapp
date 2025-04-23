@@ -4,6 +4,7 @@ import { MainLayoutComponent } from './layout/main-layout/main-layout.component'
 import { AuthLayoutComponent } from './layout/auth-layout/auth-layout.component';
 import { ErrorLayoutComponent } from './layout/error-layout/error-layout.component';
 import { AdminLayoutComponent } from './layout/admin-layout/admin-layout.component';
+import { EmployeeLayoutComponent } from './layout/employee-layout/employee-layout.component';
 
 const routes: Routes = [
   {
@@ -20,6 +21,14 @@ const routes: Routes = [
       {
         path: 'admin',
         loadChildren: () => import('./admin/admin.module').then(m => m.AdminModule)
+      }
+    ]
+  },
+  {
+    path: '', component: EmployeeLayoutComponent, children: [
+      {
+        path: 'employee',
+        loadChildren: () => import('./employee/employee.module').then(m => m.EmployeeModule)
       }
     ]
   },

@@ -7,26 +7,26 @@
             </span>
         </div>
 
-        <p class="text-gray-600 text-sm mb-4 line-clamp-2">
+        <p class="text-gray-600 text-sm mb-4 line-clamp-2 line-coverage">
             {{ training.description }}
         </p>
 
         <div class="grid grid-cols-2 gap-2 mb-3">
             <div class="flex items-center text-gray-600 text-sm">
                 <i class="fa-solid fa-clock w-4 h-4 mr-2 text-gray-400"></i>
-                {{ training.duration }} heures
+                {{ training.groups.length }} groupes
             </div>
 
             <div class="flex items-center text-gray-600 text-sm">
 
                 <i class="fa-solid fa-calendar text-gray-300  mr-2"></i>
-                {{ training.sessions }} sessions
+                {{ training.sessions.length }} sessions
             </div>
 
             <div class="flex items-center text-gray-600 text-sm">
 
                 <i class="fa-solid fa-users mr-2 text-gray-400"></i>
-                {{ training.participants }} participants
+                {{ usersCount }} participants
             </div>
         </div>
     </div>

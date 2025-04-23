@@ -77,10 +77,8 @@ namespace formationApi.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginDto dto)
         {
-
             // Normalize the input for lookup
             string normalizedInput = dto.Username.ToUpper();
-
 
             var user = await _userManager.Users
                   .FirstOrDefaultAsync(x =>
@@ -97,21 +95,39 @@ namespace formationApi.Controllers
                 return Unauthorized("Invalid username/email or password.");
             }
 
-
-
+            // Get user roles
+            var roles = await _userManager.GetRolesAsync(user);
+            var redirectUrl = GetRedirectUrlByRole(roles.FirstOrDefault());
 
             return Ok(new
             {
                 Username = user.UserName,
                 Email = user.Email,
                 Token = await _tokenService.CreateToken(user),
-               
+                RedirectUrl = redirectUrl
             });
         }
+
+        private string GetRedirectUrlByRole(string role)
+        {
+            return role switch
+            {
+                "Administrator" => "/admin",
+                "Manager" => "/manager",
+                "HierarchicalLeader" => "/hierarchical-leader",
+                "TeamLeader" => "/team-leader",
+                "PostLeader" => "/post-leader",
+                "QualityAgent" => "/quality-agent",
+                "Employee" => "/employee",
+                _ => "/employee" // Default redirect for unknown roles
+            };
+        }
+
         private async Task<bool> UserExists(string username)
         {
             return await _userManager.Users.AnyAsync(x => x.NormalizedUserName == username.ToUpper()); 
         }
     }
 }
+
 

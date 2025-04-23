@@ -125,6 +125,42 @@ namespace formationApi.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("formationApi.data.Entities.Answer", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("Enable")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsCorrect")
+                        .HasColumnType("boolean");
+
+                    b.Property<int>("QuestionId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Text")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("QuestionId");
+
+                    b.ToTable("Answers");
+                });
+
             modelBuilder.Entity("formationApi.data.Entities.AppRole", b =>
                 {
                     b.Property<int>("Id")
@@ -248,6 +284,9 @@ namespace formationApi.Migrations
                         .HasColumnType("integer");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Category")
+                        .HasColumnType("text");
 
                     b.Property<string>("Content")
                         .HasColumnType("text");
@@ -383,6 +422,70 @@ namespace formationApi.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("notifications");
+                });
+
+            modelBuilder.Entity("formationApi.data.Entities.Question", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("Enable")
+                        .HasColumnType("boolean");
+
+                    b.Property<int>("Points")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("QuizId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Title")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("QuizId");
+
+                    b.ToTable("questions");
+                });
+
+            modelBuilder.Entity("formationApi.data.Entities.Quiz", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("Enable")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Title")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("quizs");
                 });
 
             modelBuilder.Entity("formationApi.data.Entities.Session", b =>
@@ -550,6 +653,17 @@ namespace formationApi.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("formationApi.data.Entities.Answer", b =>
+                {
+                    b.HasOne("formationApi.data.Entities.Question", "Question")
+                        .WithMany("Answers")
+                        .HasForeignKey("QuestionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Question");
+                });
+
             modelBuilder.Entity("formationApi.data.Entities.AppUserRole", b =>
                 {
                     b.HasOne("formationApi.data.Entities.AppRole", "Role")
@@ -613,6 +727,17 @@ namespace formationApi.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("formationApi.data.Entities.Question", b =>
+                {
+                    b.HasOne("formationApi.data.Entities.Quiz", "Quiz")
+                        .WithMany("Questions")
+                        .HasForeignKey("QuizId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Quiz");
+                });
+
             modelBuilder.Entity("formationApi.data.Entities.Session", b =>
                 {
                     b.HasOne("formationApi.data.Entities.Formation", "Formation")
@@ -653,6 +778,16 @@ namespace formationApi.Migrations
             modelBuilder.Entity("formationApi.data.Entities.Module", b =>
                 {
                     b.Navigation("Attachments");
+                });
+
+            modelBuilder.Entity("formationApi.data.Entities.Question", b =>
+                {
+                    b.Navigation("Answers");
+                });
+
+            modelBuilder.Entity("formationApi.data.Entities.Quiz", b =>
+                {
+                    b.Navigation("Questions");
                 });
 
             modelBuilder.Entity("formationApi.data.models.AppUser", b =>

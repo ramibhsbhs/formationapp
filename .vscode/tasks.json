@@ -1,0 +1,37 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "run-dotnet-backend",
+            "type": "shell",
+            "command": "dotnet watch run --project formationApi/formationApi.csproj --urls \"https://localhost:7173\"",
+            "group": "build",
+            "problemMatcher": [],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            }
+        },
+        {
+            "label": "run-angular-frontend",
+            "type": "shell",
+            "command": "ng serve",
+            "group": "build",
+            "problemMatcher": [],
+            "options": {
+                "cwd": "${workspaceFolder}/formationApp"
+            }
+        },
+        {
+            "label": "run-fullstack",
+            "dependsOn": [
+                "run-dotnet-backend",
+                "run-angular-frontend"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": []
+        }
+    ]
+}

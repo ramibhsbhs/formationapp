@@ -12,6 +12,10 @@ import { SettingsComponent } from './settings/settings.component';
 import { SharedModule } from '../shared/shared.module';
 import { TestComponent } from './test/test.component';
 import { CreateFormationComponent } from './create-formation/create-formation.component';
+import { QuizsComponent } from './quiz/quizs/quizs.component';
+import { CreateQuizsComponent } from './quiz/create-quizs/create-quizs.component';
+import { QuizDetailsComponent } from './quiz/quiz-details/quiz-details.component';
+import { UpdateQuizsComponent } from './quiz/update-quizs/update-quizs.component';
 
 @NgModule({
   declarations: [
@@ -22,6 +26,10 @@ import { CreateFormationComponent } from './create-formation/create-formation.co
     SettingsComponent,
     TestComponent,
     CreateFormationComponent,
+    QuizsComponent,
+    CreateQuizsComponent,
+    QuizDetailsComponent,
+    UpdateQuizsComponent
   ],
   imports: [
     CommonModule,

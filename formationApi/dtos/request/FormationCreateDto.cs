@@ -15,6 +15,9 @@ namespace formationApi.dtos.request
 
         [Required(ErrorMessage = "Content is required.")]
         public string Content { get; set; }
+        
+        [Required(ErrorMessage = "Category is required.")]
+        public string Category { get; set; } = "safety";
 
         public List<int> GroupIds { get; set; } = new List<int>();
 
@@ -48,7 +51,7 @@ namespace formationApi.dtos.request
         }
 
         public class ModuleDto
-	    {
+        {
             [Required(ErrorMessage = "Description is required.")]
             public string Description { get; set; }
 
@@ -58,7 +61,7 @@ namespace formationApi.dtos.request
             [Range(1, int.MaxValue, ErrorMessage = "Position must be a positive integer.")]
             public int Position { get; set; }
 
-           
+
             public ICollection<CreateAttachmentDto> Attachments { get; set; } = new List<CreateAttachmentDto>();
 
 
@@ -73,7 +76,7 @@ namespace formationApi.dtos.request
                 public string Type { get; set; }
             }
         }
-}
+    }
 
 
 }

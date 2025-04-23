@@ -1,7 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
+import { MatDialog } from '@angular/material/dialog';
 import { Session } from 'src/app/core/models/session.model';
 import { SesssionsService } from 'src/app/core/services/sesssions.service';
+import { SessionPopupComponent } from 'src/app/shared/components/session-popup/session-popup.component';
 
 @Component({
   selector: 'app-session',
@@ -9,22 +11,26 @@ import { SesssionsService } from 'src/app/core/services/sesssions.service';
   styleUrls: ['./session.component.scss']
 })
 export class SessionComponent implements OnInit {
-  sessions: Session[] = [];
-  currentPage: number = 0;
-  pageSize: number = 5;
+  private _sessions: Session[] = [];
   isLoading: boolean = false;
 
-  constructor(private fb: FormBuilder, private sessionService: SesssionsService) { }
+  constructor(private fb: FormBuilder,
+    private sessionService: SesssionsService,
+    private dialog: MatDialog
+  ) { }
 
   ngOnInit(): void {
     this.loadSessions();
   }
-
+  get sessions(): Session[] {
+    return this._sessions
+      .sort((a, b) => a.startDate.getTime() - b.startDate.getTime());
+  }
   loadSessions(): void {
     this.isLoading = true;
     this.sessionService.getAll().subscribe({
       next: (sessions) => {
-        this.sessions = sessions;
+        this._sessions = sessions;
         this.isLoading = false;
       },
       error: (error) => {
@@ -35,27 +41,9 @@ export class SessionComponent implements OnInit {
   }
 
   reloadSessions(): void {
-    this.currentPage = 0; // Reset to first page
     this.loadSessions();
   }
 
-  get paginatedSessions(): Session[] {
-    const startIndex = this.currentPage * this.pageSize;
-    const endIndex = startIndex + this.pageSize;
-    return this.sessions.slice(startIndex, endIndex);
-  }
-
-  get pageCount(): number {
-    return Math.ceil(this.sessions.length / this.pageSize);
-  }
-
-  previousPage(): void {
-    this.currentPage = Math.max(0, this.currentPage - 1);
-  }
-
-  nextPage(): void {
-    this.currentPage = Math.min(this.pageCount - 1, this.currentPage + 1);
-  }
 
   formatDate(date: Date): string {
     return new Intl.DateTimeFormat('fr', {
@@ -63,5 +51,16 @@ export class SessionComponent implements OnInit {
       month: 'short',
       year: 'numeric'
     }).format(date);
+  }
+  openCreateSessionDialog(): void {
+    const dialogRef = this.dialog.open(SessionPopupComponent, {
+      width: '500px',
+      data: {}
+    });
+    dialogRef.afterClosed().subscribe((result: Session) => {
+      if (result) {
+        this.sessions.push(result);
+      }
+    });
   }
 }

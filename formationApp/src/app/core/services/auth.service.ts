@@ -22,8 +22,7 @@ export class AuthService {
         const user = res;
         if (user) {
           this.setCurrentUser(user)
-          this.redirectUser([])
-
+          this.redirectUser(user.redirectUrl)
         }
       })
     )
@@ -34,9 +33,10 @@ export class AuthService {
     this.currentUserSource.next(user);
   }
 
-  redirectUser(roles: String[]) {
-    this.route.navigateByUrl("/admin")
+  redirectUser(redirectUrl: string) {
+    this.route.navigateByUrl(redirectUrl)
   }
+
   logout() {
     localStorage.removeItem('user');
     this.currentUserSource.next(null);

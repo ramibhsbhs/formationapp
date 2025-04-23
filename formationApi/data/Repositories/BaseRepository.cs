@@ -92,7 +92,7 @@ namespace formationApi.data
                 throw new InvalidOperationException("An unexpected error occurred while saving entities.", ex);
             }
         }
-        public async Task<TEntity> Get(int id)
+        public virtual async Task<TEntity> Get(int id)
         {
             return await _dbContext.Set<TEntity>()
                 .Where(x => x.Enable)
