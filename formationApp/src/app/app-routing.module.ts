@@ -27,8 +27,8 @@ const routes: Routes = [
         loadChildren: () => import('./admin/admin.module').then(m => m.AdminModule)
       }
     ],
-    canActivate: [RoleGuard],
-    data: { roles: [UserRole.Administrator] }
+    // canActivate: [RoleGuard],
+    // data: { roles: [UserRole.Administrator] }
   },
   {
     path: '', component: EmployeeLayoutComponent, children: [
@@ -37,8 +37,8 @@ const routes: Routes = [
         loadChildren: () => import('./employee/employee.module').then(m => m.EmployeeModule)
       }
     ],
-    canActivate: [RoleGuard],
-    data: { roles: [UserRole.Employee] }
+    // canActivate: [RoleGuard],
+    // data: { roles: [UserRole.Employee] }
   },
   {
     path: '', component: ManagerLayoutComponent, children: [
@@ -47,8 +47,8 @@ const routes: Routes = [
         loadChildren: () => import('./manager/manager.module').then(m => m.ManagerModule)
       }
     ],
-    canActivate: [RoleGuard],
-    data: { roles: [UserRole.Manager] }
+    // canActivate: [RoleGuard],
+    // data: { roles: [UserRole.Manager] }
   },
   {
     path: '', component: TeamLeaderLayoutComponent, children: [
@@ -57,8 +57,8 @@ const routes: Routes = [
         loadChildren: () => import('./team-leader/team-leader.module').then(m => m.TeamLeaderModule)
       }
     ],
-    canActivate: [RoleGuard],
-    data: { roles: [UserRole.TeamLeader] }
+    // canActivate: [RoleGuard],
+    // data: { roles: [UserRole.TeamLeader] }
   },
   {
     path: '', component: AuthLayoutComponent, children: [
