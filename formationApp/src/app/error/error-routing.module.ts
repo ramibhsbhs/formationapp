@@ -6,8 +6,9 @@ import { ForbiddenComponent } from './forbidden/forbidden.component';
 const routes: Routes = [
   {
     path: '', children: [
+      { path: "403", component: ForbiddenComponent },
       { path: "404", component: NotFoundComponent },
-      { path: "403", component: ForbiddenComponent }
+    
     ]
   }
 ];

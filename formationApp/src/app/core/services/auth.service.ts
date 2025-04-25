@@ -12,7 +12,14 @@ export class AuthService {
   currentUser$ = this.currentUserSource.asObservable();
 
   baseUrl = environment.baseUrl
-  constructor(private http: HttpClient, private route: Router) { }
+  constructor(private http: HttpClient, private route: Router) { 
+    const user = localStorage.getItem('user');
+    if (user) {
+      this.currentUserSource.next(JSON.parse(user));
+    } else {
+      this.currentUserSource.next(null);
+    }
+  }
 
   login(model: any) {
     return this.http.post<LoggedIn>(this.baseUrl + "/auth/login",

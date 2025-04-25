@@ -7,6 +7,8 @@ import { AdminLayoutComponent } from './layout/admin-layout/admin-layout.compone
 import { EmployeeLayoutComponent } from './layout/employee-layout/employee-layout.component';
 import { ManagerLayoutComponent } from './layout/manager-layout/manager-layout.component';
 import { TeamLeaderLayoutComponent } from './layout/team-leader-layout/team-leader-layout.component';
+import { RoleGuard } from './core/guards/role.guard';
+import { UserRole } from './core/constants/roles.constants';
 
 const routes: Routes = [
   {
@@ -24,7 +26,9 @@ const routes: Routes = [
         path: 'admin',
         loadChildren: () => import('./admin/admin.module').then(m => m.AdminModule)
       }
-    ]
+    ],
+    canActivate: [RoleGuard],
+    data: { roles: [UserRole.Administrator] }
   },
   {
     path: '', component: EmployeeLayoutComponent, children: [
@@ -32,7 +36,9 @@ const routes: Routes = [
         path: 'employee',
         loadChildren: () => import('./employee/employee.module').then(m => m.EmployeeModule)
       }
-    ]
+    ],
+    canActivate: [RoleGuard],
+    data: { roles: [UserRole.Employee] }
   },
   {
     path: '', component: ManagerLayoutComponent, children: [
@@ -40,7 +46,9 @@ const routes: Routes = [
         path: 'manager',
         loadChildren: () => import('./manager/manager.module').then(m => m.ManagerModule)
       }
-    ]
+    ],
+    canActivate: [RoleGuard],
+    data: { roles: [UserRole.Manager] }
   },
   {
     path: '', component: TeamLeaderLayoutComponent, children: [
@@ -48,7 +56,9 @@ const routes: Routes = [
         path: 'team-leader',
         loadChildren: () => import('./team-leader/team-leader.module').then(m => m.TeamLeaderModule)
       }
-    ]
+    ],
+    canActivate: [RoleGuard],
+    data: { roles: [UserRole.TeamLeader] }
   },
   {
     path: '', component: AuthLayoutComponent, children: [
@@ -60,11 +70,12 @@ const routes: Routes = [
   },
   {
     path: '', component: ErrorLayoutComponent, children: [
-      { path: '**', redirectTo: '404', pathMatch: 'full' },
+     
       {
         path: '',
         loadChildren: () => import('./error/error.module').then(m => m.ErrorModule)
-      }
+      },
+      { path: '**', redirectTo: '404', pathMatch: 'full' },
     ]
   },
 ];
