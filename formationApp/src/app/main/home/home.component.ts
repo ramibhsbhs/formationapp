@@ -20,7 +20,8 @@ export class HomeComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.auth.currentUser$.subscribe(user => {
       this.user = user;
-      this.actionLink = user ? '/admin' : '/login';
+      console.log(user);
+      this.actionLink = user ? user.redirectUrl : '/login';
       this.actionText = user ? 'Accéder au tableau de bord' : 'Se connecter';
     });
   }

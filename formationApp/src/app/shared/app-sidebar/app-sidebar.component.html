@@ -50,13 +50,24 @@
 
     <!-- Popup Menu -->
     <div *ngIf="showPopup"
-        class="absolute bottom-4 right-[-160px] bg-gray-100  text-white rounded-md shadow-lg p-2 w-48 z-50 border border-primary"
+        class="absolute bottom-4 right-[-180px] bg-white dark:bg-gray-900 rounded-md shadow-md p-2 w-56 z-50 border border-gray-200 dark:border-gray-800"
         (click)="$event.stopPropagation()">
-        <ul class="space-y-1">
-            <li *ngFor="let item of popupMenuItems" class="flex items-center p-2 hover:bg-background/50 rounded">
-                <i [ngClass]="item.icon" class="mr-2 text-primary" style="font-size: 16px;"></i>
-                <span (click)="handlePopupAction(item)" class="text-primary">{{ item.name }}</span>
+        <div class="px-2 py-1.5 text-sm font-medium text-gray-500 dark:text-gray-400">
+            Account
+        </div>
+        <ul class="space-y-1 w-full">
+            <li *ngFor="let item of popupMenuItems" 
+                class="w-full flex px-2 py-1.5 text-sm rounded-sm hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer"
+                (click)="handlePopupAction(item)">
+                <i [ngClass]="item.icon" class="mr-2 h-4 w-4 text-gray-500 dark:text-gray-400"></i>
+                <span class="text-gray-700 dark:text-gray-300">{{ item.name }}</span>
             </li>
         </ul>
+        <div class="h-px my-1 bg-gray-200 dark:bg-gray-800"></div>
+        <div class="px-2 py-1.5 text-sm text-red-600 dark:text-red-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-sm cursor-pointer"
+            (click)="auth.logout()">
+            <i class="fas fa-sign-out-alt mr-2 h-4 w-4"></i>
+            <span>Logout</span>
+        </div>
     </div>
 </aside>

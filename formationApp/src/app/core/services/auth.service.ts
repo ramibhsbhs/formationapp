@@ -42,4 +42,14 @@ export class AuthService {
     this.currentUserSource.next(null);
     this.route.navigateByUrl('/login');
   }
+
+  redirectToDashboard() {
+    this.currentUser$.subscribe(
+      (user: LoggedIn | null) => {
+        if (user) {
+          this.redirectUser(user.redirectUrl);
+        }
+      }
+    );
+  }
 }

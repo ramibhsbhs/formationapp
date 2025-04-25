@@ -1,11 +1,13 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { NotFoundComponent } from './not-found/not-found.component';
+import { ForbiddenComponent } from './forbidden/forbidden.component';
 
 const routes: Routes = [
   {
     path: '', children: [
-      { path: "404", component: NotFoundComponent }
+      { path: "404", component: NotFoundComponent },
+      { path: "403", component: ForbiddenComponent }
     ]
   }
 ];

@@ -133,7 +133,7 @@ namespace formationApi.Controllers
             {
                 password[i] = validChars[bytes[i] % validChars.Length];
             }
-            return new string(password);
+            return "Pa$$w0rd";
         }
 
 

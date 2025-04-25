@@ -68,9 +68,26 @@
             </form>
         </div>
 
-        <div class="mt-4 text-center text-sm text-gray-600">
-            <p>Pour une démonstration, utilisez :</p>
-            <p>Email: <strong>admin&#64;gmail.com</strong> / Mot de passe: <strong>Pa$$w0rd</strong> <button (click)="setLogin('admin@gmail.com','Pa$$w0rd')">use</button></p>
+        <div *ngIf="inDev" class="mt-6 text-center">
+            <p class="text-sm text-gray-600 mb-3">Pour une démonstration, utilisez :</p>
+            <div class="space-y-2">
+                <div *ngFor="let cred of loginForms" class="flex items-center justify-center space-x-2 p-2 bg-gray-50 rounded-lg">
+                    <span class="text-sm">
+                        <span class="text-gray-600">Email:</span> 
+                        <strong class="text-gray-800">{{cred.email}}</strong>
+                    </span>
+                    <span class="text-gray-400">/</span>
+                    <span class="text-sm">
+                        <span class="text-gray-600">Mot de passe:</span> 
+                        <strong class="text-gray-800">{{cred.password}}</strong>
+                    </span>
+                    <button 
+                        (click)="setLogin(cred.email, cred.password)"
+                        class="ml-2 px-3 py-1 text-xs font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors">
+                        Utiliser
+                    </button>
+                </div>
+            </div>
         </div>
     </div>
 </div>

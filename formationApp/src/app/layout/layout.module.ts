@@ -7,6 +7,8 @@ import { RouterModule } from '@angular/router';
 import { AdminLayoutComponent } from './admin-layout/admin-layout.component';
 import { SharedModule } from '../shared/shared.module';
 import { EmployeeLayoutComponent } from './employee-layout/employee-layout.component';
+import { ManagerLayoutComponent } from './manager-layout/manager-layout.component';
+import { TeamLeaderLayoutComponent } from './team-leader-layout/team-leader-layout.component';
 
 
 
@@ -17,7 +19,9 @@ import { EmployeeLayoutComponent } from './employee-layout/employee-layout.compo
     ErrorLayoutComponent,
     AuthLayoutComponent,
     AdminLayoutComponent,
-    EmployeeLayoutComponent
+    EmployeeLayoutComponent,
+    ManagerLayoutComponent,
+    TeamLeaderLayoutComponent
   ],
   imports: [
     CommonModule,

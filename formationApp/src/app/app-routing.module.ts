@@ -5,6 +5,8 @@ import { AuthLayoutComponent } from './layout/auth-layout/auth-layout.component'
 import { ErrorLayoutComponent } from './layout/error-layout/error-layout.component';
 import { AdminLayoutComponent } from './layout/admin-layout/admin-layout.component';
 import { EmployeeLayoutComponent } from './layout/employee-layout/employee-layout.component';
+import { ManagerLayoutComponent } from './layout/manager-layout/manager-layout.component';
+import { TeamLeaderLayoutComponent } from './layout/team-leader-layout/team-leader-layout.component';
 
 const routes: Routes = [
   {
@@ -29,6 +31,22 @@ const routes: Routes = [
       {
         path: 'employee',
         loadChildren: () => import('./employee/employee.module').then(m => m.EmployeeModule)
+      }
+    ]
+  },
+  {
+    path: '', component: ManagerLayoutComponent, children: [
+      {
+        path: 'manager',
+        loadChildren: () => import('./manager/manager.module').then(m => m.ManagerModule)
+      }
+    ]
+  },
+  {
+    path: '', component: TeamLeaderLayoutComponent, children: [
+      {
+        path: 'team-leader',
+        loadChildren: () => import('./team-leader/team-leader.module').then(m => m.TeamLeaderModule)
       }
     ]
   },
