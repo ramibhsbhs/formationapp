@@ -31,4 +31,16 @@ export class FormationService {
     deleteFormation(id: number): Observable<void> {
         return this.http.delete<void>(`${this.apiUrl}/${id}`);
     }
+
+    updateFormationContent(id: number, formationContent: any): Observable<Formation> {
+        return this.http.put<Formation>(`${this.apiUrl}/${id}/content`, formationContent);
+    }
+
+    updateFormationCategory(id: number, category: any): Observable<Formation> {
+        return this.http.put<Formation>(`${this.apiUrl}/${id}/category`, category);
+    }
+
+    updateFormationGroups(id: number, groupIds: any): Observable<Formation> {
+        return this.http.put<Formation>(`${this.apiUrl}/${id}/groups`, groupIds);
+    }
 } 

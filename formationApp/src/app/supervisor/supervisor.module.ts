@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
-import { EmployeeRoutingModule } from './employee-routing.module';
+import { SupervisorRoutingModule } from './supervisor-routing.module';
 import { HomeComponent } from './home/home.component';
 
 
@@ -11,7 +11,7 @@ import { HomeComponent } from './home/home.component';
   ],
   imports: [
     CommonModule,
-    EmployeeRoutingModule
+    SupervisorRoutingModule
   ]
 })
-export class EmployeeModule { }
+export class SupervisorModule { }

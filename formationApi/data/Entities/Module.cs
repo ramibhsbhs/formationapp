@@ -12,6 +12,11 @@ namespace formationApi.data.Entities
         public int FormationId { get; set; }
         public Formation Formation { get; set; }
         public ICollection<Attachment> Attachments { get; set; } = new List<Attachment>();
+
+
+        // New fields for module quiz
+        public int? QuizId { get; set; }
+        public Quiz Quiz { get; set; }
     }
 }
 

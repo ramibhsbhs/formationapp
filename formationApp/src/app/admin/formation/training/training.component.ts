@@ -1,9 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
+import { Router } from '@angular/router';
 import { FORMATION_CATEGORIES } from 'src/app/core/constants/formation.constants';
 import { Formation } from 'src/app/core/models/formation.model';
 import Training from 'src/app/core/models/training';
 import { FormationService } from 'src/app/core/services/formation.service';
+import { ToasterService } from 'src/app/core/services/toaster.service';
 import { SessionPopupComponent } from 'src/app/shared/components/session-popup/session-popup.component';
 @Component({
   selector: 'app-training',
@@ -21,7 +23,12 @@ export class TrainingComponent implements OnInit {
   isLoading: boolean = false;
 
 
-  constructor(private formationService: FormationService, private dialog: MatDialog) { }
+  constructor(
+    private formationService: FormationService,
+    private dialog: MatDialog,
+    private toaster: ToasterService,
+    private router: Router
+  ) { }
 
 
   get filteredTrainings(): Formation[] {
@@ -37,10 +44,10 @@ export class TrainingComponent implements OnInit {
 
   onFilterCategory(event: Event): void {
     this.filterCategory = (event.target as HTMLSelectElement).value;
-  } 
+  }
 
   handleEditTraining(id: number): void {
- 
+    this.router.navigate(['/admin/formations/edit', id]);
   }
 
   handleDeleteTraining(id: number): void {
@@ -73,5 +80,18 @@ export class TrainingComponent implements OnInit {
       this.isLoading = false;
       console.error('Erreur lors de la récupération des formations', error);
     })
+  }
+
+  deleteFormation(id: number): void {
+    if (window.confirm('Êtes-vous sûr de vouloir supprimer cette formation ?')) {
+      this.formationService.deleteFormation(id).subscribe(() => {
+        this.fetchFormations();
+        this.toaster.showSuccess('Formation supprimée', 'La formation a été supprimée avec succès.');
+
+      }, error => {
+        console.error('Erreur lors de la suppression de la formation', error);
+        this.toaster.showError('Erreur', 'Une erreur est survenue lors de la suppression de la formation.');
+      });
+    }
   }
 }

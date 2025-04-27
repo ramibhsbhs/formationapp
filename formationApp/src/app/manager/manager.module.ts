@@ -7,6 +7,7 @@ import { FormationComponent } from './formation/formation.component';
 import { SharedModule } from '../shared/shared.module';
 import { FormsModule } from '@angular/forms';
 import { SessionComponent } from './session/session.component';
+import { FormationDetailComponent } from './formation-detail/formation-detail.component';
 
 
 
@@ -14,7 +15,8 @@ import { SessionComponent } from './session/session.component';
   declarations: [
     HomeComponent,
     FormationComponent,
-    SessionComponent
+    SessionComponent,
+    FormationDetailComponent
   ],
   imports: [
     CommonModule,

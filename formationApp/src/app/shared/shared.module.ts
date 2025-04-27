@@ -15,6 +15,8 @@ import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
+import { SelectQuizComponent } from './components/select-quiz/select-quiz.component';
+import { SelectGroupPopupComponent } from './components/select-group-popup/select-group-popup.component';
 
 @NgModule({
   declarations: [
@@ -24,7 +26,9 @@ import { MatNativeDateModule } from '@angular/material/core';
     TrainingCardComponent,
     CreateGroupDialogComponent,
     CreateUserDialogComponent,
-    SessionPopupComponent
+    SessionPopupComponent,
+    SelectQuizComponent,
+    SelectGroupPopupComponent
   ],
   imports: [
     CommonModule,

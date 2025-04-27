@@ -1,0 +1,80 @@
+<!-- Loading -->
+<div *ngIf="isLoading" class="loading">
+    Loading your quiz...
+</div>
+
+<!-- Error -->
+<div *ngIf="!isLoading && error" class="error">
+    {{ error }}
+</div>
+
+<!-- Quiz Questions -->
+<div *ngIf="!isLoading && !error && quiz && !isFinished"
+    class="quiz-details bg-gray-100 shadow-inner shadow-gray-200 rounded-2xl p-8 max-w-4xl m-auto mt-6">
+    <h1>{{ quiz.title || 'Untitled Quiz' }}</h1>
+    <p>Created on: {{ quiz.createdAt | date:'dd MMM yyyy' }}</p>
+
+    <div class="question">
+        <!-- Progress Bar -->
+        <div class="!my-5 w-full bg-gray-200 rounded-full">
+            <div class="bg-primary text-xs font-medium text-blue-100 text-center p-0.5 leading-none rounded-full transition-colors"
+                [style.width.%]="((currentQuestionIndex + 1) / quiz.questions.length) * 100">
+                {{ ((currentQuestionIndex + 1) / quiz.questions.length) * 100 | number:'1.0-0' }}%
+            </div>
+        </div>
+
+        <p>{{ quiz.questions[currentQuestionIndex].title }}</p>
+
+        <ul>
+            <li *ngFor="let answer of quiz.questions[currentQuestionIndex].answers" (click)="selectAnswer(answer.id)"
+                [class.selected]="isAnswerSelected(quiz.questions[currentQuestionIndex].id, answer.id)">
+                {{ answer.text || 'No answer text' }}
+            </li>
+        </ul>
+    </div>
+    <div class="flex flex-row justify-end w-full mt-8">
+        <button (click)="nextQuestion()"
+            class="btn-next disabled:opacity-80 bg-primary disabled:bg-primary/80 rounded-lg">
+            {{ currentQuestionIndex === quiz.questions.length - 1 ? 'Finish' : 'Next' }}
+        </button>
+    </div>
+</div>
+
+<!-- Results -->
+<div *ngIf="!isLoading && !error && isFinished"
+    class="quiz-details bg-gray-100 shadow-inner shadow-gray-200 rounded-2xl p-8 max-w-4xl m-auto mt-6">
+    <h1>Quiz Results</h1>
+    <p class="text-center text-xl font-medium mb-4">
+        You scored <strong>{{ score }}/{{ totalPossiblePoints }}</strong>
+        ({{ (score / totalPossiblePoints * 100) | number:'1.0-0' }}%)
+    </p>
+
+    <!-- Results Progress Bar (Green) -->
+    <div class="!my-5 w-full bg-gray-200 rounded-full result-progress-bar mb-8">
+        <div class="bg-green-500 text-xs font-medium text-white text-center p-0.5 leading-none rounded-full transition-colors result-progress-bar__fill"
+            [style.width.%]="(score / totalPossiblePoints * 100)">
+            {{ (score / totalPossiblePoints * 100) | number:'1.0-0' }}%
+        </div>
+    </div>
+
+    <div *ngFor="let q of quiz.questions; let i = index" class="question">
+        <h3 class="!my-5">
+            {{ i + 1 }}. {{ q.title }}
+        </h3>
+        <ul>
+            <li *ngFor="let a of q.answers" [class.correct]="a.isCorrect"
+                [class.wrong]="isAnswerSelected(q.id, a.id) && !a.isCorrect">
+                {{ a.text }}
+                <span *ngIf="a.isCorrect" class="text-green-600 font-semibold"> (Correct)</span>
+                <span *ngIf="isAnswerSelected(q.id, a.id) && !a.isCorrect" class="text-red-600 font-semibold"> (Your
+                    choice)</span>
+                <span *ngIf="isAnswerSelected(q.id, a.id) && a.isCorrect" class="text-green-600 font-semibold"> (Your
+                    choice)</span>
+            </li>
+        </ul>
+    </div>
+
+    <button [routerLink]="['../../']" class="btn-next disabled:opacity-80 bg-primary disabled:bg-primary/80 rounded-lg mt-4">
+        Back to Home
+    </button>
+</div>

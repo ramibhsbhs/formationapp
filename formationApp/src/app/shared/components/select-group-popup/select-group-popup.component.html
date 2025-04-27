@@ -1,27 +1,34 @@
-<div class="select-group-popup">
-    <h2>Select Group</h2>
+<div class="p-6 bg-white rounded-lg z-50">
+    <h2 class="text-2xl text-gray-700 font-bold mb-4">Select Group</h2>
+    <p class="text-sm text-gray-600 mb-6">Choose {{ multiSelect ? 'groups' : 'a group' }}</p>
 
-    <div class="dialog-content">
-        <div class="loading-container" *ngIf="loading">
-            <div class="spinner"></div>
+    <div class="grid grid-cols-2 gap-4 max-h-96 overflow-y-auto">
+        <div *ngIf="groups.length === 0" class="text-center text-gray-500 col-span-2">
+            No groups available. Please create one.
         </div>
 
-        <div class="groups-list" *ngIf="!loading">
-            <ul class="selection-list">
-                <li *ngFor="let group of groups" [class.selected]="selectedGroup?.id === group.id"
-                    (click)="onSelect(group)">
-                    <div class="group-item">
-                        <span class="group-name">{{group.name}}</span>
-                        <span class="group-description" *ngIf="group.description">{{group.description}}</span>
-                    </div>
-                </li>
-            </ul>
+        <div *ngFor="let group of groups" class="flex !w-full items-center space-x-2">
+            <input [type]="multiSelect ? 'checkbox' : 'radio'" [id]="'group-' + group.id"
+                [checked]="isSelected(group.id)" (change)="toggleSelection(group.id)"
+                [name]="multiSelect ? 'multi' : 'single'" class="group-input" />
+            <label [for]="'group-' + group.id" class="cursor-pointer group-label">
+                <div>
+                    <div class="font-semibold text-gray-800">{{ group.name }}</div>
+                    <div class="text-xs text-gray-500">{{ group.count }} users</div>
+                </div>
+            </label>
         </div>
     </div>
 
-    <div class="dialog-actions">
-        <button class="cancel-button" (click)="onCancel()">Cancel</button>
-        <button class="confirm-button" (click)="onConfirm()" [disabled]="!selectedGroup">
+
+    <div class="flex justify-end mt-6 space-x-4">
+        <button type="button" (click)="cancel()"
+            class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200">
+            Cancel
+        </button>
+        <button type="button" (click)="confirm()"
+            [disabled]="multiSelect ? selectedGroupIds.length === 0 : !selectedGroupId"
+            class="px-4 py-2 text-sm font-medium text-white bg-primary hover:bg-primary-dark rounded-md disabled:opacity-50">
             Confirm
         </button>
     </div>

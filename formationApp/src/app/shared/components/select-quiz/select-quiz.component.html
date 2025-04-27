@@ -1,0 +1,41 @@
+<div class="quiz-selection-dialog p-6 bg-white rounded-lg shadow-lg">
+    <h2 class="text-2xl text-gray-600 font-bold mb-4">Select Quiz</h2>
+    <p class="text-sm text-gray-600 mb-6">Choose a quiz for {{ context === 'formation' ? 'the formation' : 'the module'
+        }}</p>
+
+    <div class="quiz-list ">
+        <div *ngIf="quizzes.length === 0" class="text-center text-gray-500">
+            No quizzes available. create a quiz to start.
+        </div>
+        <div *ngIf="quizzes.length > 0"
+            class="text-center text-gray-500 grid grid-cols-2 gap-4 max-h-96 overflow-y-auto">
+            <div *ngFor="let quiz of quizzes" class="quiz-item ">
+                <input type="radio" [id]="'quiz-' + quiz.id" [value]="quiz.id" [(ngModel)]="selectedQuizId"
+                    [disabled]="disabledQuizIds.includes(quiz.id)" class="quiz-radio" />
+                <label [for]="'quiz-' + quiz.id" class="quiz-label"
+                    [ngClass]="{'opacity-50 cursor-not-allowed': disabledQuizIds.includes(quiz.id)}">
+                    <div class="quiz-content">
+                        <span class="quiz-name">{{ quiz.title }}</span>
+                        <span class="quiz-description text-xs text-gray-500 mt-1">{{ quiz.questions.length }}
+                            questions</span>
+                    </div>
+                    <div class="quiz-icon">
+                        <i class="fas fa-check"></i>
+                    </div>
+                </label>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="flex justify-end mt-6 space-x-4">
+        <button type="button" (click)="cancel()"
+            class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200">
+            Cancel
+        </button>
+        <button type="button" (click)="confirm()" [disabled]="!selectedQuizId"
+            class="px-4 py-2 text-sm font-medium text-white bg-primary hover:bg-primary-dark rounded-md disabled:opacity-50">
+            Confirm
+        </button>
+    </div>
+</div>

@@ -4,5 +4,6 @@ export interface LoggedIn {
     email: string,
     token: string,
     roles: string[],
-    redirectUrl :string
+    redirectUrl: string
+    imageUrl: string
 }

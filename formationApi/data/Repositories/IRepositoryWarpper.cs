@@ -1,6 +1,7 @@
 ﻿using System;
 using formationApi.data.models;
 using formationApi.data.Repositories.AttachmentRepo;
+using formationApi.data.Repositories.feedbackRepo;
 using formationApi.data.Repositories.FormationRepo;
 using formationApi.data.Repositories.GroupRepo;
 using formationApi.data.Repositories.ModuleRepo;
@@ -23,6 +24,7 @@ namespace formationApi.data.Repositories
         IQuizRepository Quiz { get; }
         IQuestionRepository Question { get; }
         IAnswerRepository Answer { get; }
+        IFeedbackRepository Feedback { get; }
     }
 }
 

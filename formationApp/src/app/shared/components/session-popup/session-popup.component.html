@@ -17,14 +17,16 @@
                 <label class="block text-sm font-medium text-gray-700">Formation</label>
                 <div class="relative">
                     <select formControlName="formationId" required
-                        >
+                        class="block w-full px-3 py-2 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary text-gray-700 text-sm appearance-none">
                         <option value="" disabled selected class="text-gray-400">Select a formation</option>
                         <option *ngFor="let formation of formations" [value]="formation.id" class="text-gray-900">
                             {{ formation.title }}
                         </option>
                     </select>
-                    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-500">
-                        <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+
+                    <!-- Arrow Icon -->
+                    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
+                        <svg class="h-4 w-4 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
                             <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" />
                         </svg>
                     </div>
@@ -63,7 +65,7 @@
                 class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
                 Cancel
             </button>
-            <button (click)="onSubmit()" [disabled]="!sessionForm.valid || isLoading"
+            <button (click)="onSubmit()" [disabled]="sessionForm.invalid || isLoading"
                 class="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:bg-blue-500 disabled:cursor-not-allowed">
                 {{isLoading ? 'Loading...' : 'Create Session'}}
                 <i class="fa-solid fa-spinner animate-spin" *ngIf="isLoading"></i>

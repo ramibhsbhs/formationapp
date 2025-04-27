@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
-import { TeamLeaderRoutingModule } from './team-leader-routing.module';
+import { CondidatRoutingModule } from './comdidat-routing.module';
 import { HomeComponent } from './home/home.component';
 
 
@@ -11,7 +11,7 @@ import { HomeComponent } from './home/home.component';
   ],
   imports: [
     CommonModule,
-    TeamLeaderRoutingModule
+    CondidatRoutingModule
   ]
 })
-export class TeamLeaderModule { }
+export class CondidatModule { }

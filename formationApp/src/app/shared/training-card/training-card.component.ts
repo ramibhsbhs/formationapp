@@ -9,6 +9,8 @@ import Training from 'src/app/core/models/training';
 })
 export class TrainingCardComponent implements OnInit {
   @Input() training!: Formation;
+  @Input() canEdit: boolean = false;
+  @Input() canDelete: boolean = false;
   @Output() edit = new EventEmitter<number>();
   @Output() delete = new EventEmitter<number>();
   @Output() addSession = new EventEmitter<number>();
@@ -24,15 +26,15 @@ export class TrainingCardComponent implements OnInit {
 
   getCategoryColor(category: string): string {
     switch (category) {
-      case 'technical':
+      case 'Technical Training':
         return 'bg-blue-100 text-blue-800';
-      case 'safety':
+      case 'Soft Skills':
         return 'bg-red-100 text-red-800';
-      case 'quality':
+      case  'Leadership':
         return 'bg-green-100 text-green-800';
-      case 'management':
+      case 'Project Management':
         return 'bg-purple-100 text-purple-800';
-      case 'communication':
+      case 'Compliance':
         return 'bg-yellow-100 text-yellow-800';
       default:
         return 'bg-gray-100 text-gray-800';
@@ -41,16 +43,16 @@ export class TrainingCardComponent implements OnInit {
 
   getCategoryLabel(category: string): string {
     switch (category) {
-      case 'technical':
+      case 'Technical Training':
         return 'Technique';
-      case 'safety':
+      case 'Soft Skills':
         return 'Sécurité';
-      case 'quality':
+      case  'Leadership':
         return 'Qualité';
-      case 'management':
-        return 'Management';
-      case 'communication':
-        return 'Communication';
+      case 'Project Management':
+        return 'Project Management';
+      case 'Compliance':
+        return 'Compliance';
       default:
         return category;
     }

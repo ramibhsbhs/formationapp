@@ -11,6 +11,10 @@ namespace formationApi.data.Entities
         public double Value { get; set; }
         public int UserId { get; set; }
         public AppUser User { get; set; }
+
+        // New fields for formation
+        public int FormationId { get; set; }
+        public Formation Formation { get; set; }
     }
 }
 

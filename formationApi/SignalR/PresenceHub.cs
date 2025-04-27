@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.SignalR;
 namespace formationApi.SignalR
 {
     [Authorize]
-    public class PresenceHub :Hub
+    public class PresenceHub : Hub
 	{
         private readonly PresenceTracker _tracker;
 

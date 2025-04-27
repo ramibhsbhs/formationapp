@@ -12,9 +12,9 @@ import { SessionPopupComponent } from 'src/app/shared/components/session-popup/s
   styleUrls: ['./formation.component.scss']
 })
 export class FormationComponent implements OnInit {
-handleDeleteTraining($event: number) {
-throw new Error('Method not implemented.');
-}
+  handleDeleteTraining($event: number) {
+    throw new Error('Method not implemented.');
+  }
   categories = FORMATION_CATEGORIES
   trainings: Formation[] = [];
 
@@ -24,7 +24,7 @@ throw new Error('Method not implemented.');
   filterCategory: string = '';
   isLoading: boolean = false;
 
-  formationService  = inject(FormationService)
+  formationService = inject(FormationService)
   dialog = inject(MatDialog)
   constructor() { }
 
@@ -52,7 +52,7 @@ throw new Error('Method not implemented.');
   }
   onFilterCategory(event: Event): void {
     this.filterCategory = (event.target as HTMLSelectElement).value;
-  } 
+  }
   fetchFormations(): void {
     this.isLoading = true;
     this.formationService.getFormations().subscribe(formations => {

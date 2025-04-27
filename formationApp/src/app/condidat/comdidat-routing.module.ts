@@ -10,4 +10,4 @@ const routes: Routes = [
   imports: [RouterModule.forChild(routes)],
   exports: [RouterModule]
 })
-export class TeamLeaderRoutingModule { }
+export class CondidatRoutingModule { }

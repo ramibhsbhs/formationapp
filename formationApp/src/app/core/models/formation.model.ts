@@ -9,7 +9,9 @@ export class Formation {
     sessions: Session[];
     modules: Module[];
     groups: Group[];
+    groupIds : number[];
     category: string;
+    roleNames: string[];
 
     constructor(data: Partial<Formation> = {}) {
         this.id = data.id;
@@ -20,6 +22,8 @@ export class Formation {
         this.modules = data.modules || [];
         this.groups = data.groups || [];
         this.category = data.category || 'safety';
+        this.roleNames = data.roleNames ?? [];
+        this.groupIds = data.groupIds || [];
     }
 
      totalUsersCount(): number {
@@ -54,6 +58,7 @@ export interface Module {
     position: number;
     formationId: number;
     attachments: Attachment[];
+    quizId: number;
 }
 
 export interface Attachment {

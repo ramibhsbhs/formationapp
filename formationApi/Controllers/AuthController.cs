@@ -13,7 +13,7 @@ namespace formationApi.Controllers
     [ApiController]
     public class AuthController : ControllerBase
     {
-       
+
         private readonly UserManager<AppUser> _userManager;
         private readonly RoleManager<AppRole> _roleManager;
         private readonly ITokenService _tokenService;
@@ -22,12 +22,12 @@ namespace formationApi.Controllers
             UserManager<AppUser> userManager,
             ITokenService tokenService,
             RoleManager<AppRole> roleManager)
-                {
+        {
 
-                    _userManager = userManager;
-                    _tokenService = tokenService;
-                    _roleManager = roleManager;
-                }
+            _userManager = userManager;
+            _tokenService = tokenService;
+            _roleManager = roleManager;
+        }
 
 
         [HttpPost("register")]
@@ -43,7 +43,7 @@ namespace formationApi.Controllers
                     Email = dto.Email
                 };
                 var result = await _userManager.CreateAsync(user, dto.Password);
-                
+
                 // If creation failed, return the errors
                 if (!result.Succeeded)
                     return BadRequest(result.Errors);
@@ -54,7 +54,7 @@ namespace formationApi.Controllers
                 if (!roleExists)
                 {
                     // If the role doesn't exist, create it
-                    await _roleManager.CreateAsync(new AppRole() { Name = "Member"});
+                    await _roleManager.CreateAsync(new AppRole() { Name = "Member" });
                 }
 
                 await _userManager.AddToRoleAsync(user, "Member");
@@ -62,9 +62,10 @@ namespace formationApi.Controllers
                 // Return success response
                 return Ok(new
                 {
-                    message = "User registered successfully",
                     username = user.UserName,
                     Token = await _tokenService.CreateToken(user),
+                    Roles = await _userManager.GetRolesAsync(user),
+                    ImageUrl = user.ImageUrl,
                 });
 
             }
@@ -104,7 +105,9 @@ namespace formationApi.Controllers
                 Username = user.UserName,
                 Email = user.Email,
                 Token = await _tokenService.CreateToken(user),
-                RedirectUrl = redirectUrl
+                RedirectUrl = redirectUrl,
+                Roles = roles,
+                ImageUrl = user.ImageUrl,
             });
         }
 
@@ -114,18 +117,17 @@ namespace formationApi.Controllers
             {
                 "Administrator" => "/admin",
                 "Manager" => "/manager",
-                "HierarchicalLeader" => "/hierarchical-leader",
-                "TeamLeader" => "/team-leader",
-                "PostLeader" => "/post-leader",
-                "QualityAgent" => "/quality-agent",
-                "Employee" => "/employee",
-                _ => "/employee" // Default redirect for unknown roles
+                "HierarchicalLeader" => "/supervisor",
+                "QualityAgent" => "/condidat",
+                "TeamLeader" => "/condidat",
+                "PostLeader" => "/condidat",
+                _ => "/condidat" 
             };
         }
 
         private async Task<bool> UserExists(string username)
         {
-            return await _userManager.Users.AnyAsync(x => x.NormalizedUserName == username.ToUpper()); 
+            return await _userManager.Users.AnyAsync(x => x.NormalizedUserName == username.ToUpper());
         }
     }
 }

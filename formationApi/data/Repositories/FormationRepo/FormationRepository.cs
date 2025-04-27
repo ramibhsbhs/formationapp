@@ -18,7 +18,18 @@ namespace formationApi.data.Repositories.FormationRepo
                 .Include(f => f.Sessions)
                 .Include(f => f.Groups)
                 .ThenInclude(g => g.Users)
+                .Include(f => f.Roles)
                 .ToListAsync();
+        }
+        public async override Task<Formation> Get(int id)
+        {
+            return await _dbContext.Formations
+                .Where(x => x.Enable)
+                .Include(f => f.Sessions)
+                .Include(f => f.Groups)
+                .ThenInclude(g => g.Users)
+                .Include(f => f.Roles)
+                .FirstOrDefaultAsync(x => x.Id.Equals(id));
         }
 
         public async Task<Formation> GetFormationByIdAsync(int id)

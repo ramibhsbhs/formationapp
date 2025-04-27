@@ -23,18 +23,21 @@ const routes: Routes = [
   {
     path: '', component: AdminLayoutComponent, children: [
       {
+       
         path: 'admin',
-        loadChildren: () => import('./admin/admin.module').then(m => m.AdminModule)
+        loadChildren: () => import('./admin/admin.module').then(m => m.AdminModule),
+
       }
     ],
-    // canActivate: [RoleGuard],
-    // data: { roles: [UserRole.Administrator] }
+    canActivate: [RoleGuard],
+    data: { roles: [UserRole.Administrator] },
+
   },
   {
     path: '', component: EmployeeLayoutComponent, children: [
       {
         path: 'employee',
-        loadChildren: () => import('./employee/employee.module').then(m => m.EmployeeModule)
+        loadChildren: () => import('./condidat/condidat.module').then(m => m.CondidatModule)
       }
     ],
     // canActivate: [RoleGuard],
@@ -54,7 +57,7 @@ const routes: Routes = [
     path: '', component: TeamLeaderLayoutComponent, children: [
       {
         path: 'team-leader',
-        loadChildren: () => import('./team-leader/team-leader.module').then(m => m.TeamLeaderModule)
+        loadChildren: () => import('./supervisor/supervisor.module').then(m => m.SupervisorModule)
       }
     ],
     // canActivate: [RoleGuard],
@@ -70,7 +73,7 @@ const routes: Routes = [
   },
   {
     path: '', component: ErrorLayoutComponent, children: [
-     
+
       {
         path: '',
         loadChildren: () => import('./error/error.module').then(m => m.ErrorModule)

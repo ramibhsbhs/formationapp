@@ -2,6 +2,11 @@ import { Component, Inject, OnInit } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { Group } from '../../../core/models/group.model';
 import { GroupService } from '../../../core/services/group.service';
+export interface GroupSelectionDialogData {
+    groups?: Group[];
+    multiSelect?: boolean;
+}
+
 
 @Component({
     selector: 'app-select-group-popup',
@@ -10,44 +15,51 @@ import { GroupService } from '../../../core/services/group.service';
 })
 export class SelectGroupPopupComponent implements OnInit {
     groups: Group[] = [];
-    selectedGroup: Group | null = null;
-    loading = false;
+    multiSelect = false;
+
+    selectedGroupIds: number[] = [];
+    selectedGroupId: number | null = null;
 
     constructor(
-        public dialogRef: MatDialogRef<SelectGroupPopupComponent>,
-        @Inject(MAT_DIALOG_DATA) public data: { singleSelect: boolean },
-        private groupService: GroupService
+        private groupService: GroupService,
+        private dialogRef: MatDialogRef<SelectGroupPopupComponent>,
+        @Inject(MAT_DIALOG_DATA) public data: GroupSelectionDialogData
     ) { }
 
     ngOnInit(): void {
-        this.loadGroups();
-    }
+        this.multiSelect = this.data.multiSelect ?? false;
 
-    loadGroups(): void {
-        this.loading = true;
-        this.groupService.getGroups().subscribe({
-            next: (groups) => {
-                this.groups = groups;
-                this.loading = false;
-            },
-            error: (error) => {
-                console.error('Error loading groups:', error);
-                this.loading = false;
-            }
-        });
-    }
+        if (this.data.groups) {
+            this.groups = this.data.groups;
+        } else {
+            this.groupService.getGroups().subscribe((fetched) => {
+                this.groups = fetched;
 
-    onSelect(group: Group): void {
-        if (this.data.singleSelect) {
-            this.selectedGroup = group;
+                console.log(this.groups, fetched);
+
+            });
         }
     }
 
-    onConfirm(): void {
-        this.dialogRef.close(this.selectedGroup);
+    isSelected(id: number): boolean {
+        return this.multiSelect ? this.selectedGroupIds.includes(id) : this.selectedGroupId === id;
     }
 
-    onCancel(): void {
-        this.dialogRef.close();
+    toggleSelection(id: number): void {
+        if (this.multiSelect) {
+            this.selectedGroupIds = this.isSelected(id)
+                ? this.selectedGroupIds.filter(gid => gid !== id)
+                : [...this.selectedGroupIds, id];
+        } else {
+            this.selectedGroupId = id;
+        }
+    }
+
+    confirm(): void {
+        this.dialogRef.close(this.multiSelect ? this.selectedGroupIds : this.selectedGroupId);
+    }
+
+    cancel(): void {
+        this.dialogRef.close(null);
     }
 } 

@@ -20,7 +20,6 @@ namespace formationApi.data
                 new AppRole { Name = UserRole.PostLeader.ToString() }  ,
                 new AppRole { Name = UserRole.QualityAgent.ToString() }  ,
                 new AppRole { Name = UserRole.Manager.ToString() }  ,
-                new AppRole { Name = UserRole.Employee.ToString() }  ,
 
             };
 

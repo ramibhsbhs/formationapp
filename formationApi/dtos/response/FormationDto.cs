@@ -1,4 +1,5 @@
 using System;
+using System.Text.Json.Serialization;
 using formationApi.data.Entities;
 using formationApi.data.models;
 using formationApi.dtos.response;
@@ -12,11 +13,12 @@ namespace formationApi.dtos.response
         public string Title { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;
         public string Content { get; set; } = string.Empty;
-        public string Category { get; set; } = "safety";
+        public string Category { get; set; }
         public ICollection<SessionDto> Sessions { get; set; } = new List<SessionDto>();
         public ICollection<ModuleDto> Modules { get; set; } = new List<ModuleDto>();
         public ICollection<int> GroupIds { get; set; } = new List<int>();
         public ICollection<GroupDto> Groups { get; set; } = new List<GroupDto>();
+        public ICollection<string> RoleNames { get; set; } = new List<string>();
         public class SessionDto
         {
             public int Id { get; set; }
@@ -56,7 +58,9 @@ namespace formationApi.dtos.response
                 Sessions = formation.Sessions?.Select(session => session.ToDto()).ToList() ?? new List<FormationDto.SessionDto>(),
                 Modules = formation.Modules?.Select(module => module.ToDto()).ToList() ?? new List<FormationDto.ModuleDto>(),
                 GroupIds = formation.Groups?.Select(g => g.Id).ToList() ?? new List<int>(),
-                Groups = formation.Groups?.Select(g => g.ToDto()).ToList()
+                Groups = formation.Groups?.Select(g => g.ToDto()).ToList(),
+                RoleNames = formation.Roles?.Select(r => r.Name).ToList() ?? new List<string>(),
+                Category = formation.Category,
             };
         }
 

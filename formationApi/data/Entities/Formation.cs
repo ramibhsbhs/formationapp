@@ -9,11 +9,18 @@ namespace formationApi.data.Entities
         public string Title { get; set; } 
         public string Description { get; set; }
         public string Content { get; set; }
-        public string Category { get; set; } = "safety";
+        public string Category { get; set; } 
         public ICollection<Group> Groups { get; set; } = new List<Group>();
         public ICollection<Session> Sessions { get; set; } = new List<Session>();
 
         public ICollection<Module> Modules { get; set; } = new List<Module>();
+
+        public ICollection<AppRole> Roles { get; set; } = new List<AppRole>();
+
+
+        // New fields for final quiz
+        public int? FinalQuizId { get; set; }
+        public Quiz FinalQuiz { get; set; }
 
     }
 }

@@ -9,7 +9,8 @@ import { AppComponent } from './app.component';
 import { LayoutModule } from './layout/layout.module';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { SharedModule } from './shared/shared.module';
-
+import { ToastModule } from 'primeng/toast';
+import { MessageService } from 'primeng/api';
 @NgModule({
   declarations: [
     AppComponent,
@@ -21,9 +22,11 @@ import { SharedModule } from './shared/shared.module';
     HttpClientModule,
     BrowserAnimationsModule,
     SharedModule,
-    DragDropModule
+    DragDropModule,
+    ToastModule
   ],
   providers: [
+    MessageService,
     {
       provide: HTTP_INTERCEPTORS,
       useClass: JwtInterceptor,

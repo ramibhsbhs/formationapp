@@ -1,6 +1,7 @@
 ﻿using System;
 using formationApi.data.models;
 using formationApi.data.Repositories.AttachmentRepo;
+using formationApi.data.Repositories.feedbackRepo;
 using formationApi.data.Repositories.GroupRepo;
 using formationApi.data.Repositories.ModuleRepo;
 using formationApi.data.Repositories.NotificationRepo;
@@ -23,7 +24,7 @@ namespace formationApi.data.Repositories.FormationRepo
         private IQuizRepository _quiz;
         private IQuestionRepository _question;
         private IAnswerRepository _answer;
-
+        private IFeedbackRepository _feedback;
 
 
         public RepositoryWrapper(ApplicationContext context, UserManager<AppUser> userManager)
@@ -51,6 +52,8 @@ namespace formationApi.data.Repositories.FormationRepo
         public IQuestionRepository Question => _question ??= new QuestionRepository(_context);
 
         public IAnswerRepository Answer => _answer ??= new AnswerRepository(_context);
+
+        public IFeedbackRepository Feedback => _feedback ??= new FeedbackRepository(_context);
     }
 }
 
