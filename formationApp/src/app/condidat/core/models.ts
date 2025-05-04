@@ -7,7 +7,8 @@ export interface CondidatFormation {
     category: string
     sessions: Session[]
     modules: Module[]
-    quizId?: number
+    quizId?: number // Quiz final
+    userProgress?: ModuleProgress[] // Progression de l'utilisateur dans les modules
 }
 
 export interface Session {
@@ -19,16 +20,28 @@ export interface Session {
     score: any
     canRepass: boolean
 }
+
 export interface Module {
     id: number;
     title: string;
     description: string;
     position: number;
     attachments: Attachment[];
+    quizId?: number; // ID du quiz associé au module
+    isCompleted?: boolean; // Indique si le module est complété
+    isAccessible?: boolean; // Indique si le module est accessible
+}
+
+export interface ModuleProgress {
+    moduleId: number;
+    isCompleted: boolean;
+    quizAttempted: boolean;
+    quizPassed: boolean;
+    score?: number;
 }
 
 export interface Attachment {
     id: number;
     lien: string;
     type: string;
-} 
+}

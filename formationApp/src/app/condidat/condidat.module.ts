@@ -12,6 +12,7 @@ import { CertificationListComponent } from './certification/certification-list/c
 import { CertificationDeatilsComponent } from './certification/certification-deatils/certification-deatils.component';
 import { QuizValidationComponent } from './quiz/quiz-validation/quiz-validation.component';
 import { NotificationsComponent } from './notifications/notifications.component';
+import { ModuleViewComponent } from './module/module-view/module-view.component';
 
 
 @NgModule({
@@ -24,7 +25,8 @@ import { NotificationsComponent } from './notifications/notifications.component'
     CertificationListComponent,
     CertificationDeatilsComponent,
     QuizValidationComponent,
-    NotificationsComponent
+    NotificationsComponent,
+    ModuleViewComponent
   ],
   imports: [
     CommonModule,

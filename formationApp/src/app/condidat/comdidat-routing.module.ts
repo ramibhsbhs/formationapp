@@ -8,6 +8,7 @@ import { CertificationDeatilsComponent } from './certification/certification-dea
 import { CertificationListComponent } from './certification/certification-list/certification-list.component';
 import { QuizValidationComponent } from './quiz/quiz-validation/quiz-validation.component';
 import { NotificationsComponent } from './notifications/notifications.component';
+import { ModuleViewComponent } from './module/module-view/module-view.component';
 
 const routes: Routes = [
   { path: "", component: HomeComponent },
@@ -16,6 +17,11 @@ const routes: Routes = [
   { path: "formations/:formationId/finaltest/:quizId", component: QuizPassingComponent },
   { path: "validate-quiz/:sessionId", component: QuizValidationComponent },
   { path: "quiz/:quizId/:sessionId", component: QuizPassingComponent },
+
+  // Routes pour les modules
+  { path: "module/:formationId/:moduleId", component: ModuleViewComponent },
+  { path: "module/:formationId/:moduleId/:sessionId", component: ModuleViewComponent },
+
   { path: "certification", component: CertificationListComponent },
   { path: "certification/:id", component: CertificationDeatilsComponent },
   { path: "notifications", component: NotificationsComponent },

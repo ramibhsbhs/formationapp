@@ -4,6 +4,7 @@ import { CondidatService } from '../../core/condidat.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription, interval } from 'rxjs';
 import { AttachmentService } from 'src/app/core/services/attachment.service';
+import { ToasterService } from 'src/app/core/services/toaster.service';
 
 @Component({
   selector: 'app-formation-details',
@@ -11,7 +12,7 @@ import { AttachmentService } from 'src/app/core/services/attachment.service';
   styleUrls: ['./formation-details.component.scss']
 })
 export class FormationDetailsComponent implements OnInit {
-  loading = false;
+  loading = true;
   error: string | null = null;
   formation: CondidatFormation | null = null;
 
@@ -19,22 +20,32 @@ export class FormationDetailsComponent implements OnInit {
     private condidatService: CondidatService,
     private route: ActivatedRoute,
     private router: Router,
-    private attachmentService: AttachmentService
+    private attachmentService: AttachmentService,
+    private toaster: ToasterService
   ) { }
 
   ngOnInit(): void {
-
     const id = Number(this.route.snapshot.paramMap.get('id'));
     this.loadFormation(id);
-
-
   }
+
   loadFormation(id: number) {
+    this.loading = true;
     this.condidatService.getFormation(id).subscribe({
       next: (formation) => {
         this.formation = formation;
+
+        // Initialiser les propriétés des modules
+        if (formation.modules && formation.modules.length > 0) {
+          // Trier les modules par position
+          formation.modules.sort((a, b) => a.position - b.position);
+
+          // Le premier module est toujours accessible
+          formation.modules[0].isAccessible = true;
+        }
+
         this.loading = false;
-        console.log(this.formation);
+        console.log('Formation chargée:', this.formation);
         this.initCountdown();
       },
       error: (err) => {
@@ -43,6 +54,8 @@ export class FormationDetailsComponent implements OnInit {
       }
     });
   }
+
+
   /**
    * Get file icon based on file type
    * @param fileType The type of the file
@@ -120,64 +133,170 @@ export class FormationDetailsComponent implements OnInit {
     });
   }
 
+  /**
+   * Vérifie si l'utilisateur a déjà tenté de passer la formation
+   * @returns true si l'utilisateur a déjà tenté de passer la formation, false sinon
+   */
+  hasAttemptedFormation(): boolean {
+    if (!this.formation || !this.formation.sessions) return false;
+
+    // Vérifier si l'utilisateur a déjà tenté de passer au moins une session
+    return this.formation.sessions.some(session => session.hasAttempted);
+  }
 
   /**
-   * Vérifie si l'utilisateur peut passer le quiz pour une session donnée
-   * en fonction des dates et de l'état de la session
-   * @param session La session à vérifier
-   * @returns true si l'utilisateur peut passer le quiz, false sinon
+   * Vérifie si l'utilisateur a réussi la formation
+   * @returns true si l'utilisateur a réussi la formation, false sinon
    */
-  canTakeQuiz(session: any): boolean {
-    // Vérifier si l'utilisateur a le droit de repasser le quiz (selon les règles métier)
-    if (!session.canRepass) {
-      return false;
-    }
+  hasPassedFormation(): boolean {
+    if (!this.formation || !this.formation.sessions) return false;
 
-    // Vérifier si la date actuelle est dans la période de la session
+    // Vérifier si l'utilisateur a réussi au moins une session
+    return this.formation.sessions.some(session => session.hasAttempted && session.score >= 70);
+  }
+
+  /**
+   * Vérifie si l'utilisateur a des sessions disponibles pour passer un test
+   * @returns true si l'utilisateur a des sessions disponibles, false sinon
+   */
+  hasAvailableSessions(): boolean {
+    if (!this.formation || !this.formation.sessions) return false;
+
+    // Si l'utilisateur a déjà réussi la formation, il n'a pas besoin de passer d'autres tests
+    if (this.hasPassedFormation()) return false;
+
+    // Vérifier s'il y a des sessions disponibles
+    const now = new Date();
+    return this.formation.sessions.some(session => {
+      const start = new Date(session.startDate);
+      const end = new Date(session.endDate);
+
+      // La session est disponible si :
+      // 1. La date actuelle est entre la date de début et la date de fin
+      // 2. ET (l'utilisateur n'a pas encore passé le test OU il a échoué au test et peut le repasser)
+      return now >= start && now <= end &&
+        (session.canRepass || (!session.hasAttempted) || (session.hasAttempted && session.score < 70));
+    });
+  }
+
+  /**
+   * Vérifie si la session est actuellement active (dans la période de dates)
+   * @param session La session à vérifier
+   * @returns true si la session est active, false sinon
+   */
+  isSessionActive(session: any): boolean {
     const now = new Date();
     const start = new Date(session.startDate);
     const end = new Date(session.endDate);
 
-    // L'utilisateur peut passer le quiz si la date actuelle est entre la date de début et la date de fin
     return now >= start && now <= end;
   }
 
   /**
-   * Obtient le message d'état de la session en fonction des dates
-   * @param session La session à vérifier
-   * @returns Un message décrivant l'état de la session
+   * Vérifie si toutes les sessions sont terminées
+   * @returns true si toutes les sessions sont terminées, false sinon
    */
-  getSessionStatusMessage(session: any): string {
-    const now = new Date();
-    const start = new Date(session.startDate);
-    const end = new Date(session.endDate);
+  areAllSessionsEnded(): boolean {
+    if (!this.formation || !this.formation.sessions || this.formation.sessions.length === 0) return false;
 
-    if (now < start) {
-      return "La session n'a pas encore commencé";
-    } else if (now > end) {
-      return "La session est terminée";
+    const now = new Date();
+    return this.formation.sessions.every(session => {
+      const end = new Date(session.endDate);
+      return now > end;
+    });
+  }
+
+  /**
+   * Vérifie si toutes les sessions n'ont pas encore commencé
+   * @returns true si toutes les sessions n'ont pas encore commencé, false sinon
+   */
+  areAllSessionsNotStarted(): boolean {
+    if (!this.formation || !this.formation.sessions || this.formation.sessions.length === 0) return false;
+
+    const now = new Date();
+    return this.formation.sessions.every(session => {
+      const start = new Date(session.startDate);
+      return now < start;
+    });
+  }
+
+  /**
+   * Démarre la formation en redirigeant vers le premier module
+   */
+  startFormation(): void {
+    if (!this.formation || !this.formation.modules.length) {
+      this.toaster.showInfo('Cette formation ne contient aucun module.', 'Information');
+      return;
+    }
+
+    // Vérifier si des sessions sont disponibles
+    if (!this.hasAvailableSessions()) {
+      // Vérifier si toutes les sessions sont terminées
+      const allSessionsEnded = this.formation.sessions.every(session => {
+        const end = new Date(session.endDate);
+        const now = new Date();
+        return now > end;
+      });
+
+      // Vérifier si toutes les sessions n'ont pas encore commencé
+      const allSessionsNotStarted = this.formation.sessions.every(session => {
+        const start = new Date(session.startDate);
+        const now = new Date();
+        return now < start;
+      });
+
+      if (allSessionsEnded) {
+        this.toaster.showInfo('Toutes les sessions de cette formation sont terminées.', 'Information');
+      } else if (allSessionsNotStarted) {
+        this.toaster.showInfo('Les sessions de cette formation n\'ont pas encore commencé.', 'Information');
+      } else {
+        this.toaster.showInfo('Aucune session disponible pour cette formation.', 'Information');
+      }
+      return;
+    }
+
+    // Récupérer le premier module
+    const firstModule = this.formation.modules.sort((a, b) => a.position - b.position)[0];
+
+    // Trouver une session disponible
+    const availableSession = this.getAvailableSession();
+
+    if (availableSession) {
+      // Rediriger vers la page du module avec la session
+      this.router.navigate(['/condidat/module', this.formation.id, firstModule.id, availableSession.sessionId]);
     } else {
-      return "La session est en cours";
+      // Ce cas ne devrait pas se produire car on a vérifié hasAvailableSessions() plus haut
+      this.toaster.showInfo('Aucune session disponible pour cette formation.', 'Information');
     }
   }
 
   /**
-   * Détermine la classe CSS à appliquer en fonction de l'état de la session
-   * @param session La session à vérifier
-   * @returns Une classe CSS pour le style du message d'état
+   * Récupère une session disponible pour la formation
+   * @returns La première session disponible ou null si aucune n'est disponible
    */
-  getSessionStatusClass(session: any): string {
+  getAvailableSession(): any {
+    if (!this.formation || !this.formation.sessions) return null;
+
+    // Si l'utilisateur a déjà réussi la formation, il n'a pas besoin de passer d'autres tests
+    if (this.hasPassedFormation()) return null;
+
     const now = new Date();
-    const start = new Date(session.startDate);
-    const end = new Date(session.endDate);
 
-    if (now < start) {
-      return "text-blue-600";
-    } else if (now > end) {
-      return "text-red-600";
-    } else {
-      return "text-green-600";
-    }
+    // Filtrer les sessions disponibles
+    const availableSessions = this.formation.sessions.filter(session => {
+      const start = new Date(session.startDate);
+      const end = new Date(session.endDate);
+
+      // La session est disponible si :
+      // 1. La date actuelle est entre la date de début et la date de fin
+      // 2. ET (l'utilisateur n'a pas encore passé le test OU il a échoué au test et peut le repasser)
+      return now >= start && now <= end &&
+        (session.canRepass || (!session.hasAttempted) || (session.hasAttempted && session.score < 70));
+    });
+
+    // Trier les sessions par date de début (la plus récente d'abord)
+    availableSessions.sort((a, b) => new Date(b.startDate).getTime() - new Date(a.startDate).getTime());
+
+    return availableSessions.length > 0 ? availableSessions[0] : null;
   }
-
 }
