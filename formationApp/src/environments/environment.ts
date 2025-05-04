@@ -5,7 +5,8 @@
 export const environment = {
   production: false,
   // baseUrl: "https://formationapi-production.up.railway.app/api"
-  baseUrl: "https://localhost:7173/api"
+  baseUrl: "https://localhost:7173/api",
+  hubsUrl: 'https://localhost:7173/hubs/',
 };
 
 /*

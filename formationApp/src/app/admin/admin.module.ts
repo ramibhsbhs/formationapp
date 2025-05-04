@@ -18,7 +18,7 @@ import { QuizDetailsComponent } from './quiz/quiz-details/quiz-details.component
 import { UpdateQuizsComponent } from './quiz/update-quizs/update-quizs.component';
 import { CreateFormationComponent } from './formation/create-formation/create-formation.component';
 import { UpdateFormationComponent } from './formation/update-formation/update-formation.component';
-import { QuizPassingComponent } from './quiz-passing/quiz-passing.component';
+import { QuizPassingComponent } from '../condidat/quiz/quiz-passing/quiz-passing.component';
 import { FormationDetailComponent } from './formation/formation-detail/formation-detail.component';
 
 @NgModule({
@@ -35,7 +35,6 @@ import { FormationDetailComponent } from './formation/formation-detail/formation
     QuizDetailsComponent,
     UpdateQuizsComponent,
     UpdateFormationComponent,
-    QuizPassingComponent,
     FormationDetailComponent
   ],
   imports: [

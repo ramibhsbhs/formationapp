@@ -16,7 +16,7 @@ export class QuizService {
         return this.http.post<Quiz>(this.apiUrl, quiz);
     }
 
-    getQuizzes(){
+    getQuizzes() {
         return this.http.get<Quiz[]>(this.apiUrl);
     }
 
@@ -36,7 +36,10 @@ export class QuizService {
         return this.http.delete<void>(`${this.apiUrl}/${id}`);
     }
 
-    submitQuizAnswer(quizId: number, answers: { questionId: number, selectedAnswer: number }[]): Observable<{ score: number, passed: boolean }> {
-        return this.http.post<{ score: number, passed: boolean }>(`${this.apiUrl}/${quizId}/submit`, { answers });
+    submitQuizAnswer(quizId: number, sessionId: number, answers: { questionId: number, selectedAnswerId: number }[]): Observable<{ score: number, passed: boolean }> {
+        return this.http.post<{ score: number, passed: boolean }>(`${this.apiUrl}/${quizId}/submit`, {
+            sessionId,
+            answers
+        });
     }
-} 
+}

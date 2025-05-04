@@ -12,6 +12,10 @@ namespace formationApi.data.Entities
 
         public int FormationId { get; set; }
         public Formation Formation { get; set; }
+
+
+        [NotMapped]
+        public ICollection<UserQuizAttempt> UserQuizAttempts { get; set; }
     }
 }
 

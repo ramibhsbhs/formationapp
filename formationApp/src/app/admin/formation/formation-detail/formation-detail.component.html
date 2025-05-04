@@ -1,1 +1,248 @@
-<p>formation-detail works!</p>
+<div class="max-w-6xl mx-auto">
+    <div class="mt-10">
+        <!-- Header -->
+        <div class="px-8 py-4">
+            <h1 class="text-3xl font-bold text-gray-800">Détails de la formation</h1>
+            <p class="mt-1 text-sm text-gray-600">Consultez les informations de la formation</p>
+        </div>
+
+        <!-- Loading State -->
+        <div *ngIf="loading" class="flex justify-center items-center py-20">
+            <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+        </div>
+
+        <!-- Error State -->
+        <div *ngIf="error" class="p-4 max-w-4xl mx-auto">
+            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+                <strong class="font-bold">Erreur!</strong>
+                <span class="block sm:inline">{{ error }}</span>
+            </div>
+        </div>
+
+        <!-- Formation Data -->
+        <div *ngIf="formation && !loading" class="p-8">
+            <!-- Tabs Section -->
+            <div class="bg-white shadow-md rounded-lg overflow-hidden">
+                <div class="border-b border-gray-200">
+                    <nav class="flex -mb-px">
+                        <button (click)="setActiveTab('info')"
+                            [ngClass]="{'border-primary text-primary': activeTab === 'info', 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300': activeTab !== 'info'}"
+                            class="py-4 px-6 font-medium text-sm border-b-2 focus:outline-none">
+                            Informations de base
+                        </button>
+                        <button (click)="setActiveTab('sessions')"
+                            [ngClass]="{'border-primary text-primary': activeTab === 'sessions', 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300': activeTab !== 'sessions'}"
+                            class="py-4 px-6 font-medium text-sm border-b-2 focus:outline-none">
+                            Sessions
+                        </button>
+                        <button (click)="setActiveTab('groups')"
+                            [ngClass]="{'border-primary text-primary': activeTab === 'groups', 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300': activeTab !== 'groups'}"
+                            class="py-4 px-6 font-medium text-sm border-b-2 focus:outline-none">
+                            Groupes et Catégorie
+                        </button>
+                        <button (click)="setActiveTab('modules')"
+                            [ngClass]="{'border-primary text-primary': activeTab === 'modules', 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300': activeTab !== 'modules'}"
+                            class="py-4 px-6 font-medium text-sm border-b-2 focus:outline-none">
+                            Modules
+                        </button>
+                        <button (click)="setActiveTab('results')"
+                            [ngClass]="{'border-primary text-primary': activeTab === 'results', 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300': activeTab !== 'results'}"
+                            class="py-4 px-6 font-medium text-sm border-b-2 focus:outline-none">
+                            Résultats de formation
+                        </button>
+                    </nav>
+                </div>
+
+                <!-- Tab Content -->
+                <div class="p-6">
+                    <!-- Basic Information Tab -->
+                    <div *ngIf="activeTab === 'info'">
+                        <h2 class="text-2xl font-bold mb-6">Informations de base</h2>
+                        <div class="grid grid-cols-1 gap-6">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Titre</label>
+                                <div class="mt-1 p-2 bg-gray-50 rounded-md border border-gray-200">
+                                    {{ formation.title }}
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Description</label>
+                                <div class="mt-1 p-2 bg-gray-50 rounded-md border border-gray-200 min-h-[80px]">
+                                    {{ formation.description }}
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Contenu</label>
+                                <div class="mt-1 p-2 bg-gray-50 rounded-md border border-gray-200 min-h-[120px]">
+                                    {{ formation.content }}
+                                </div>
+                            </div>
+
+                            <!-- Final Quiz Information -->
+                            <div *ngIf="formation.finalQuizId" class="mt-6 p-4 bg-gray-50 rounded-lg">
+                                <label class="block text-lg font-medium text-gray-700 mb-2">Quiz final</label>
+                                <div
+                                    class="flex items-center justify-between bg-white p-3 rounded border border-gray-200">
+                                    <div class="flex items-center">
+                                        <i class="fas fa-award text-primary mr-2"></i>
+                                        <span class="text-sm font-medium">{{ getQuizTitle(formation.finalQuizId)
+                                            }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Sessions Tab -->
+                    <div *ngIf="activeTab === 'sessions'">
+                        <div class="flex justify-between items-center mb-6">
+                            <h2 class="text-2xl font-bold">Sessions</h2>
+                        </div>
+
+                        <!-- Sessions Table -->
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full divide-y divide-gray-200">
+                                <thead class="bg-gray-50">
+                                    <tr>
+                                        <th scope="col"
+                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            Titre</th>
+                                        <th scope="col"
+                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            Date de début</th>
+                                        <th scope="col"
+                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            Date de fin</th>
+                                        <th scope="col"
+                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            Statut</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="bg-white divide-y divide-gray-200">
+                                    <tr *ngFor="let session of formation.sessions">
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <div class="text-sm font-medium text-gray-900">{{ session.title }}</div>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <div class="text-sm text-gray-500">{{ session.startDate | date }}</div>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <div class="text-sm text-gray-500">{{ session.endDate | date }}</div>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full"
+                                                [ngClass]="{
+                                                    'bg-green-100 text-green-800': getStatus(session) === 'En cours',
+                                                    'bg-yellow-100 text-yellow-800': getStatus(session) === 'Pas encore',
+                                                    'bg-gray-100 text-gray-800': getStatus(session) === 'Terminée'
+                                                }">
+                                                {{ getStatus(session) }}
+                                            </span>
+                                        </td>
+                                    </tr>
+                                    <tr *ngIf="formation.sessions.length === 0">
+                                        <td colspan="4" class="px-6 py-4 text-center text-sm text-gray-500">
+                                            Aucune session disponible
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Groups and Category Tab -->
+                    <div *ngIf="activeTab === 'groups'" class="space-y-8">
+                        <!-- Category Section -->
+                        <div class="mb-8">
+                            <h3 class="text-xl font-bold mb-4">Catégorie</h3>
+                            <div class="p-3 bg-gray-50 rounded-md border border-gray-200">
+                                {{ formation.category }}
+                            </div>
+                        </div>
+
+                        <!-- Groups Section -->
+                        <div>
+                            <h3 class="text-xl font-bold mb-4">Groupes cibles</h3>
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                <div *ngFor="let group of formation.groups"
+                                    class="p-3 bg-gray-50 rounded-md border border-gray-200">
+                                    <div class="font-medium">{{ group.name }}</div>
+                                    <div *ngIf="group.description" class="text-sm text-gray-500">{{ group.description }}
+                                    </div>
+                                </div>
+                                <div *ngIf="formation.groups.length === 0"
+                                    class="col-span-3 text-center text-gray-500 p-4">
+                                    Aucun groupe associé à cette formation
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Modules Tab -->
+                    <div *ngIf="activeTab === 'modules'">
+                        <div class="flex justify-between items-center mb-6">
+                            <h2 class="text-2xl font-bold">Modules</h2>
+                        </div>
+                        <div class="space-y-6">
+                            <div *ngFor="let module of formation.modules"
+                                class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                                <div class="flex items-start justify-between mb-4">
+                                    <div class="flex-1">
+                                        <h3 class="text-lg font-semibold">{{ module.title }}</h3>
+                                        <p class="text-gray-600 mt-1">{{ module.description }}</p>
+
+                                        <!-- Module Quiz -->
+                                        <div *ngIf="module.quizId"
+                                            class="mt-3 p-2 bg-white rounded border border-gray-200 inline-flex items-center">
+                                            <i class="fas fa-question-circle text-primary mr-2"></i>
+                                            <span class="text-sm font-medium">{{ getQuizTitle(module.quizId) }}</span>
+                                        </div>
+
+                                        <!-- Attachments -->
+                                        <div *ngIf="module.attachments && module.attachments.length > 0" class="mt-4">
+                                            <h4 class="text-md font-medium mb-2">Pièces jointes</h4>
+                                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                                                <a *ngFor="let attachment of module.attachments"
+                                                    [href]="attachment.lien" target="_blank"
+                                                    class="flex items-center p-2 bg-white rounded border border-gray-200 hover:border-primary">
+                                                    <img [src]="getFileIcon(attachment.type)" alt="File Icon"
+                                                        class="w-6 h-6 mr-2" />
+                                                    <span class="text-sm">{{ getFileName(attachment.lien) || 'Fichier '
+                                                        + attachment.type }}</span>
+                                                </a>
+                                            </div>
+                                        </div>
+                                        <div *ngIf="!module.attachments || module.attachments.length === 0"
+                                            class="mt-4 text-sm text-gray-500">
+                                            Aucune pièce jointe pour ce module
+                                        </div>
+                                    </div>
+                                    <div class="text-sm text-gray-500">
+                                        Position: {{ module.position }}
+                                    </div>
+                                </div>
+                            </div>
+                            <div *ngIf="formation.modules.length === 0" class="text-center py-8 text-gray-500">
+                                Aucun module disponible pour cette formation
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Results Tab -->
+                    <div *ngIf="activeTab === 'results'">
+                        <h2 class="text-2xl font-bold mb-6">Résultats de formation</h2>
+                        <div class="bg-gray-50 p-8 rounded-lg text-center">
+                            <p class="text-gray-500">Les résultats de formation seront affichés ici.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Edit Button (Fixed) -->
+        <a [routerLink]="['/admin/formations/update', formation?.id]"
+            class="fixed bottom-8 right-8 bg-primary text-white rounded-full p-4 shadow-lg hover:bg-primary-dark transition-colors">
+            <i class="fas fa-edit text-xl"></i>
+        </a>
+    </div>
+</div>

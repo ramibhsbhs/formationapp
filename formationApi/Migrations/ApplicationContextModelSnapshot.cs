@@ -256,6 +256,47 @@ namespace formationApi.Migrations
                     b.ToTable("Attachments");
                 });
 
+            modelBuilder.Entity("formationApi.data.Entities.Certification", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("text");
+
+                    b.Property<bool>("Enable")
+                        .HasColumnType("boolean");
+
+                    b.Property<double>("Score")
+                        .HasColumnType("double precision");
+
+                    b.Property<int>("SessionId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SessionId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Certifications");
+                });
+
             modelBuilder.Entity("formationApi.data.Entities.Feedback", b =>
                 {
                     b.Property<int>("Id")
@@ -420,6 +461,9 @@ namespace formationApi.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("ActionUrl")
+                        .HasColumnType("text");
+
                     b.Property<string>("Body")
                         .HasColumnType("text");
 
@@ -440,6 +484,9 @@ namespace formationApi.Migrations
 
                     b.Property<string>("Title")
                         .HasColumnType("text");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("integer");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
@@ -555,6 +602,87 @@ namespace formationApi.Migrations
                     b.HasIndex("FormationId");
 
                     b.ToTable("Sessions");
+                });
+
+            modelBuilder.Entity("formationApi.data.Entities.UserQuestionResponse", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("QuestionId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("SelectedAnswerIds")
+                        .HasColumnType("text");
+
+                    b.Property<int>("UserQuizAttemptId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("QuestionId");
+
+                    b.HasIndex("UserQuizAttemptId");
+
+                    b.ToTable("UserQuestionResponses");
+                });
+
+            modelBuilder.Entity("formationApi.data.Entities.UserQuizAttempt", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime?>("AttemptedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("Enable")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("HasPassed")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsCompleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<int>("QuizId")
+                        .HasColumnType("integer");
+
+                    b.Property<double?>("Score")
+                        .HasColumnType("double precision");
+
+                    b.Property<int>("SessionId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("StartTime")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("QuizId");
+
+                    b.HasIndex("SessionId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("UserQuizAttempts");
                 });
 
             modelBuilder.Entity("formationApi.data.models.AppUser", b =>
@@ -739,6 +867,25 @@ namespace formationApi.Migrations
                     b.Navigation("Module");
                 });
 
+            modelBuilder.Entity("formationApi.data.Entities.Certification", b =>
+                {
+                    b.HasOne("formationApi.data.Entities.Session", "Session")
+                        .WithMany()
+                        .HasForeignKey("SessionId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("formationApi.data.models.AppUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Session");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("formationApi.data.Entities.Feedback", b =>
                 {
                     b.HasOne("formationApi.data.Entities.Formation", "Formation")
@@ -817,6 +964,52 @@ namespace formationApi.Migrations
                     b.Navigation("Formation");
                 });
 
+            modelBuilder.Entity("formationApi.data.Entities.UserQuestionResponse", b =>
+                {
+                    b.HasOne("formationApi.data.Entities.Question", "Question")
+                        .WithMany()
+                        .HasForeignKey("QuestionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("formationApi.data.Entities.UserQuizAttempt", "UserQuizAttempt")
+                        .WithMany("QuestionResponses")
+                        .HasForeignKey("UserQuizAttemptId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Question");
+
+                    b.Navigation("UserQuizAttempt");
+                });
+
+            modelBuilder.Entity("formationApi.data.Entities.UserQuizAttempt", b =>
+                {
+                    b.HasOne("formationApi.data.Entities.Quiz", "Quiz")
+                        .WithMany()
+                        .HasForeignKey("QuizId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("formationApi.data.Entities.Session", "Session")
+                        .WithMany()
+                        .HasForeignKey("SessionId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("formationApi.data.models.AppUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Quiz");
+
+                    b.Navigation("Session");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("formationApi.data.models.AppUser", b =>
                 {
                     b.HasOne("formationApi.data.Entities.Group", "Group")
@@ -856,6 +1049,11 @@ namespace formationApi.Migrations
             modelBuilder.Entity("formationApi.data.Entities.Quiz", b =>
                 {
                     b.Navigation("Questions");
+                });
+
+            modelBuilder.Entity("formationApi.data.Entities.UserQuizAttempt", b =>
+                {
+                    b.Navigation("QuestionResponses");
                 });
 
             modelBuilder.Entity("formationApi.data.models.AppUser", b =>

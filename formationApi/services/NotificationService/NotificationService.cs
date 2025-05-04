@@ -6,10 +6,10 @@ using Microsoft.AspNetCore.SignalR;
 
 namespace formationApi.services.NotificationService
 {
-	public class NotificationService : INotificationService
+    public class NotificationService : INotificationService
     {
-        private readonly IHubContext<PresenceHub> _hubContext;
-        private readonly PresenceTracker _presenceTracker;
+        private readonly IHubContext<PresenceHub> _hubContext; // class reponsable a envoyee notification en temp reels 
+        private readonly PresenceTracker _presenceTracker;  // ou on store les utilisateurs connectees
         private readonly IRepositoryWrapper _repositoryWrapper;
 
         public NotificationService(IHubContext<PresenceHub> hubContext, PresenceTracker presenceTracker, IRepositoryWrapper repositoryWrapper)
@@ -19,7 +19,7 @@ namespace formationApi.services.NotificationService
             _repositoryWrapper = repositoryWrapper;
         }
 
-        public async Task SendNotificationAsync(int userId, string title, string body)
+        public async Task SendNotificationAsync(int userId, string title, string body, NotificationType type = NotificationType.Info, string actionUrl = null)
         {
             var notification = new Notification
             {
@@ -27,15 +27,16 @@ namespace formationApi.services.NotificationService
                 Title = title,
                 Body = body,
                 Date = DateTime.UtcNow,
-                Received = false 
+                Received = false,
+                Type = type,
+                ActionUrl = actionUrl
             };
             var connectionIds = await _presenceTracker.GetConnectionsForUser(userId);
             if (connectionIds.Any())
             {
-                
                 await _hubContext.Clients.Clients(connectionIds)
-                    .SendAsync("ReceiveNotification",notification);
-                notification.Received = true; 
+                    .SendAsync("ReceiveNotification", notification);
+                notification.Received = true;
             }
 
             await _repositoryWrapper.Notification.Create(notification);

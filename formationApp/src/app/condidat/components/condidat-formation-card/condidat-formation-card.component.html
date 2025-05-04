@@ -1,0 +1,31 @@
+<div class="bg-white rounded-lg shadow-md overflow-hidden border border-gray-200 hover:shadow-lg transition-shadow">
+    <div class="p-4">
+        <div class="flex justify-between items-start mb-3">
+            <h3 class="font-semibold text-gray-800 text-lg">{{ formation.title }}</h3>
+            <span class="px-2 py-1 rounded-full text-xs font-medium" [ngClass]="getCategoryColor(formation.category)">
+                {{ getCategoryLabel(formation.category) }}
+            </span>
+        </div>
+
+        <p class="text-gray-600 text-sm mb-4 line-clamp-2 min-h-[3.5rem]">
+            {{ formation.description }}
+        </p>
+
+        <div class="grid grid-cols-2 gap-2 mb-3">
+            <div class="flex items-center text-gray-600 text-sm">
+                <i class="fa-solid fa-calendar text-gray-400 w-4 h-4 mr-2"></i>
+                {{ formation.sessions.length }} sessions
+            </div>
+            <div class="flex items-center text-gray-600 text-sm">
+                <i class="fa-solid fa-book text-gray-400 w-4 h-4 mr-2"></i>
+                {{ formation.modules.length }} modules
+            </div>
+        </div>
+    </div>
+
+    <div class="px-4 py-3 bg-gray-50 border-t border-gray-200 flex justify-end">
+        <button [routerLink]="['./', formation.id]" class="text-gray-500 hover:text-blue-600">
+            <i class="fa-solid fa-eye text-gray-500 hover:text-primary"></i>
+        </button>
+    </div>
+</div>

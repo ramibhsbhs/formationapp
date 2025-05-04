@@ -1,10 +1,12 @@
 ﻿using System;
 using formationApi.data.models;
 using formationApi.data.Repositories.AttachmentRepo;
+using formationApi.data.Repositories.CertificationRepo;
 using formationApi.data.Repositories.feedbackRepo;
 using formationApi.data.Repositories.GroupRepo;
 using formationApi.data.Repositories.ModuleRepo;
 using formationApi.data.Repositories.NotificationRepo;
+using formationApi.data.Repositories.QuizattempRepo;
 using formationApi.data.Repositories.QuizsRepo;
 using formationApi.data.Repositories.SessionRepo;
 using Microsoft.AspNetCore.Identity;
@@ -25,6 +27,9 @@ namespace formationApi.data.Repositories.FormationRepo
         private IQuestionRepository _question;
         private IAnswerRepository _answer;
         private IFeedbackRepository _feedback;
+        private IQuizAttemptRepository _quizAttempt;
+
+        private ICertificationRepository _certification;
 
 
         public RepositoryWrapper(ApplicationContext context, UserManager<AppUser> userManager)
@@ -54,6 +59,10 @@ namespace formationApi.data.Repositories.FormationRepo
         public IAnswerRepository Answer => _answer ??= new AnswerRepository(_context);
 
         public IFeedbackRepository Feedback => _feedback ??= new FeedbackRepository(_context);
+
+        public IQuizAttemptRepository QuizAttempt => _quizAttempt ??= new QuizAttemptRepository(_context);
+
+        public ICertificationRepository Certifications => _certification ??= new CertificationRepository(_context);
     }
 }
 

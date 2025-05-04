@@ -1,6 +1,8 @@
 <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
     <div class="bg-white rounded-lg p-6 w-full max-w-md">
-        <h2 class="text-xl font-semibold text-gray-800 mb-4">Create New Session</h2>
+        <h2 class="text-xl font-semibold text-gray-800 mb-4">
+            {{ data.session?.id ? 'Modifier la session' : 'Créer une nouvelle session' }}
+        </h2>
 
         <form [formGroup]="sessionForm" class="space-y-4">
             <div class="space-y-2">
@@ -67,8 +69,13 @@
             </button>
             <button (click)="onSubmit()" [disabled]="sessionForm.invalid || isLoading"
                 class="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:bg-blue-500 disabled:cursor-not-allowed">
-                {{isLoading ? 'Loading...' : 'Create Session'}}
-                <i class="fa-solid fa-spinner animate-spin" *ngIf="isLoading"></i>
+                <span *ngIf="isLoading">
+                    <i class="fa-solid fa-spinner animate-spin mr-1"></i>
+                    Chargement...
+                </span>
+                <span *ngIf="!isLoading">
+                    {{ data.session?.id ? 'Mettre à jour' : 'Créer la session' }}
+                </span>
             </button>
         </div>
     </div>

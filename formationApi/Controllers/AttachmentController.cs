@@ -10,8 +10,8 @@ using Microsoft.VisualBasic.FileIO;
 
 namespace formationApi.Controllers
 {
-	public class AttachmentController : BaseApiController
-	{
+    public class AttachmentController : BaseApiController
+    {
         private readonly ICloudService _cloudService;
         private readonly IRepositoryWrapper _repositoryWrapper;
 
@@ -106,6 +106,18 @@ namespace formationApi.Controllers
 
             return Ok(attachmentDto);
         }
+        [Authorize(Roles = "Administrator")]
+        [HttpDelete("{id}")]
+        public async Task<ActionResult> DeleteAttachment(int id)
+        {
+            var attachment = await _repositoryWrapper.Attachment.Get(id);
+            if (attachment == null)
+                return NotFound($"Attachment with ID {id} not found.");
+
+            await _repositoryWrapper.Attachment.Delete(attachment.Id);
+
+            return NoContent();
+        }
 
         public class UploadAttachmentDto
         {
@@ -114,11 +126,11 @@ namespace formationApi.Controllers
         }
 
         /// <summary>
-        /// Detect the file type based on the file's content (magic numbers) and map to allowed types
+        /// Detect the file type based on the file's content (magic numbers) and return specific file extension
         /// </summary>
         /// <param name="stream">The file stream</param>
-        /// <returns>The mapped file type (e.g., "pdf", "video", "image", "doc") or null if unsupported</returns>
-        private string DetectFileType(Stream stream)
+        /// <returns>The specific file type extension (e.g., "pdf", "jpg", "png", "docx") or null if unsupported</returns>
+        private static string DetectFileType(Stream stream)
         {
             try
             {
@@ -126,43 +138,183 @@ namespace formationApi.Controllers
                 stream.Position = 0;
 
                 // Read the first few bytes to check the file signature
-                byte[] buffer = new byte[4];
-                stream.Read(buffer, 0, 4);
+                byte[] buffer = new byte[8]; // Increased to 8 bytes for more signatures
+                stream.Read(buffer, 0, buffer.Length);
 
                 // Reset stream position for the upload
                 stream.Position = 0;
 
-                // Check file signatures (magic numbers)
-                if (buffer[0] == 0x25 && buffer[1] == 0x50 && buffer[2] == 0x44 && buffer[3] == 0x46) // PDF: %PDF
+                // PDF: %PDF
+                if (buffer[0] == 0x25 && buffer[1] == 0x50 && buffer[2] == 0x44 && buffer[3] == 0x46)
                     return "pdf";
-                if (buffer[0] == 0xFF && buffer[1] == 0xD8 && buffer[2] == 0xFF) // JPEG: FF D8 FF
-                    return "image";
-                if (buffer[0] == 0x89 && buffer[1] == 0x50 && buffer[2] == 0x4E && buffer[3] == 0x47) // PNG: 89 50 4E 47
-                    return "image";
-                if (buffer[0] == 0x50 && buffer[1] == 0x4B && buffer[2] == 0x03 && buffer[3] == 0x04) // DOCX: PK (ZIP format)
-                    return "doc";
-                if (buffer[0] == 0xD0 && buffer[1] == 0xCF && buffer[2] == 0x11 && buffer[3] == 0xE0) // DOC: D0 CF 11 E0
-                    return "doc";
-                if (buffer[0] == 0x00 && buffer[1] == 0x00 && buffer[2] == 0x01 && buffer[3] == 0x00) // MP4: Often starts with 00 00 01 (simplified)
-                    return "video";
 
-                // Additional check for MP4/MOV (which often have "ftyp" at offset 4)
+                // JPEG: FF D8 FF
+                if (buffer[0] == 0xFF && buffer[1] == 0xD8 && buffer[2] == 0xFF)
+                    return "jpg";
+
+                // PNG: 89 50 4E 47
+                if (buffer[0] == 0x89 && buffer[1] == 0x50 && buffer[2] == 0x4E && buffer[3] == 0x47)
+                    return "png";
+
+                // GIF: GIF8
+                if (buffer[0] == 0x47 && buffer[1] == 0x49 && buffer[2] == 0x46 && buffer[3] == 0x38)
+                    return "gif";
+
+                // ZIP format (could be DOCX, XLSX, PPTX) - need additional checks
+                if (buffer[0] == 0x50 && buffer[1] == 0x4B && buffer[2] == 0x03 && buffer[3] == 0x04)
+                {
+                    // For Office files, we need to check the file content more deeply
+                    // This is a simplified approach - in production, you might want to use a library
+                    stream.Position = 0;
+                    using (var zip = new System.IO.Compression.ZipArchive(stream, System.IO.Compression.ZipArchiveMode.Read, true))
+                    {
+                        foreach (var entry in zip.Entries)
+                        {
+                            // Check for Word document
+                            if (entry.FullName.Contains("word/"))
+                                return "docx";
+
+                            // Check for Excel workbook
+                            if (entry.FullName.Contains("xl/"))
+                                return "xlsx";
+
+                            // Check for PowerPoint presentation
+                            if (entry.FullName.Contains("ppt/"))
+                                return "pptx";
+                        }
+                    }
+
+                    // Reset stream position after ZIP inspection
+                    stream.Position = 0;
+
+                    // If we couldn't determine the specific Office format, return a generic one
+                    return "zip";
+                }
+
+                // Legacy Office formats (DOC, XLS, PPT) - Compound File Binary Format
+                if (buffer[0] == 0xD0 && buffer[1] == 0xCF && buffer[2] == 0x11 && buffer[3] == 0xE0)
+                {
+                    // For a more accurate detection, we would need to parse the OLE structure
+                    // This is a simplified approach based on common patterns
+
+                    // Check for PowerPoint marker
+                    if (ContainsBytes(stream, "PowerPoint"u8.ToArray()))
+                        return "ppt";
+
+                    // Check for Excel marker
+                    if (ContainsBytes(stream, "Microsoft Excel"u8.ToArray()))
+                        return "xls";
+
+                    // Default to Word if no other markers found
+                    return "doc";
+                }
+
+                // MP4: Often starts with specific patterns
+                if (buffer[0] == 0x00 && buffer[1] == 0x00 && buffer[2] == 0x01 && (buffer[3] == 0xBA || buffer[3] == 0xB3))
+                    return "mp4";
+
+                // Check for MP4/MOV (which often have "ftyp" at offset 4)
                 if (stream.Length > 8)
                 {
-                    stream.Position = 4;
-                    byte[] ftypBuffer = new byte[4];
-                    stream.Read(ftypBuffer, 0, 4);
-                    stream.Position = 0;
-                    if (ftypBuffer[0] == 0x66 && ftypBuffer[1] == 0x74 && ftypBuffer[2] == 0x79 && ftypBuffer[3] == 0x70) // "ftyp"
-                        return "video";
+                    // Check for "ftyp" marker
+                    if (buffer[4] == 0x66 && buffer[5] == 0x74 && buffer[6] == 0x79 && buffer[7] == 0x70)
+                    {
+                        // Check for specific ftyp codes to differentiate between MP4 and MOV
+                        stream.Position = 8;
+                        byte[] ftypCodeBuffer = new byte[4];
+                        stream.Read(ftypCodeBuffer, 0, 4);
+                        stream.Position = 0;
+
+                        // Common MP4 ftyp codes
+                        if (IsMatch(ftypCodeBuffer, "mp42"u8.ToArray()) || // mp42
+                            IsMatch(ftypCodeBuffer, "isom"u8.ToArray()) || // isom
+                            IsMatch(ftypCodeBuffer, "mp41"u8.ToArray()))   // mp41
+                            return "mp4";
+
+                        // Common MOV ftyp codes
+                        if (IsMatch(ftypCodeBuffer, "qt  "u8.ToArray()))   // qt
+                            return "mov";
+
+                        // Default to mp4 if we can't determine specifically
+                        return "mp4";
+                    }
                 }
+
+                // AVI: RIFF header followed by AVI
+                if (buffer[0] == 0x52 && buffer[1] == 0x49 && buffer[2] == 0x46 && buffer[3] == 0x46 &&
+                    buffer[8] == 0x41 && buffer[9] == 0x56 && buffer[10] == 0x49 && buffer[11] == 0x20)
+                    return "avi";
 
                 return null; // Unsupported file type
             }
-            catch
+            catch (Exception ex)
             {
+                // Log the exception
+                Console.WriteLine($"Error detecting file type: {ex.Message}");
                 return null;
             }
+        }
+
+        /// <summary>
+        /// Check if a stream contains a specific byte sequence
+        /// </summary>
+        private static bool ContainsBytes(Stream stream, byte[] sequence)
+        {
+            // Save original position
+            long originalPosition = stream.Position;
+
+            try
+            {
+                // Buffer for reading
+                byte[] buffer = new byte[4096];
+                int bytesRead;
+                int matchIndex = 0;
+
+                // Reset to beginning
+                stream.Position = 0;
+
+                // Read through the stream
+                while ((bytesRead = stream.Read(buffer, 0, buffer.Length)) > 0)
+                {
+                    for (int i = 0; i < bytesRead; i++)
+                    {
+                        if (buffer[i] == sequence[matchIndex])
+                        {
+                            matchIndex++;
+                            if (matchIndex == sequence.Length)
+                                return true;
+                        }
+                        else
+                        {
+                            matchIndex = 0;
+                        }
+                    }
+                }
+
+                return false;
+            }
+            finally
+            {
+                // Restore original position
+                stream.Position = originalPosition;
+            }
+        }
+
+        /// <summary>
+        /// Check if two byte arrays match
+        /// </summary>
+        private static bool IsMatch(byte[] array1, byte[] array2)
+        {
+            if (array1.Length != array2.Length)
+                return false;
+
+            for (int i = 0; i < array1.Length; i++)
+            {
+                if (array1[i] != array2[i])
+                    return false;
+            }
+
+            return true;
         }
     }
 }

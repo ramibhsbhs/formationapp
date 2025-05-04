@@ -1,12 +1,14 @@
-import { Component, EventEmitter, inject, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, inject, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
-import { filter } from 'rxjs';
+import { Subscription, filter } from 'rxjs';
 import { AuthService } from 'src/app/core/services/auth.service';
+import { NotificationService } from 'src/app/core/services/notification.service';
 
 export interface MenuItem {
   path: string;
   name: string;
-  icon: string; 
+  icon: string;
+  badge?: number; // Nombre à afficher dans le badge
 }
 
 @Component({
@@ -14,12 +16,15 @@ export interface MenuItem {
   templateUrl: './app-sidebar.component.html',
   styleUrls: ['./app-sidebar.component.scss']
 })
-export class AppSidebarComponent {
+export class AppSidebarComponent implements OnInit, OnDestroy {
   @Input() menuItems: MenuItem[] = [];
   @Output() sidebarToggled = new EventEmitter<boolean>();
-  auth = inject(AuthService)
+  auth = inject(AuthService);
+  notificationService = inject(NotificationService);
   showPopup: boolean = false;
   isOpen: boolean = false;
+
+  private subscription: Subscription = new Subscription();
 
   popupMenuItems = [
     { name: 'Settings', icon: 'fas fa-cog' },
@@ -35,6 +40,24 @@ export class AppSidebarComponent {
     this.router.events.pipe(filter(event => event instanceof NavigationEnd)).subscribe(() => {
       this.showPopup = false;
     });
+  }
+
+  ngOnInit(): void {
+    // S'abonner au nombre de notifications non lues
+    this.subscription.add(
+      this.notificationService.notifications$.subscribe(notifications => {
+        // Mettre à jour le badge de notifications dans le menu
+        const notificationMenuItem = this.menuItems.find(item => item.path.includes('/notifications'));
+        if (notificationMenuItem) {
+          notificationMenuItem.badge = notifications.filter(n => !n.received).length;;
+        }
+      })
+    );
+  }
+
+  ngOnDestroy(): void {
+    // Se désabonner pour éviter les fuites de mémoire
+    this.subscription.unsubscribe();
   }
 
   toggleSidebar(): void {

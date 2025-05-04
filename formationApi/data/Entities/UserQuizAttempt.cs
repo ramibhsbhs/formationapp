@@ -15,7 +15,8 @@ namespace formationApi.data.Entities
         public bool IsCompleted { get; set; }
         public double? Score { get; set; }
         public bool HasPassed { get; set; }
-
+        public int SessionId { get; set; } 
+        public Session Session { get; set; }
         // Collection of responses for this attempt
         public ICollection<UserQuestionResponse> QuestionResponses { get; set; }
     }

@@ -10,7 +10,6 @@ import { SessionComponent } from './session/session.component';
 import { FormationDetailComponent } from './formation-detail/formation-detail.component';
 
 
-
 @NgModule({
   declarations: [
     HomeComponent,

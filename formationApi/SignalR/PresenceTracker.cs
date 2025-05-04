@@ -3,7 +3,14 @@ namespace formationApi.SignalR
 {
 	public class PresenceTracker
 	{
-        private static readonly Dictionary<int, List<string>> OnlineUsers = new();
+        private static readonly Dictionary<int, List<string>> OnlineUsers = new();   
+
+        // [
+        //     userID :[connection1,connecttion],
+        //     userId2 :[connection1],
+        //     1 :[con11,jkbj],
+        //     2:[swqdq]
+        // ]
 
         public Task<bool> UserConnected(int userId, string connectionId)
         {

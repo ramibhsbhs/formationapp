@@ -30,6 +30,8 @@ namespace formationApi.data
         public DbSet<UserQuizAttempt> UserQuizAttempts { get; set; }
         public DbSet<UserQuestionResponse> UserQuestionResponses { get; set; }
 
+        public DbSet<Certification> Certifications { get; set; }
+
         public ApplicationContext(DbContextOptions<ApplicationContext> options) : base(options) { }
 
         protected override void OnModelCreating(ModelBuilder builder)
@@ -116,100 +118,66 @@ namespace formationApi.data
                 .WithOne(a => a.Question)
                 .HasForeignKey(a => a.QuestionId)
                 .IsRequired();
+            builder.Entity<UserQuizAttempt>(entity =>
+                {
+                    entity.HasKey(e => e.Id);
 
+                    entity.HasOne(e => e.User)
+                            .WithMany() // or `.WithMany(u => u.UserQuizAttempts)` if you have a collection in AppUser
+                            .HasForeignKey(e => e.UserId)
+                            .OnDelete(DeleteBehavior.Cascade);
 
-            modelBuilder.Entity<UserQuizAttempt>(entity =>
-            {
-                // Table name (already specified via [Table] attribute, but explicit here for clarity)
-                entity.ToTable("UserQuizAttempts");
+                    entity.HasOne(e => e.Quiz)
+                            .WithMany() // or `.WithMany(q => q.UserQuizAttempts)` if you have a collection in Quiz
+                            .HasForeignKey(e => e.QuizId)
+                            .OnDelete(DeleteBehavior.Cascade);
 
-                // Primary key (assuming BaseEntity has Id)
-                entity.HasKey(e => e.Id);
+                    entity.HasMany(e => e.QuestionResponses)
+                            .WithOne(qr => qr.UserQuizAttempt)
+                            .HasForeignKey(qr => qr.UserQuizAttemptId)
+                            .OnDelete(DeleteBehavior.Cascade);
 
-                // Properties
-                entity.Property(e => e.UserId)
-                    .IsRequired();
+                    entity.HasOne(uqa => uqa.Session)
+                        .WithMany()
+                        .HasForeignKey(uqa => uqa.SessionId)
+                        .OnDelete(DeleteBehavior.Restrict);
+                });
 
-                entity.Property(e => e.QuizId)
-                    .IsRequired();
+            builder.Entity<UserQuestionResponse>(entity =>
+                {
+                    entity.HasKey(e => e.Id);
 
-                entity.Property(e => e.StartTime)
-                    .IsRequired()
-                    .HasColumnType("datetime");
+                    entity.HasOne(e => e.UserQuizAttempt)
+                        .WithMany(uqa => uqa.QuestionResponses)
+                        .HasForeignKey(e => e.UserQuizAttemptId)
+                        .OnDelete(DeleteBehavior.Cascade);
 
-                entity.Property(e => e.AttemptedAt)
-                    .HasColumnType("datetime");
+                    entity.HasOne(e => e.Question)
+                        .WithMany() // or `.WithMany(q => q.UserQuestionResponses)` if you have a collection in Question
+                        .HasForeignKey(e => e.QuestionId)
+                        .OnDelete(DeleteBehavior.Cascade);
 
-                entity.Property(e => e.IsCompleted)
-                    .IsRequired()
-                    .HasDefaultValue(false);
+                    // Configure SelectedAnswerIds to be stored as JSON
+                    entity.Property(e => e.SelectedAnswerIds)
+                        .HasConversion(
+                            v => JsonSerializer.Serialize(v, (JsonSerializerOptions)null),
+                            v => JsonSerializer.Deserialize<List<int>>(v, (JsonSerializerOptions)null)
+                        );
+                });
 
-                entity.Property(e => e.Score)
-                    .HasColumnType("float");
+            // Configure Certification relationships
 
-                entity.Property(e => e.HasPassed)
-                    .IsRequired()
-                    .HasDefaultValue(false);
+            builder.Entity<Certification>()
+                .HasOne(c => c.User)
+                .WithMany() // Assuming AppUser does not have a navigation property for Certifications
+                .HasForeignKey(c => c.UserId)
+                .OnDelete(DeleteBehavior.Restrict); // Restrict delete: prevent User deletion if they have Certifications
 
-                // Relationships
-                entity.HasOne(e => e.User)
-                    .WithMany() // Assuming AppUser doesn't have a navigation property back
-                    .HasForeignKey(e => e.UserId)
-                    .OnDelete(DeleteBehavior.Restrict); // Prevent cascade delete
-
-                entity.HasOne(e => e.Quiz)
-                    .WithMany() // Assuming Quiz doesn't have a navigation property back
-                    .HasForeignKey(e => e.QuizId)
-                    .OnDelete(DeleteBehavior.Restrict);
-
-                // One-to-many with UserQuestionResponse
-                entity.HasMany(e => e.QuestionResponses)
-                    .WithOne(r => r.UserQuizAttempt)
-                    .HasForeignKey(r => r.UserQuizAttemptId)
-                    .OnDelete(DeleteBehavior.Cascade); // Delete responses if attempt is deleted
-            });
-
-            // Configure UserQuestionResponse
-            modelBuilder.Entity<UserQuestionResponse>(entity =>
-            {
-                // Table name
-                entity.ToTable("UserQuestionResponses");
-
-                // Primary key
-                entity.HasKey(e => e.Id);
-
-                // Properties
-                entity.Property(e => e.UserQuizAttemptId)
-                    .IsRequired();
-
-                entity.Property(e => e.QuestionId)
-                    .IsRequired();
-
-                // Configure SelectedAnswerIds as JSON
-                entity.Property(e => e.SelectedAnswerIds)
-                    .IsRequired()
-                    .HasColumnType("json") // Use 'jsonb' for PostgreSQL, 'nvarchar(max)' for SQL Server if needed
-                    .HasConversion(
-                        v => JsonSerializer.Serialize(v, (JsonSerializerOptions)null),
-                        v => JsonSerializer.Deserialize<List<int>>(v, (JsonSerializerOptions)null),
-                        new ValueComparer<List<int>>(
-                            (c1, c2) => c1 != null && c2 != null && c1.SequenceEqual(c2),
-                            c => c != null ? c.Aggregate(0, (a, v) => HashCode.Combine(a, v.GetHashCode())) : 0,
-                            c => c != null ? c.ToList() : new List<int>()
-                        )
-                    );
-
-                // Relationships
-                entity.HasOne(e => e.UserQuizAttempt)
-                    .WithMany(u => u.QuestionResponses)
-                    .HasForeignKey(e => e.UserQuizAttemptId)
-                    .OnDelete(DeleteBehavior.Cascade);
-
-                entity.HasOne(e => e.Question)
-                    .WithMany() // Assuming Question doesn't have a navigation property back
-                    .HasForeignKey(e => e.QuestionId)
-                    .OnDelete(DeleteBehavior.Restrict);
-            });
+            builder.Entity<Certification>()
+                .HasOne(c => c.Session)
+                .WithMany() // Assuming Session does not have a navigation property for Certifications
+                .HasForeignKey(c => c.SessionId)
+                .OnDelete(DeleteBehavior.Restrict);
 
         }
     }

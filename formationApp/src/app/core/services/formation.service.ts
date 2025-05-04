@@ -43,4 +43,8 @@ export class FormationService {
     updateFormationGroups(id: number, groupIds: any): Observable<Formation> {
         return this.http.put<Formation>(`${this.apiUrl}/${id}/groups`, groupIds);
     }
-} 
+
+    updateFormationModules(id: number, modules: any): Observable<Formation> {
+        return this.http.put<Formation>(`${this.apiUrl}/${id}/modules`, modules);
+    }
+}

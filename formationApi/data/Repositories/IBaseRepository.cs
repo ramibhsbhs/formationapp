@@ -12,6 +12,11 @@ namespace formationApi.data.Repositories
         Task<IEnumerable<TEntity>> InsertMany(IEnumerable<TEntity> entities);
         Task<TEntity> Update(TEntity obj);
         Task Delete(int id);
+
+
+        IQueryable<TEntity> GetAllAsQueryable();
+
+
     }
 }
 

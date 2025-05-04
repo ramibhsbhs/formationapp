@@ -23,8 +23,7 @@ export class LoginComponent implements OnInit {
   loginForms: { email: string, password: string }[] = [
     { email: "admin@gmail.com", password: "Pa$$w0rd" },
     { email: "manager@gmail.com", password: "Pa$$w0rd" },
-    { email: "employee@gmail.com", password: "Pa$$w0rd" },
-    { email: "team-leader@gmail.com", password: "Pa$$w0rd" },
+    { email: "teamleader@gmail.com", password: "Pa$$w0rd" },
   ]
 
   ngOnInit(): void {

@@ -1,188 +1,499 @@
-<div class="max-w-4xl">
+<div class="max-w-6xl mx-auto">
     <div class="mt-10">
         <!-- Header -->
-        <div class="px-8 py-">
+        <div class="px-8 py-4">
             <h1 class="text-3xl font-bold text-gray-800">Modifier la formation</h1>
-            <p class="mt-1 text-sm text-gray-600">Mettez à jour les informations de base de la formation</p>
+            <p class="mt-1 text-sm text-gray-600">Mettez à jour les informations de la formation</p>
         </div>
 
-        <!-- Form Content -->
-        <div class="p-8">
-            <form [formGroup]="formationForm" (ngSubmit)="updateContent()" class="space-y-6">
-                <!-- Basic Information Section -->
-                <div class="bg-white shadow-md rounded-lg p-6">
-                    <h2 class="text-2xl font-bold mb-6">Basic Information</h2>
-                    <div class="grid grid-cols-1 gap-6">
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700">Title</label>
-                            <input type="text" formControlName="title"
-                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring-primary" />
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700">Description</label>
-                            <textarea formControlName="description" rows="3"
-                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring-primary"></textarea>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700">Content</label>
-                            <textarea formControlName="content" rows="5"
-                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring-primary"></textarea>
-                        </div>
-                    </div>
-                    <div *ngIf="formationForm.dirty" class="flex justify-end space-x-4 mt-8 animate-accordion-down">
-                        <button type="button" (click)="cancel()"
-                            class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200">
-                            Annuler
+        <!-- Loading State -->
+        <div *ngIf="isLoading" class="text-center py-4">
+            <p class="text-gray-600">Chargement...</p>
+        </div>
+
+        <!-- Error State -->
+        <div *ngIf="!formation && !isLoading" class="text-center py-4">
+            <p class="text-gray-600">Formation non trouvée.</p>
+        </div>
+
+        <!-- Main Content -->
+        <div class="p-8" *ngIf="formation && !isLoading">
+            <!-- Tabs Section -->
+            <div class="bg-white shadow-md rounded-lg overflow-hidden">
+                <div class="border-b border-gray-200">
+                    <nav class="flex -mb-px">
+                        <button (click)="setActiveTab('info')"
+                            [ngClass]="{'border-primary text-primary': activeTab === 'info', 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300': activeTab !== 'info'}"
+                            class="py-4 px-6 font-medium text-sm border-b-2 focus:outline-none">
+                            Informations de base
                         </button>
-                        <button type="submit" [disabled]="formationForm.invalid || isLoading"
-                            class="px-4 py-2 text-sm font-medium text-white bg-primary rounded-lg hover:bg-primary-dark disabled:opacity-50">
-                            Mettre à jour
+                        <button (click)="setActiveTab('sessions')"
+                            [ngClass]="{'border-primary text-primary': activeTab === 'sessions', 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300': activeTab !== 'sessions'}"
+                            class="py-4 px-6 font-medium text-sm border-b-2 focus:outline-none">
+                            Sessions
                         </button>
-                    </div>
+                        <button (click)="setActiveTab('groups')"
+                            [ngClass]="{'border-primary text-primary': activeTab === 'groups', 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300': activeTab !== 'groups'}"
+                            class="py-4 px-6 font-medium text-sm border-b-2 focus:outline-none">
+                            Groupes et Catégorie
+                        </button>
+                        <button (click)="setActiveTab('modules')"
+                            [ngClass]="{'border-primary text-primary': activeTab === 'modules', 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300': activeTab !== 'modules'}"
+                            class="py-4 px-6 font-medium text-sm border-b-2 focus:outline-none">
+                            Modules
+                        </button>
+                        <button (click)="setActiveTab('results')"
+                            [ngClass]="{'border-primary text-primary': activeTab === 'results', 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300': activeTab !== 'results'}"
+                            class="py-4 px-6 font-medium text-sm border-b-2 focus:outline-none">
+                            Résultats de formation
+                        </button>
+                    </nav>
                 </div>
 
-                <!-- Categories Section -->
-
-
-            </form>
-            <form [formGroup]="categoryForm" class="mt-6" (ngSubmit)="updateCategory()">
-
-                <div class="bg-white shadow rounded-lg p-6">
-                    <h2 class="text-2xl font-bold mb-6">Category</h2>
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <div *ngFor="let category of categories" class="category-item">
-                            <input type="radio" [id]="'category-' + category" [value]="category"
-                                formControlName="category" class="category-radio" />
-                            <label [for]="'category-' + category" class="category-label">
-                                <div class="category-content">
-                                    <span class="category-name">{{ category }}</span>
+                <!-- Tab Content -->
+                <div class="p-6">
+                    <!-- Basic Information Tab -->
+                    <div *ngIf="activeTab === 'info'">
+                        <form [formGroup]="formationForm" (ngSubmit)="updateContent()">
+                            <h2 class="text-2xl font-bold mb-6">Informations de base</h2>
+                            <div class="grid grid-cols-1 gap-6">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700">Titre</label>
+                                    <input type="text" formControlName="title"
+                                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring-primary" />
+                                    <div *ngIf="formationForm.get('title')?.invalid && formationForm.get('title')?.touched"
+                                        class="text-red-500 text-sm mt-1">
+                                        <span *ngIf="formationForm.get('title')?.errors?.['required']">Le titre est
+                                            requis.</span>
+                                        <span *ngIf="formationForm.get('title')?.errors?.['minlength']">Le titre doit
+                                            contenir au moins 3 caractères.</span>
+                                    </div>
                                 </div>
-                                <div class="category-icon">
-                                    <i class="fas fa-check"></i>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700">Description</label>
+                                    <textarea formControlName="description" rows="3"
+                                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring-primary"></textarea>
+                                    <div *ngIf="formationForm.get('description')?.invalid && formationForm.get('description')?.touched"
+                                        class="text-red-500 text-sm mt-1">
+                                        <span *ngIf="formationForm.get('description')?.errors?.['required']">La
+                                            description est requise.</span>
+                                        <span *ngIf="formationForm.get('description')?.errors?.['minlength']">La
+                                            description doit contenir au moins 10 caractères.</span>
+                                    </div>
                                 </div>
-                            </label>
-                        </div>
-                    </div>
-                    <div *ngIf="categoryForm.dirty" class="flex justify-end space-x-4 mt-8 animate-accordion-down">
-                        <button type="button" (click)="resetCategory()"
-                            class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200">
-                            Annuler
-                        </button>
-                        <button type="submit" [disabled]="categoryForm.invalid"
-                            class="px-4 py-2 text-sm font-medium text-white bg-primary rounded-lg hover:bg-primary-dark disabled:opacity-50">
-                            Mettre à jour
-                        </button>
-                    </div>
-                </div>
-
-            </form>
-            <form [formGroup]="groupForm" class="mt-6" (ngSubmit)="updateGroups()">
-                <!-- Groups Section -->
-                <div class="bg-white shadow rounded-lg p-6">
-                    <h2 class="text-2xl font-bold mb-6">Target Groups</h2>
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <div *ngFor="let group of groups" class="group-item">
-                            <input type="checkbox" [id]="'group-' + group.id"
-                                [checked]="groupIdsArray.value.includes(group.id)" (change)="toggleGroup(group.id)"
-                                class="group-checkbox" />
-                            <label [for]="'group-' + group.id" class="group-label">
-                                <div class="group-content">
-                                    <span class="group-name">{{ group.name }}</span>
-                                    <span *ngIf="group.description" class="group-description">{{
-                                        group.description}}</span>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700">Contenu</label>
+                                    <textarea formControlName="content" rows="5"
+                                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring-primary"></textarea>
+                                    <div *ngIf="formationForm.get('content')?.invalid && formationForm.get('content')?.touched"
+                                        class="text-red-500 text-sm mt-1">
+                                        <span *ngIf="formationForm.get('content')?.errors?.['required']">Le contenu est
+                                            requis.</span>
+                                    </div>
                                 </div>
-                                <div class="group-icon">
-                                    <i class="fas fa-check"></i>
-                                </div>
-                            </label>
-                        </div>
-                    </div>
-                    <div *ngIf="groupIdsArray.dirty" class="flex justify-end space-x-4 mt-8 animate-accordion-down">
-                        <button type="button" (click)="resetGroupsForm()"
-                            class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200">
-                            Annuler
-                        </button>
-                        <button type="submit" [disabled]="categoryForm.invalid"
-                            class="px-4 py-2 text-sm font-medium text-white bg-primary rounded-lg hover:bg-primary-dark disabled:opacity-50">
-                            Mettre à jour
-                        </button>
-                    </div>
-                </div>
-            </form>
-            <form [formGroup]="modulesForm" class="mt-6">
-                <div class="bg-white shadow rounded-lg p-6">
 
-
-                    <div class="flex justify-between items-center mb-6">
-                        <h2 class="text-2xl font-bold">Modules</h2>
-                        <button type="button" (click)="addModule()"
-                            class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-primary hover:bg-primary-dark">
-                            <i class="fas fa-plus mr-2"></i>
-                            Add Module
-                        </button>
-                    </div>
-                    <div formArrayName="modules" class="space-y-4">
-                        <div *ngFor="let module of modules.controls; let i = index" [formGroupName]="i"
-                            class="module-item" cdkDrag>
-                            <div class="flex items-start space-x-4">
-                                <div class="flex-1">
-                                    <div class="grid grid-cols-1 gap-4">
-                                        <div>
-                                            <label class="block text-sm font-medium text-gray-700">Title</label>
-                                            <input type="text" formControlName="title"
-                                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring-primary" />
-                                        </div>
-                                        <div>
-                                            <label class="block text-sm font-medium text-gray-700">Description</label>
-                                            <textarea formControlName="description" rows="2"
-                                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring-primary"></textarea>
-                                        </div>
-                                        <!-- <div>
-                                        <label class="block text-sm font-medium text-gray-700">Quiz</label>
-                                        <div class="mt-1">
-                                            <button type="button" (click)="openQuizSelectionDialog('module', i)"
-                                                class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
-                                                {{ getQuizTitle(module.get('quizId')?.value) }}
-                                                <i class="fas fa-chevron-down ml-2"></i>
+                                <!-- Final Quiz Selection -->
+                                <div class="mt-6 p-4 bg-gray-50 rounded-lg">
+                                    <label class="block text-lg font-medium text-gray-700 mb-2">Quiz final</label>
+                                    <p class="text-sm text-gray-500 mb-3">
+                                        Le quiz final est présenté à la fin de la formation et détermine si
+                                        l'utilisateur a réussi la formation.
+                                    </p>
+                                    <div class="flex items-center space-x-2">
+                                        <div *ngIf="!formationForm.get('finalQuizId')?.value" class="flex-1">
+                                            <button type="button" (click)="openFinalQuizSelectionDialog()"
+                                                class="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none">
+                                                <i class="fas fa-plus-circle mr-2 text-primary"></i>
+                                                Sélectionner un quiz final
                                             </button>
                                         </div>
-                                    </div> -->
+                                        <div *ngIf="formationForm.get('finalQuizId')?.value"
+                                            class="flex-1 flex items-center justify-between bg-white p-3 rounded border border-gray-200">
+                                            <div class="flex items-center">
+                                                <i class="fas fa-award text-primary mr-2"></i>
+                                                <span class="text-sm font-medium">{{
+                                                    getQuizTitle(formationForm.get('finalQuizId')?.value) }}</span>
+                                            </div>
+                                            <div class="flex space-x-2">
+                                                <button type="button" (click)="openFinalQuizSelectionDialog()"
+                                                    class="text-primary hover:text-primary-dark">
+                                                    <i class="fas fa-exchange-alt"></i>
+                                                </button>
+                                                <button type="button" (click)="removeFinalQuiz()"
+                                                    class="text-red-500 hover:text-red-700">
+                                                    <i class="fas fa-times"></i>
+                                                </button>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
-                                <div class="flex flex-col space-y-2">
-                                    <div class="drag-handle" cdkDragHandle>
-                                        <i class="fas fa-grip-vertical"></i>
+                            </div>
+                            <div *ngIf="formationForm.dirty"
+                                class="flex justify-end space-x-4 mt-8 animate-accordion-down">
+                                <button type="button" (click)="cancel()"
+                                    class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200">
+                                    Annuler
+                                </button>
+                                <button type="submit" [disabled]="formationForm.invalid || isLoading"
+                                    class="px-4 py-2 text-sm font-medium text-white bg-primary rounded-lg hover:bg-primary-dark disabled:opacity-50">
+                                    Mettre à jour
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- Sessions Tab -->
+                    <div *ngIf="activeTab === 'sessions'">
+                        <div class="flex justify-between items-center mb-6">
+                            <h2 class="text-2xl font-bold">Sessions</h2>
+                            <button type="button" (click)="openSessionDialog()"
+                                class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-primary hover:bg-primary-dark">
+                                <i class="fas fa-plus mr-2"></i>
+                                Ajouter une session
+                            </button>
+                        </div>
+
+                        <!-- Loading State -->
+                        <div *ngIf="isLoadingSessions" class="flex justify-center py-8">
+                            <div class="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary"></div>
+                        </div>
+
+                        <!-- Sessions Table -->
+                        <div class="overflow-x-auto" *ngIf="!isLoadingSessions">
+                            <table class="min-w-full divide-y divide-gray-200">
+                                <thead class="bg-gray-50">
+                                    <tr>
+                                        <th scope="col"
+                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            Titre</th>
+                                        <th scope="col"
+                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            Date de début</th>
+                                        <th scope="col"
+                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            Date de fin</th>
+                                        <th scope="col"
+                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            Statut</th>
+                                        <th scope="col"
+                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="bg-white divide-y divide-gray-200">
+                                    <tr *ngFor="let session of formation.sessions">
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <div class="text-sm font-medium text-gray-900">{{ session.title }}</div>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <div class="text-sm text-gray-500">{{ session.startDate | date }}</div>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <div class="text-sm text-gray-500">{{ session.endDate | date }}</div>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full"
+                                                [ngClass]="{
+                                                    'bg-green-100 text-green-800': getSessionStatus(session) === 'En cours',
+                                                    'bg-yellow-100 text-yellow-800': getSessionStatus(session) === 'Pas encore',
+                                                    'bg-gray-100 text-gray-800': getSessionStatus(session) === 'Terminée'
+                                                }">
+                                                {{ getSessionStatus(session) }}
+                                            </span>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                            <button (click)="editSession(session)"
+                                                class="text-primary hover:text-primary-dark mr-3">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button (click)="deleteSession(session)"
+                                                class="text-red-600 hover:text-red-900">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    <tr *ngIf="formation.sessions.length === 0">
+                                        <td colspan="5" class="px-6 py-4 text-center text-sm text-gray-500">
+                                            Aucune session disponible
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Groups and Category Tab -->
+                    <div *ngIf="activeTab === 'groups'" class="space-y-8">
+                        <!-- Category Section -->
+                        <form [formGroup]="categoryForm" (ngSubmit)="updateCategory()">
+                            <div class="mb-8">
+                                <h3 class="text-xl font-bold mb-4">Catégorie</h3>
+                                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                    <div *ngFor="let category of categories" class="category-item">
+                                        <input type="radio" [id]="'category-' + category" [value]="category"
+                                            formControlName="category" class="category-radio" />
+                                        <label [for]="'category-' + category" class="category-label">
+                                            <div class="category-content">
+                                                <span class="category-name">{{ category }}</span>
+                                            </div>
+                                            <div class="category-icon">
+                                                <i class="fas fa-check"></i>
+                                            </div>
+                                        </label>
                                     </div>
-                                    <button type="button" (click)="moveModule(i, i - 1)" [disabled]="i === 0"
-                                        class="p-2 text-gray-500 hover:text-gray-700 disabled:opacity-50">
-                                        <i class="fas fa-arrow-up"></i>
+                                </div>
+                                <div *ngIf="categoryForm.dirty"
+                                    class="flex justify-end space-x-4 mt-4 animate-accordion-down">
+                                    <button type="button" (click)="resetCategory()"
+                                        class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200">
+                                        Annuler
                                     </button>
-                                    <button type="button" (click)="moveModule(i, i + 1)"
-                                        [disabled]="i === modules.length - 1"
-                                        class="p-2 text-gray-500 hover:text-gray-700 disabled:opacity-50">
-                                        <i class="fas fa-arrow-down"></i>
-                                    </button>
-                                    <button type="button" (click)="removeModule(i)"
-                                        class="p-2 text-red-500 hover:text-red-700">
-                                        <i class="fas fa-trash"></i>
+                                    <button type="submit" [disabled]="categoryForm.invalid"
+                                        class="px-4 py-2 text-sm font-medium text-white bg-primary rounded-lg hover:bg-primary-dark disabled:opacity-50">
+                                        Mettre à jour
                                     </button>
                                 </div>
                             </div>
-                            <div class="mt-2 text-sm text-gray-500">
-                                Position: {{ module.get('position')?.value }}
+                        </form>
+
+                        <!-- Groups Section -->
+                        <form [formGroup]="groupForm" (ngSubmit)="updateGroups()">
+                            <div>
+                                <h3 class="text-xl font-bold mb-4">Groupes cibles</h3>
+                                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                    <div *ngFor="let group of groups" class="group-item">
+                                        <input type="checkbox" [id]="'group-' + group.id"
+                                            [checked]="groupIdsArray.value.includes(group.id)"
+                                            (change)="toggleGroup(group.id)" class="group-checkbox" />
+                                        <label [for]="'group-' + group.id" class="group-label">
+                                            <div class="group-content">
+                                                <span class="group-name">{{ group.name }}</span>
+                                                <span *ngIf="group.description" class="group-description">{{
+                                                    group.description}}</span>
+                                            </div>
+                                            <div class="group-icon">
+                                                <i class="fas fa-check"></i>
+                                            </div>
+                                        </label>
+                                    </div>
+                                </div>
+                                <div *ngIf="groupIdsArray.dirty"
+                                    class="flex justify-end space-x-4 mt-4 animate-accordion-down">
+                                    <button type="button" (click)="resetGroupsForm()"
+                                        class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200">
+                                        Annuler
+                                    </button>
+                                    <button type="submit" [disabled]="groupForm.invalid"
+                                        class="px-4 py-2 text-sm font-medium text-white bg-primary rounded-lg hover:bg-primary-dark disabled:opacity-50">
+                                        Mettre à jour
+                                    </button>
+                                </div>
                             </div>
+                        </form>
+                    </div>
+
+                    <!-- Modules Tab -->
+                    <div *ngIf="activeTab === 'modules'">
+                        <form [formGroup]="modulesForm">
+                            <div class="flex justify-between items-center mb-6">
+                                <h2 class="text-2xl font-bold">Modules</h2>
+                                <button type="button" (click)="addModule()"
+                                    class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-primary hover:bg-primary-dark">
+                                    <i class="fas fa-plus mr-2"></i>
+                                    Ajouter un module
+                                </button>
+                            </div>
+                            <div formArrayName="modules" class="space-y-4">
+                                <div *ngFor="let module of modules.controls; let i = index" [formGroupName]="i"
+                                    class="module-item bg-gray-50 p-4 rounded-lg" cdkDrag>
+                                    <div class="flex items-start space-x-4">
+                                        <div class="flex-1">
+                                            <div class="grid grid-cols-1 gap-4">
+                                                <div>
+                                                    <label class="block text-sm font-medium text-gray-700">Titre</label>
+                                                    <input type="text" formControlName="title"
+                                                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring-primary" />
+                                                </div>
+                                                <div>
+                                                    <label
+                                                        class="block text-sm font-medium text-gray-700">Description</label>
+                                                    <textarea formControlName="description" rows="2"
+                                                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring-primary"></textarea>
+                                                </div>
+
+                                                <!-- Quiz Selection -->
+                                                <div>
+                                                    <label class="block text-sm font-medium text-gray-700 mb-2">Quiz
+                                                        associé</label>
+                                                    <div class="flex items-center space-x-2">
+                                                        <div *ngIf="!module.get('quizId')?.value" class="flex-1">
+                                                            <button type="button" (click)="openQuizSelectionDialog(i)"
+                                                                class="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none">
+                                                                <i class="fas fa-plus-circle mr-2 text-primary"></i>
+                                                                Sélectionner un quiz
+                                                            </button>
+                                                        </div>
+                                                        <div *ngIf="module.get('quizId')?.value"
+                                                            class="flex-1 flex items-center justify-between bg-gray-50 p-2 rounded">
+                                                            <div class="flex items-center">
+                                                                <i class="fas fa-question-circle text-primary mr-2"></i>
+                                                                <span class="text-sm font-medium">{{
+                                                                    getQuizTitle(module.get('quizId')?.value) }}</span>
+                                                            </div>
+                                                            <div class="flex space-x-2">
+                                                                <button type="button"
+                                                                    (click)="openQuizSelectionDialog(i)"
+                                                                    class="text-primary hover:text-primary-dark">
+                                                                    <i class="fas fa-exchange-alt"></i>
+                                                                </button>
+                                                                <button type="button" (click)="removeQuiz(i)"
+                                                                    class="text-red-500 hover:text-red-700">
+                                                                    <i class="fas fa-times"></i>
+                                                                </button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <!-- Attachments Section -->
+                                                <div>
+                                                    <label class="block text-sm font-medium text-gray-700 mb-2">Pièces
+                                                        jointes</label>
+
+                                                    <!-- Existing Attachments -->
+                                                    <div *ngIf="getModuleAttachments(i).length > 0" class="mb-3">
+                                                        <div *ngFor="let attachment of getModuleAttachments(i); let j = index"
+                                                            class="flex items-center justify-between p-2 bg-gray-50 rounded mb-2">
+                                                            <div class="flex items-center">
+                                                                <img [src]="getFileIcon(attachment.type)"
+                                                                    alt="File Icon" class="w-6 h-6 mr-2" />
+                                                                <a [href]="attachment.lien" target="_blank"
+                                                                    class="text-primary hover:underline">
+                                                                    {{ getFileName(attachment.lien) || 'Fichier ' +
+                                                                    attachment.type }}
+                                                                </a>
+                                                            </div>
+                                                            <button type="button"
+                                                                (click)="deleteAttachment(i, attachment.id)"
+                                                                class="text-red-500 hover:text-red-700">
+                                                                <i class="fas fa-trash"></i>
+                                                            </button>
+                                                        </div>
+                                                    </div>
+
+                                                    <!-- Upload New Attachment -->
+                                                    <div class="mt-3">
+                                                        <input type="file" #fileInput
+                                                            (change)="onFileSelected($event, i)" class="!hidden"
+                                                            accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.jpg,.jpeg,.png,.gif,.mp4,.avi,.mov" />
+
+                                                        <!-- File Upload Button -->
+                                                        <label for="file-upload-{{i}}"
+                                                            class="cursor-pointer inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none"
+                                                            (click)="fileInput.click()">
+                                                            <i class="fas fa-paperclip mr-2"></i>
+                                                            Ajouter un fichier
+                                                        </label>
+
+                                                        <!-- Selected File Info -->
+                                                        <div *ngIf="selectedFiles[i]"
+                                                            class="flex items-center mt-2 bg-gray-50 p-2 rounded">
+                                                            <div class="flex-1">
+                                                                <div class="flex items-center">
+                                                                    <i class="fas fa-file mr-2 text-primary"></i>
+                                                                    <span class="text-sm font-medium">{{
+                                                                        selectedFiles[i].name }}</span>
+                                                                </div>
+                                                                <span class="text-xs text-gray-500">{{
+                                                                    formatFileSize(selectedFiles[i].size) }}</span>
+                                                            </div>
+                                                            <button type="button" (click)="uploadFile(i)"
+                                                                class="inline-flex items-center px-3 py-1 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-primary hover:!bg-primary/80 focus:outline-none">
+                                                                <i class="fas fa-upload mr-1"></i>
+                                                                Télécharger
+                                                            </button>
+                                                        </div>
+
+                                                        <!-- File Type Info -->
+                                                        <div *ngIf="!selectedFiles[i] && !isUploading[i]" class="mt-2">
+                                                            <p class="text-xs text-gray-500">
+                                                                Formats acceptés: PDF, Word, Excel, PowerPoint, images
+                                                                et vidéos
+                                                            </p>
+                                                        </div>
+
+                                                        <!-- Upload Progress and Status -->
+                                                        <div *ngIf="isUploading[i]" class="mt-2">
+                                                            <div class="flex items-center mb-1">
+                                                                <div class="w-full bg-gray-200 rounded-full h-2">
+                                                                    <div class="bg-primary h-2 rounded-full transition-all duration-300"
+                                                                        [style.width.%]="uploadProgress[i]"></div>
+                                                                </div>
+                                                            </div>
+                                                            <div
+                                                                class="flex justify-between items-center text-xs text-gray-500">
+                                                                <span>{{ uploadProgress[i] }}% terminé</span>
+                                                                <span *ngIf="uploadProgress[i] < 100">Téléchargement en
+                                                                    cours...</span>
+                                                                <span *ngIf="uploadProgress[i] === 100"
+                                                                    class="text-green-600">
+                                                                    <i class="fas fa-check-circle mr-1"></i>
+                                                                    Téléchargement réussi
+                                                                </span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="flex flex-col space-y-2">
+                                            <div class="drag-handle cursor-move" cdkDragHandle>
+                                                <i class="fas fa-grip-vertical text-gray-400"></i>
+                                            </div>
+                                            <button type="button" (click)="moveModule(i, i - 1)" [disabled]="i === 0"
+                                                class="p-2 text-gray-500 hover:text-gray-700 disabled:opacity-50">
+                                                <i class="fas fa-arrow-up"></i>
+                                            </button>
+                                            <button type="button" (click)="moveModule(i, i + 1)"
+                                                [disabled]="i === modules.length - 1"
+                                                class="p-2 text-gray-500 hover:text-gray-700 disabled:opacity-50">
+                                                <i class="fas fa-arrow-down"></i>
+                                            </button>
+                                            <button type="button" (click)="removeModule(i)"
+                                                class="p-2 text-red-500 hover:text-red-700">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div class="mt-2 text-sm text-gray-500">
+                                        Position: {{ module.get('position')?.value }}
+                                    </div>
+                                </div>
+                                <div *ngIf="modules.length === 0" class="text-center py-8 text-gray-500">
+                                    Aucun module disponible. Cliquez sur "Ajouter un module" pour commencer.
+                                </div>
+                            </div>
+                            <div *ngIf="modules.dirty" class="flex justify-end space-x-4 mt-6">
+                                <button type="button" (click)="loadData()"
+                                    class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200">
+                                    Annuler
+                                </button>
+                                <button type="button" (click)="updateModules()"
+                                    class="px-4 py-2 text-sm font-medium text-white bg-primary rounded-lg hover:bg-primary-dark">
+                                    Enregistrer les modules
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- Results Tab -->
+                    <div *ngIf="activeTab === 'results'">
+                        <h2 class="text-2xl font-bold mb-6">Résultats de formation</h2>
+                        <div class="bg-gray-50 p-8 rounded-lg text-center">
+                            <p class="text-gray-500">Les résultats de formation seront affichés ici.</p>
                         </div>
                     </div>
                 </div>
-            </form>
-
-            <!-- Loading State -->
-            <div *ngIf="isLoading" class="text-center py-4">
-                <p class="text-gray-600">Chargement...</p>
-            </div>
-            <!-- Error State -->
-            <div *ngIf="!formation && !isLoading" class="text-center py-4">
-                <p class="text-gray-600">Formation non trouvée.</p>
             </div>
         </div>
     </div>

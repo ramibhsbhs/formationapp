@@ -8,7 +8,7 @@
 <div *ngIf="isOpen" class="md:hidden fixed inset-0 bg-black bg-opacity-50 z-40" (click)="toggleSidebar()"></div>
 
 <!-- Sidebar -->
-<aside class="h-full z-40 w-64 bg-sidebar transform transition-transform duration-300 ease-in-out 
+<aside class="h-full z-40 w-64 bg-sidebar transform transition-transform duration-300 ease-in-out
       {{ isOpen ? 'translate-x-0' : '-translate-x-full' }} md:translate-x-0 flex flex-col shadow-lg">
     <div class="p-4 border-b border-sidebar-border">
         <div class="flex items-center" routerLink="/">
@@ -26,9 +26,14 @@
         <ul class="space-y-1 px-2">
             <li *ngFor="let item of menuItems">
                 <a [routerLink]="item.path" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}"
-                    class="sidebar-item flex items-center p-2 rounded-md text-white hover:bg-sidebar-hover ">
-                    <i [ngClass]="item.icon" class="" style="font-size: 20px;" class="w-8 h-8 text-center"></i>
+                    class="sidebar-item flex items-center p-2 rounded-md text-white hover:bg-white/10 relative">
+                    <i [ngClass]="item.icon" style="font-size: 20px;" class="w-8 h-8 text-center"></i>
                     <span>{{ item.name }}</span>
+                    <!-- Badge de notification -->
+                    <span *ngIf="item.badge && item.badge > 0"
+                        class="notification-badge bg-red-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
+                        {{ item.badge > 99 ? '99+' : item.badge }}
+                    </span>
                 </a>
             </li>
         </ul>
@@ -56,12 +61,12 @@
 
     <!-- Popup Menu -->
     <div *ngIf="showPopup"
-        class="absolute bottom-4 right-[-180px] bg-white dark:bg-gray-900 rounded-md shadow-md p-2 w-56 z-50 border border-gray-200 dark:border-gray-800"
+        class="absolute z-50 bottom-4 right-[-180px] bg-white dark:bg-gray-900 rounded-md shadow-md p-2 w-56 border border-gray-200 dark:border-gray-800"
         (click)="$event.stopPropagation()">
         <div class="px-2 py-1.5 text-sm font-medium text-gray-500 dark:text-gray-400">
             Account
         </div>
-        <ul class="space-y-1 w-full">
+        <ul class="space-y-1 w-full !pl-0">
             <li *ngFor="let item of popupMenuItems"
                 class="w-full flex px-2 py-1.5 text-sm rounded-sm hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer"
                 (click)="handlePopupAction(item)">

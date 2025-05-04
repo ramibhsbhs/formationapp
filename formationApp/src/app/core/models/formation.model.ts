@@ -9,9 +9,10 @@ export class Formation {
     sessions: Session[];
     modules: Module[];
     groups: Group[];
-    groupIds : number[];
+    groupIds: number[];
     category: string;
     roleNames: string[];
+    finalQuizId?: number;
 
     constructor(data: Partial<Formation> = {}) {
         this.id = data.id;
@@ -24,9 +25,10 @@ export class Formation {
         this.category = data.category || 'safety';
         this.roleNames = data.roleNames ?? [];
         this.groupIds = data.groupIds || [];
+        this.finalQuizId = data.finalQuizId;
     }
 
-     totalUsersCount(): number {
+    totalUsersCount(): number {
         let sum = 0;
         this.groups.forEach(group => {
             sum += group.users?.length || 0;
@@ -56,7 +58,7 @@ export interface Module {
     title: string;
     description: string;
     position: number;
-    formationId: number;
+    formationId?: number;
     attachments: Attachment[];
     quizId: number;
 }
@@ -66,4 +68,4 @@ export interface Attachment {
     lien: string;
     type: string;
     moduleId: number;
-} 
+}

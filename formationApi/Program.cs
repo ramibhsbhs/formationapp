@@ -15,10 +15,10 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowClient", policy =>
     {
-        policy.WithOrigins("http://localhost:5500", "http://localhost:4200") 
-              .AllowAnyMethod()
+        policy.AllowAnyMethod()
               .AllowAnyHeader()
-              .AllowCredentials();
+              .AllowCredentials()
+              .WithOrigins("http://localhost:5500", "http://localhost:4200");
     });
 });
 

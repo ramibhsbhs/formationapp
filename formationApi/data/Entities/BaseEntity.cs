@@ -17,4 +17,5 @@ namespace formationApi.data.Entities
         public bool Enable { get; set; } = true;
     }
 
+
 }

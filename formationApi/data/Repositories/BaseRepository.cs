@@ -21,6 +21,7 @@ namespace formationApi.data
                 .Where(x => x.Enable)
                 .ToListAsync();
         }
+
         public async Task<IEnumerable<TEntity>> InsertMany(IEnumerable<TEntity> entities)
         {
             if (entities == null)
@@ -125,6 +126,14 @@ namespace formationApi.data
 
                 await _dbContext.SaveChangesAsync();
             }
+        }
+
+
+        public IQueryable<TEntity> GetAllAsQueryable()
+        {
+            return _dbContext.Set<TEntity>()
+                        .Where(x => x.Enable)
+                        .AsQueryable();
         }
     }
 }

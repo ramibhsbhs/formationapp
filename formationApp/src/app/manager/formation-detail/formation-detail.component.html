@@ -1,1 +1,170 @@
-<p>formation-detail works!</p>
+<div class="min-h-screen bg-gray-50 p-8 relative">
+    <!-- Loading State -->
+    <div *ngIf="loading" class="flex justify-center items-center h-screen">
+        <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+    </div>
+
+    <!-- Error State -->
+    <div *ngIf="error" class="p-4 max-w-4xl mx-auto">
+        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+            <strong class="font-bold">Error!</strong>
+            <span class="block sm:inline">{{ error }}</span>
+        </div>
+    </div>
+
+    <!-- Formation Data -->
+    <div *ngIf="formation && !loading" class="max-w-4xl  space-y-8">
+        <!-- Header -->
+        <div class="bg-white rounded-lg shadow-md p-6">
+            <div class="flex items-center justify-between mb-4">
+                <div class="flex items-center gap-2">
+                    <span class="text-gray-500 font-medium text-lg">Title: </span>
+                    <span class="text-xl font-extrabold text-gray-700 inline uppercase">{{ formation.title }}</span>
+                </div>
+                <span class="px-4 py-1 bg-blue-100 text-blue-800 rounded-full text-sm">
+                    {{ formation.category }}
+                </span>
+            </div>
+            <div class="mb-4">
+                <span class="text-gray-500 font-medium text-md">Description: </span>
+                <p class="text-gray-600 text-base inline">{{ formation.description }}</p>
+            </div>
+            <div>
+                <span class="text-gray-500 font-medium text-md">Content: </span>
+                <div class="prose max-w-none inline text-gray-600 text-base" [innerHTML]="formation.content"></div>
+            </div>
+        </div>
+        <div class="space-y-6 bg-white rounded-lg shadow-md p-6">
+            <h2 class="text-2xl font-bold text-gray-900 mb-4">Training Groups</h2>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                <div *ngFor="let group of formation.groups"
+                    class="group border rounded-lg p-4 bg-secondary hover:border-blue-500 transition-colors">
+                    {{group.name}}
+                </div>
+            </div>
+
+
+            <div *ngIf="formation.groups.length === 0" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+
+                <a
+                    class="group border rounded-lg p-4 bg-red-200/20 hover:border-blue-500 transition-colors cursor-none">
+                    <div class="flex items-center space-x-3">
+                        <img src="/assets/icons/nofile.svg" alt="File Icon" class="w-14" />
+                        <div>
+                            <p class="font-medium text-gray-700 group-hover:text-blue-600 truncate !mb-0">
+                                No File
+                            </p>
+                            <p class="text-sm text-gray-500 truncate !mb-0">Aucun fichier attachee</p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        <!-- Sessions -->
+        <div class="bg-white rounded-lg shadow-md p-6">
+            <h2 class="text-2xl font-bold text-gray-900 mb-4">Training Sessions</h2>
+            <div class="space-y-3">
+                <div *ngFor="let session of formation.sessions" class="p-3 border rounded-lg hover:bg-gray-50">
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <h3 class="font-semibold text-lg text-gray-900">{{ session.title }}</h3>
+                            <p class="text-sm text-gray-600">
+                                {{ session.startDate | date }} - {{ session.endDate | date }}
+                            </p>
+                        </div>
+                        <span [ngClass]="{
+                            'bg-green-100 text-green-800': session.status === 'En cours',
+                            'bg-gray-100 text-gray-800': session.status === 'Terminée',
+                            'bg-yellow-100 text-yellow-800': session.status === 'Pas encore'
+                          }" class="px-3 py-1 rounded-full text-sm">
+                            {{getStatus(session) }}
+                        </span>
+                    </div>
+                </div>
+                <div *ngIf="formation.sessions.length===0" class="flex">
+
+                    <a
+                        class="nosession-group w-full relative group border rounded-lg p-4 bg-red-200/20 transition-colors">
+                        <div class="flex items-center space-x-3">
+                            <img src="/assets/icons/nofile.svg" alt="File Icon" class="w-14" />
+                            <div>
+                                <p class="font-medium text-gray-700 truncate !mb-0">
+                                    No Session
+                                </p>
+                                <p class="text-sm text-gray-500 truncate !mb-0">Aucun session attachee</p>
+                            </div>
+                        </div>
+                        <button [routerLink]="['../../sessions']"
+                            class="bg-primary z-50 text-white rounded-full p-2 absolute w-10 h-10  hover:bg-primary-dark transition-colors">
+                            <i class="fa-solid fa-plus"></i>
+                        </button>
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="flex flex-row gap-2 items-center">
+            <span class="text-gray-600 text-lg text-bold">Modules</span>
+            <div class="flex-1 bg-gray-200  h-[2px] rounded-full"></div>
+        </div>
+        <!-- Modules -->
+        <div class="space-y-6">
+            <div *ngFor="let module of formation.modules" class="bg-white rounded-lg shadow-md p-6">
+
+                <div class="flex justify-between mb-4">
+                    <div class="flex items-center gap-2">
+                        <span class="text-gray-500 font-medium text-md">Title : </span>
+                        <h2 class="text-2xl font-bold text-gray-600 !mb-0">{{ module.title }}</h2>
+                    </div>
+                    <span class="text-gray-500 font-bold text-xs">Module {{ module.id }}</span>
+                </div>
+
+                <div class="flex items-center gap-2">
+                    <span class="text-gray-500 font-medium text-md">Description : </span>
+                    <p class="text-gray-500 text-lg font-medium !mb-0">{{ module.description }}</p>
+
+                </div>
+                <div class="w-full h-[1px] bg-gray-200 rounded-full my-4"></div>
+                <!-- Attachments -->
+                <div class="mt-4">
+                    <h3 class="font-semibold text-lg text-gray-900 mb-3">Resources</h3>
+                    <div *ngIf="module.attachments.length > 0"
+                        class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                        <a *ngFor="let attachment of module.attachments" [href]="attachment.lien" target="_blank"
+                            class="group border rounded-lg p-4 bg-secondary hover:border-blue-500 transition-colors">
+                            <div class="flex items-center space-x-3">
+                                <img [src]="getFileIcon(attachment.type)" alt="File Icon" class="w-14" />
+                                <div>
+                                    <p class="font-medium text-gray-700 group-hover:text-blue-600 truncate !mb-0">
+                                        {{ attachment.type }} File
+                                    </p>
+                                    <p class="text-sm text-gray-500 truncate !mb-0">Click to view</p>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                    <div *ngIf="module.attachments.length === 0"
+                        class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+
+                        <a
+                            class="group border rounded-lg p-4 bg-red-200/20 hover:border-blue-500 transition-colors cursor-none">
+                            <div class="flex items-center space-x-3">
+                                <img src="/assets/icons/nofile.svg" alt="File Icon" class="w-14" />
+                                <div>
+                                    <p class="font-medium text-gray-700 group-hover:text-blue-600 truncate !mb-0">
+                                        No File
+                                    </p>
+                                    <p class="text-sm text-gray-500 truncate !mb-0">Aucun fichier attachee</p>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+
+
+            </div>
+        </div>
+
+    </div>
+</div>

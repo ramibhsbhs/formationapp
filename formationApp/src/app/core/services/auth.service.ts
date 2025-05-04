@@ -4,6 +4,7 @@ import { HttpClient } from '@angular/common/http';
 import { map, ReplaySubject } from 'rxjs';
 import { LoggedIn } from '../models/loggedIn';
 import { Router } from '@angular/router';
+import { NotificationService } from './notification.service';
 @Injectable({
   providedIn: 'root'
 })
@@ -12,7 +13,11 @@ export class AuthService {
   currentUser$ = this.currentUserSource.asObservable();
 
   baseUrl = environment.baseUrl
-  constructor(private http: HttpClient, private route: Router) { 
+  constructor(
+    private http: HttpClient,
+    private route: Router,
+    private notificationService: NotificationService
+  ) {
     const user = localStorage.getItem('user');
     if (user) {
       this.currentUserSource.next(JSON.parse(user));
@@ -38,6 +43,9 @@ export class AuthService {
   setCurrentUser(user: LoggedIn) {
     localStorage.setItem('user', JSON.stringify(user));
     this.currentUserSource.next(user);
+
+    // Initialiser les notifications après la connexion
+    this.notificationService.initNotifications(user);
   }
 
   redirectUser(redirectUrl: string) {
@@ -47,6 +55,8 @@ export class AuthService {
   logout() {
     localStorage.removeItem('user');
     this.currentUserSource.next(null);
+    // Réinitialiser les notifications lors de la déconnexion
+    this.notificationService.resetNotifications();
     this.route.navigateByUrl('/login');
   }
 

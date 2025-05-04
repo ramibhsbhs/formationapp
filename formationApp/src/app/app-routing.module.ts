@@ -23,7 +23,7 @@ const routes: Routes = [
   {
     path: '', component: AdminLayoutComponent, children: [
       {
-       
+
         path: 'admin',
         loadChildren: () => import('./admin/admin.module').then(m => m.AdminModule),
 
@@ -36,7 +36,7 @@ const routes: Routes = [
   {
     path: '', component: EmployeeLayoutComponent, children: [
       {
-        path: 'employee',
+        path: 'condidat',
         loadChildren: () => import('./condidat/condidat.module').then(m => m.CondidatModule)
       }
     ],

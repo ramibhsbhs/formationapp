@@ -38,6 +38,21 @@ export class SesssionsService {
     );
   }
 
+  updateSession(model: any) {
+    return this.http.put<Session>(`${this.apiUrl}/${model.id}`, model).pipe(
+      map(session => ({
+        ...session,
+        startDate: new Date(session.startDate),
+        endDate: new Date(session.endDate),
+        status: this.getSessionStatus(session)
+      }))
+    );
+  }
+
+  deleteSession(sessionId: number) {
+    return this.http.delete<void>(`${this.apiUrl}/${sessionId}`);
+  }
+
   getSessionStatus(session: Session): SessionStatus {
     const now = new Date();
     const startDate = new Date(session.startDate);

@@ -14,6 +14,8 @@ namespace formationApi.dtos.response
         public string Description { get; set; } = string.Empty;
         public string Content { get; set; } = string.Empty;
         public string Category { get; set; }
+        public int? FinalQuizId { get; set; }
+        public QuizDto FinalQuiz { get; set; }
         public ICollection<SessionDto> Sessions { get; set; } = new List<SessionDto>();
         public ICollection<ModuleDto> Modules { get; set; } = new List<ModuleDto>();
         public ICollection<int> GroupIds { get; set; } = new List<int>();
@@ -33,6 +35,8 @@ namespace formationApi.dtos.response
             public string Title { get; set; } = string.Empty;
             public string Description { get; set; } = string.Empty;
             public int Position { get; set; }
+            public int? QuizId { get; set; }
+            public QuizDto Quiz { get; set; }
             public ICollection<AttachmentDto> Attachments { get; set; } = new List<AttachmentDto>();
         }
 
@@ -61,6 +65,8 @@ namespace formationApi.dtos.response
                 Groups = formation.Groups?.Select(g => g.ToDto()).ToList(),
                 RoleNames = formation.Roles?.Select(r => r.Name).ToList() ?? new List<string>(),
                 Category = formation.Category,
+                FinalQuizId = formation.FinalQuizId,
+                FinalQuiz = formation.FinalQuiz?.ToDto()
             };
         }
 
@@ -83,7 +89,9 @@ namespace formationApi.dtos.response
                 Title = module.Title,
                 Description = module.Description,
                 Position = module.Position,
-                Attachments = module.Attachments?.Select(attachment => attachment.ToDto()).ToList() ?? new List<FormationDto.AttachmentDto>()
+                Attachments = module.Attachments?.Select(attachment => attachment.ToDto()).ToList() ?? new List<FormationDto.AttachmentDto>(),
+                QuizId = module.QuizId,
+                Quiz = module.Quiz?.ToDto()
             };
         }
 
@@ -96,6 +104,11 @@ namespace formationApi.dtos.response
                 Type = attachment.Type,
                 ModuleId = attachment.ModuleId
             };
+        }
+
+        public static ICollection<AttachmentDto> ToDtos(this ICollection<Attachment> attachments)
+        {
+            return attachments.Select(attachment => attachment.ToDto()).ToList();
         }
 
         public static ICollection<FormationDto> ToDtoList(this IList<Formation> formations)

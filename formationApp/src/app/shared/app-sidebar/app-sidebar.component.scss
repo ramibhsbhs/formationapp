@@ -6,9 +6,9 @@
     color: white;
     transition: background-color 0.2s ease;
 
-    &:hover {
-        background-color: var(--sidebar-hover);
-    }
+    // &:hover {
+    //     background-color: var(--sidebar-hover);
+    // }
 
     i {
         display: flex;
@@ -22,4 +22,11 @@
     span {
         margin-left: 0.75rem;
     }
+}
+
+.notification-badge {
+    position: absolute;
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
 }

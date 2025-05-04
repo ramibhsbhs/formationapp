@@ -4,9 +4,11 @@ using formationApi.data.Repositories;
 using formationApi.dtos.request;
 using formationApi.dtos.response;
 using formationApi.Extensions;
+using formationApi.Helper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using static formationApi.dtos.request.FormationCreateDto;
 
 namespace formationApi.Controllers
@@ -39,7 +41,17 @@ namespace formationApi.Controllers
             if (isAdmin)
             {
                 // Admin sees all formations
-                return formations.ToDtoList();
+                // return formations.ToDtoList();
+                var result = await _repositoryWrapper.Formation.GetAllAsQueryable()
+                         .Include(f => f.Sessions.Where(s => s.Enable))
+                         .Include(f => f.Groups.Where(g => g.Enable))
+                         .ThenInclude(g => g.Users)
+                         .Include(f => f.Roles)
+                         .Include(f => f.Modules.Where(m => m.Enable))
+                         .ThenInclude(m => m.Attachments.Where(a => a.Enable))
+                         .ToListAsync();
+                return result.ToDtoList();
+
             }
             else if (isHierarchicalLeader)
             {
@@ -64,16 +76,127 @@ namespace formationApi.Controllers
 
             return new List<FormationDto>();
         }
-
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetFormation(int id)
+        [HttpGet("condidat")]
+        public async Task<ActionResult<ICollection<CandidateFormationDto>>> FindFormationsForCandidate()
         {
-            var formation = await _repositoryWrapper.Formation.Get(id);
+            if (!User.IsCandidate())
+            {
+                return Forbid();
+            }
+
+            var user = await _repositoryWrapper.UserManager.GetUserAsync(User);
+            if (user == null)
+                return new List<CandidateFormationDto>();
+
+            var userRoles = await _repositoryWrapper.UserManager.GetRolesAsync(user);
+            var isCandidate = userRoles.Contains("TeamLeader") || userRoles.Contains("PostLeader");
+
+            if (!isCandidate)
+                return new List<CandidateFormationDto>();
+
+            // Get formations where the role is required and user is part of the group
+            var formations = await _repositoryWrapper.Formation.GetAllAsQueryable()
+                                .Include(f => f.Sessions)
+                                .Include(f => f.Groups)
+                                .ThenInclude(g => g.Users)
+                                .Include(f => f.Roles)
+                                .Include(f => f.Modules)
+                                .ThenInclude(m => m.Attachments)
+                                .ToListAsync();
+
+            var userFormations = formations
+                .Where(f => f.Roles.Any(r => r.Name == "TeamLeader" || r.Name == "PostLeader") &&
+                            f.Groups.Any(g => g.Users.Any(u => u.Id == user.Id)))
+                .ToList();
+            var userQuizAttempts = await _repositoryWrapper.QuizAttempt.GetAllAsQueryable()
+                               .Where(a => a.UserId == user.Id)
+                               .ToListAsync();
+            var candidateFormations = new List<CandidateFormationDto>();
+
+            foreach (var formation in userFormations)
+            {
+                var formationDto = new CandidateFormationDto
+                {
+                    Id = formation.Id,
+                    Title = formation.Title,
+                    Description = formation.Description,
+                    Content = formation.Content,
+                    Category = formation.Category,
+                    QuizId = formation.FinalQuizId,
+                    Modules = formation.Modules.FromModules(),
+                    Sessions = new List<CandidateFormationSessionDto>()
+                };
+
+                foreach (var session in formation.Sessions)
+                {
+                    var attempt = userQuizAttempts
+                                    .FirstOrDefault(a => a.SessionId == session.Id);
+
+                    var sessionDto = new CandidateFormationSessionDto
+                    {
+                        SessionId = session.Id,
+                        SessionTitle = session.Title,
+                        StartDate = session.StartDate,
+                        EndDate = session.EndDate,
+                        HasAttempted = attempt != null,
+                        Score = attempt?.Score,
+                        CanRepass = attempt == null || (!attempt.HasPassed && attempt.IsCompleted)
+                    };
+
+                    formationDto.Sessions.Add(sessionDto);
+                }
+
+                candidateFormations.Add(formationDto);
+            }
+
+            return Ok(candidateFormations);
+        }
+
+        [HttpGet("condidat/{id}")]
+        public async Task<ActionResult<CandidateFormationDto>> FindFormationForCandidate(int id)
+        {
+            // Use the new method that only includes enabled sessions and modules
+            var formation = await _repositoryWrapper.Formation.GetFormationWithEnabledItemsAsync(id);
+
             if (formation == null)
             {
                 return NotFound();
             }
-            return Ok(formation.ToDto());
+            var userQuizAttempts = await _repositoryWrapper.QuizAttempt.GetAllAsQueryable()
+                              .Where(a => a.UserId == User.GetUserId())
+                              .ToListAsync();
+            var formationDto = new CandidateFormationDto
+            {
+                Id = formation.Id,
+                Title = formation.Title,
+                Description = formation.Description,
+                Content = formation.Content,
+                Category = formation.Category,
+                QuizId = formation.FinalQuizId,
+                Modules = formation.Modules.FromModules(),
+                Sessions = new List<CandidateFormationSessionDto>()
+            };
+
+            foreach (var session in formation.Sessions)
+            {
+                var attempt = userQuizAttempts
+                                .FirstOrDefault(a => a.SessionId == session.Id);
+
+                var sessionDto = new CandidateFormationSessionDto
+                {
+                    SessionId = session.Id,
+                    SessionTitle = session.Title,
+                    StartDate = session.StartDate,
+                    EndDate = session.EndDate,
+                    HasAttempted = attempt != null,
+                    Score = attempt?.Score,
+                    CanRepass = attempt == null || (!attempt.HasPassed && attempt.IsCompleted)
+                };
+
+                formationDto.Sessions.Add(sessionDto);
+            }
+
+            return Ok(formationDto);
         }
 
         [HttpPost]
@@ -238,8 +361,24 @@ namespace formationApi.Controllers
             await _repositoryWrapper.Formation.Update(formation);
             return Ok(formation.ToDto());
         }
-    }
 
+
+
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetFormation(int id)
+        {
+            // Use the new method that only includes enabled sessions and modules
+            var formation = await _repositoryWrapper.Formation.GetFormationWithEnabledItemsAsync(id);
+
+            if (formation == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(formation.ToDto());
+        }
+
+    }
 }
 
 
