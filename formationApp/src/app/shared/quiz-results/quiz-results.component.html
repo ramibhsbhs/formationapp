@@ -1,0 +1,354 @@
+<!-- Chargement -->
+<div *ngIf="loading || generatingPdf" class="flex justify-center items-center py-10">
+    <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2"
+        [ngClass]="{'border-primary': loading, 'border-red-500': generatingPdf}"></div>
+    <div class="ml-4 text-lg font-medium" *ngIf="generatingPdf">Génération du PDF en cours...</div>
+</div>
+
+<!-- Erreur -->
+<div *ngIf="error" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
+    <strong class="font-bold">Erreur!</strong>
+    <span class="block sm:inline">{{ error }}</span>
+</div>
+
+<!-- Résultats -->
+<div *ngIf="!loading && !error && formationResults" class="print:bg-white" [ngClass]="{'hidden': generatingPdf}">
+
+    <!-- Contenu pour le PDF (affiché uniquement pendant la génération) -->
+    <div #pdfContent [ngClass]="{'hidden': !generatingPdf}" *ngIf="generatingPdf">
+        <div class="bg-white p-8">
+            <div class="text-center mb-8">
+                <h1 class="text-3xl font-bold mb-2">Résultats de formation</h1>
+                <h2 class="text-xl font-semibold mb-4">{{ formationResults.formationTitle }}</h2>
+                <p class="text-gray-600">Date d'impression: {{ formatDate(today) }}</p>
+            </div>
+
+            <!-- Statistiques pour PDF -->
+            <div class="mb-8">
+                <h3 class="text-xl font-semibold mb-4">Statistiques globales</h3>
+                <div class="grid grid-cols-3 gap-4">
+                    <div class="border border-gray-300 p-4 rounded-lg">
+                        <h4 class="font-medium text-gray-700 mb-2">Total des tentatives</h4>
+                        <p class="text-2xl font-bold text-blue-600">{{ formationResults.attempts.length }}</p>
+                    </div>
+                    <div class="border border-gray-300 p-4 rounded-lg">
+                        <h4 class="font-medium text-gray-700 mb-2">Taux de réussite</h4>
+                        <p class="text-2xl font-bold text-green-600">{{ getSuccessRate() | number:'1.0-0' }}%</p>
+                    </div>
+                    <div class="border border-gray-300 p-4 rounded-lg">
+                        <h4 class="font-medium text-gray-700 mb-2">Score moyen</h4>
+                        <p class="text-2xl font-bold text-blue-600">{{ getAverageScore() | number:'1.0-1' }}%</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tableau des résultats pour PDF -->
+            <div class="mb-8">
+                <h3 class="text-xl font-semibold mb-4">Résultats globaux</h3>
+                <table class="w-full border-collapse border border-gray-300">
+                    <thead>
+                        <tr class="bg-gray-100">
+                            <th class="border border-gray-300 p-2 text-left">Utilisateur</th>
+                            <th class="border border-gray-300 p-2 text-left">Session</th>
+                            <th class="border border-gray-300 p-2 text-left">Date</th>
+                            <th class="border border-gray-300 p-2 text-left">Score</th>
+                            <th class="border border-gray-300 p-2 text-left">Statut</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let attempt of formationResults.attempts">
+                            <td class="border border-gray-300 p-2">
+                                <div class="font-medium">{{ attempt.user?.userName }}</div>
+                                <div class="text-sm text-gray-500">{{ attempt.user?.email }}</div>
+                            </td>
+                            <td class="border border-gray-300 p-2">{{ attempt.session?.title }}</td>
+                            <td class="border border-gray-300 p-2">{{ formatDate(attempt.attemptedAt) }}</td>
+                            <td class="border border-gray-300 p-2" [ngClass]="{
+                                'text-green-600': attempt.score >= 70,
+                                'text-red-600': attempt.score < 70
+                            }">{{ attempt.score | number:'1.0-1' }}%</td>
+                            <td class="border border-gray-300 p-2">
+                                <span [ngClass]="{
+                                    'text-green-600': attempt.hasPassed,
+                                    'text-red-600': !attempt.hasPassed
+                                }">{{ attempt.hasPassed ? 'Réussi' : 'Échoué' }}</span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Résultats par session pour PDF -->
+            <div *ngIf="formationResults.sessionResults && formationResults.sessionResults.length > 0">
+                <h3 class="text-xl font-semibold mb-4">Résultats par session</h3>
+
+                <div *ngFor="let sessionResult of formationResults.sessionResults" class="mb-6">
+                    <h4 class="text-lg font-medium mb-3">{{ sessionResult.sessionTitle }}</h4>
+
+                    <table class="w-full border-collapse border border-gray-300">
+                        <thead>
+                            <tr class="bg-gray-100">
+                                <th class="border border-gray-300 p-2 text-left">Utilisateur</th>
+                                <th class="border border-gray-300 p-2 text-left">Date</th>
+                                <th class="border border-gray-300 p-2 text-left">Score</th>
+                                <th class="border border-gray-300 p-2 text-left">Statut</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let attempt of sessionResult.attempts">
+                                <td class="border border-gray-300 p-2">
+                                    <div class="font-medium">{{ attempt.user?.userName }}</div>
+                                    <div class="text-sm text-gray-500">{{ attempt.user?.email }}</div>
+                                </td>
+                                <td class="border border-gray-300 p-2">{{ formatDate(attempt.attemptedAt) }}</td>
+                                <td class="border border-gray-300 p-2" [ngClass]="{
+                                    'text-green-600': attempt.score >= 70,
+                                    'text-red-600': attempt.score < 70
+                                }">{{ attempt.score | number:'1.0-1' }}%</td>
+                                <td class="border border-gray-300 p-2">
+                                    <span [ngClass]="{
+                                        'text-green-600': attempt.hasPassed,
+                                        'text-red-600': !attempt.hasPassed
+                                    }">{{ attempt.hasPassed ? 'Réussi' : 'Échoué' }}</span>
+                                </td>
+                            </tr>
+                            <tr *ngIf="sessionResult.attempts.length === 0">
+                                <td colspan="4" class="border border-gray-300 p-2 text-center text-gray-500">
+                                    Aucun résultat pour cette session.
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- En-tête avec titre et options -->
+    <div class="flex justify-between items-center mb-6 print:hidden">
+        <h2 class="text-2xl font-bold">Résultats de la formation: {{ formationResults.formationTitle }}</h2>
+        <div class="flex space-x-2">
+            <button (click)="generatePDF()" [disabled]="generatingPdf"
+                class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg flex items-center mr-2">
+                <i class="fas fa-file-pdf mr-2"></i>
+                <span *ngIf="!generatingPdf">Générer PDF</span>
+                <span *ngIf="generatingPdf">Génération en cours...</span>
+            </button>
+            <button (click)="printResults()"
+                class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg flex items-center">
+                <i class="fas fa-print mr-2"></i> Imprimer
+            </button>
+        </div>
+    </div>
+
+    <!-- En-tête pour impression -->
+    <div class="hidden print:block mb-6">
+        <h1 class="text-3xl font-bold text-center mb-2">Résultats de formation</h1>
+        <h2 class="text-xl font-semibold text-center mb-4">{{ formationResults.formationTitle }}</h2>
+        <p class="text-center text-gray-600">Date d'impression: {{ formatDate(today) }}</p>
+    </div>
+
+    <!-- Filtres -->
+    <div class="bg-gray-50 p-4 rounded-lg mb-6 print:hidden">
+        <div class="flex flex-wrap gap-4 items-center">
+            <div class="flex-1">
+                <label for="search" class="block text-sm font-medium text-gray-700 mb-1">Rechercher</label>
+                <input type="text" id="search" [(ngModel)]="searchTerm"
+                    placeholder="Rechercher par nom, email ou session..."
+                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-primary focus:border-primary">
+            </div>
+            <div class="flex items-center">
+                <input type="checkbox" id="showPassed" [(ngModel)]="showOnlyPassed"
+                    class="h-4 w-4 text-primary focus:ring-primary border-gray-300 rounded">
+                <label for="showPassed" class="ml-2 block text-sm text-gray-900">Afficher uniquement les
+                    réussites</label>
+            </div>
+        </div>
+    </div>
+
+    <!-- Statistiques -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+        <div class="bg-white p-4 rounded-lg shadow border border-gray-200">
+            <h3 class="text-lg font-medium text-gray-700 mb-2">Total des tentatives</h3>
+            <p class="text-3xl font-bold text-primary">{{ formationResults.attempts.length }}</p>
+        </div>
+        <div class="bg-white p-4 rounded-lg shadow border border-gray-200">
+            <h3 class="text-lg font-medium text-gray-700 mb-2">Taux de réussite</h3>
+            <p class="text-3xl font-bold text-green-600">
+                {{ getSuccessRate() | number:'1.0-0' }}%
+            </p>
+        </div>
+        <div class="bg-white p-4 rounded-lg shadow border border-gray-200">
+            <h3 class="text-lg font-medium text-gray-700 mb-2">Score moyen</h3>
+            <p class="text-3xl font-bold text-blue-600">
+                {{ getAverageScore() | number:'1.0-1' }}%
+            </p>
+        </div>
+    </div>
+
+    <!-- Tableau des résultats -->
+    <div class="overflow-x-auto bg-white rounded-lg shadow">
+        <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-50">
+                <tr>
+                    <th scope="col"
+                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
+                        (click)="sortBy('user')">
+                        Utilisateur
+                        <i class="fas fa-sort ml-1" [ngClass]="{
+              'fa-sort-up': sortField === 'user' && sortDirection === 'asc',
+              'fa-sort-down': sortField === 'user' && sortDirection === 'desc'
+            }"></i>
+                    </th>
+                    <th scope="col"
+                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
+                        (click)="sortBy('session')">
+                        Session
+                        <i class="fas fa-sort ml-1" [ngClass]="{
+              'fa-sort-up': sortField === 'session' && sortDirection === 'asc',
+              'fa-sort-down': sortField === 'session' && sortDirection === 'desc'
+            }"></i>
+                    </th>
+                    <th scope="col"
+                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
+                        (click)="sortBy('date')">
+                        Date
+                        <i class="fas fa-sort ml-1" [ngClass]="{
+              'fa-sort-up': sortField === 'date' && sortDirection === 'asc',
+              'fa-sort-down': sortField === 'date' && sortDirection === 'desc'
+            }"></i>
+                    </th>
+                    <th scope="col"
+                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
+                        (click)="sortBy('score')">
+                        Score
+                        <i class="fas fa-sort ml-1" [ngClass]="{
+              'fa-sort-up': sortField === 'score' && sortDirection === 'asc',
+              'fa-sort-down': sortField === 'score' && sortDirection === 'desc'
+            }"></i>
+                    </th>
+                    <th scope="col"
+                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Statut
+                    </th>
+                </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+                <tr *ngFor="let attempt of filteredAttempts">
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="flex items-center">
+                            <div class="ml-4">
+                                <div class="text-sm font-medium text-gray-900">{{ attempt.user?.userName }}</div>
+                                <div class="text-sm text-gray-500">{{ attempt.user?.email }}</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="text-sm text-gray-900">{{ attempt.session?.title }}</div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="text-sm text-gray-500">{{ formatDate(attempt.attemptedAt) }}</div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="text-sm font-medium" [ngClass]="{
+              'text-green-600': attempt.score >= 70,
+              'text-red-600': attempt.score < 70
+            }">
+                            {{ attempt.score | number:'1.0-1' }}%
+                        </div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full" [ngClass]="{
+                    'bg-green-100 text-green-800': attempt.hasPassed,
+                    'bg-red-100 text-red-800': !attempt.hasPassed
+                  }">
+                            {{ attempt.hasPassed ? 'Réussi' : 'Échoué' }}
+                        </span>
+                    </td>
+                </tr>
+                <tr *ngIf="filteredAttempts.length === 0">
+                    <td colspan="5" class="px-6 py-4 text-center text-gray-500">
+                        Aucun résultat trouvé.
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Résultats par session -->
+    <div *ngIf="formationResults.sessionResults && formationResults.sessionResults.length > 0" class="mt-8">
+        <h3 class="text-xl font-semibold mb-4">Résultats par session</h3>
+
+        <div *ngFor="let sessionResult of formationResults.sessionResults" class="mb-6 bg-white rounded-lg shadow p-4">
+            <h4 class="text-lg font-medium mb-3">{{ sessionResult.sessionTitle }}</h4>
+
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th scope="col"
+                                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Utilisateur
+                            </th>
+                            <th scope="col"
+                                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Date
+                            </th>
+                            <th scope="col"
+                                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Score
+                            </th>
+                            <th scope="col"
+                                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Statut
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                        <tr *ngFor="let attempt of sessionResult.attempts">
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="flex items-center">
+                                    <div class="ml-4">
+                                        <div class="text-sm font-medium text-gray-900">{{ attempt.user?.userName }}
+                                        </div>
+                                        <div class="text-sm text-gray-500">{{ attempt.user?.email }}</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="text-sm text-gray-500">{{ formatDate(attempt.attemptedAt) }}</div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="text-sm font-medium" [ngClass]="{
+                  'text-green-600': attempt.score >= 70,
+                  'text-red-600': attempt.score < 70
+                }">
+                                    {{ attempt.score | number:'1.0-1' }}%
+                                </div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full"
+                                    [ngClass]="{
+                        'bg-green-100 text-green-800': attempt.hasPassed,
+                        'bg-red-100 text-red-800': !attempt.hasPassed
+                      }">
+                                    {{ attempt.hasPassed ? 'Réussi' : 'Échoué' }}
+                                </span>
+                            </td>
+                        </tr>
+                        <tr *ngIf="sessionResult.attempts.length === 0">
+                            <td colspan="4" class="px-6 py-4 text-center text-gray-500">
+                                Aucun résultat pour cette session.
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Message si aucun résultat -->
+<div *ngIf="!loading && !error && (!formationResults || formationResults.attempts.length === 0)"
+    class="bg-gray-50 p-8 rounded-lg text-center">
+    <p class="text-gray-500">Aucun résultat disponible pour cette formation.</p>
+</div>

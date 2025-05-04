@@ -8,6 +8,7 @@ import { AttachmentService } from 'src/app/core/services/attachment.service';
 import { FormationService } from 'src/app/core/services/formation.service';
 import { QuizService } from 'src/app/core/services/quiz.service';
 
+type ActiveTabText = "info" | "sessions" | "groups" | "modules" | "results";
 @Component({
   selector: 'app-formation-detail',
   templateUrl: './formation-detail.component.html',
@@ -17,7 +18,7 @@ export class FormationDetailComponent implements OnInit, OnDestroy {
   formation: Formation | null = null;
   loading: boolean = false;
   error: string | null = null;
-  activeTab: string = 'info';
+  activeTab: ActiveTabText = 'info';
   quizzes: Quiz[] = [];
   private subscriptions: Subscription[] = [];
 
@@ -34,7 +35,7 @@ export class FormationDetailComponent implements OnInit, OnDestroy {
     const queryParamsSub = this.route.queryParams.subscribe(queryParams => {
       // Get active tab from URL or use default
       if (queryParams['tab']) {
-        this.activeTab = queryParams['tab'];
+        this.activeTab = queryParams['tab'] as ActiveTabText;
       }
     });
     this.subscriptions.push(queryParamsSub);
@@ -104,7 +105,7 @@ export class FormationDetailComponent implements OnInit, OnDestroy {
    * Set the active tab and update URL parameters
    * @param tabName Name of the tab to activate
    */
-  setActiveTab(tabName: string): void {
+  setActiveTab(tabName: ActiveTabText): void {
     this.activeTab = tabName;
     this.updateUrlParams();
   }

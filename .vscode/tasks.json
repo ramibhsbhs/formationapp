@@ -4,7 +4,7 @@
         {
             "label": "run-dotnet-backend",
             "type": "shell",
-            "command": "dotnet watch run --project formationApi/formationApi.csproj --urls \"https://0.0.0.0:7173\"",
+            "command": "dotnet watch run --project formationApi/formationApi.csproj --urls \"https://localhost:7173\"",
             "group": "build",
             "problemMatcher": [],
             "options": {
@@ -14,7 +14,7 @@
         {
             "label": "run-angular-frontend",
             "type": "shell",
-            "command": "ng serve --host 0.0.0.0",
+            "command": "ng serve",
             "group": "build",
             "problemMatcher": [],
             "options": {

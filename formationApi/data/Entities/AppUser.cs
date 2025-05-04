@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Identity;
 
 namespace formationApi.data.models
 {
-	public class AppUser : IdentityUser<int>
+    public class AppUser : IdentityUser<int>
     {
         public string? ImageUrl { get; set; } = null;
 

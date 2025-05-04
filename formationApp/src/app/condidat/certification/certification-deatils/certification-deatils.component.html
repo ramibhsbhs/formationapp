@@ -1,89 +1,86 @@
 <div class="p-6">
-    <div *ngIf="isLoading" class="flex justify-center items-center py-10">
-        <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+    <div *ngIf="isLoading || generatingPdf" class="flex justify-center items-center py-10">
+        <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2"
+            [ngClass]="{'border-blue-500': isLoading, 'border-red-500': generatingPdf}"></div>
+        <div *ngIf="generatingPdf" class="ml-4 text-lg font-medium">Generating PDF...</div>
     </div>
 
     <div *ngIf="error" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-6">
         {{ error }}
     </div>
 
-    <div *ngIf="!isLoading && !error && certification" class="print:shadow-none">
+    <div *ngIf="!isLoading && !error && certification && !generatingPdf" class="p-[50px]">
         <!-- Certificate -->
         <div
-            class="bg-white rounded-lg shadow-lg overflow-hidden mb-6 max-w-4xl mx-auto print:shadow-none print:mx-0 certificate-wrapper">
-            <div
-                class="p-8 print:p-1 certificate-container border-8 border-double border-gray-200 m-4 print:m-0 print:border-0">
-                <!-- Certificate Header -->
-                <div class="text-center mb-8">
-                    <div class="flex justify-center mb-4">
-                        <div class="w-24 h-24 rounded-full bg-yellow-100 flex items-center justify-center">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-yellow-500" fill="none"
-                                viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-                            </svg>
-                        </div>
-                    </div>
-                    <h1 class="text-3xl font-bold text-gray-800 mb-2">CERTIFICATE OF COMPLETION</h1>
-                    <p class="text-gray-600">This is to certify that</p>
+            class="bg-white rounded-lg shadow-lg overflow-hidden mb-6 max-w-4xl mx-auto print:mx-0 certificate-wrapper">
+            <div class="certificate-container">
+                <!-- Decorative Corners -->
+                <div class="certificate-border">
+                    <img src="https://media-public.canva.com/vfgHs/MAEl7bvfgHs/2/t.png"
+                        class="absolute top-[10px] right-[10px]" alt="Corner decoration">
+                    <img src="https://media-public.canva.com/vfgHs/MAEl7bvfgHs/2/t.png"
+                        class="absolute top-[10px] left-[10px] -rotate-90" alt="Corner decoration">
+
+                    <img src="https://media-public.canva.com/vfgHs/MAEl7bvfgHs/2/t.png"
+                        class="absolute bottom-[10px] left-[10px] rotate-180" alt="Corner decoration">
+                    <img src="https://media-public.canva.com/vfgHs/MAEl7bvfgHs/2/t.png"
+                        class="absolute bottom-[10px] right-[10px] rotate-90" alt="Corner decoration">
                 </div>
+
+                <!-- Certificate Header -->
+                <h1 class="certificate-title">CERTIFICATE</h1>
+                <h2 class="certificate-subtitle">OF APPRECIATION</h2>
 
                 <!-- Certificate Body -->
-                <div class="text-center mb-8">
-                    <h2 class="text-2xl font-bold text-yellow-600 mb-2">{{ certification.user.userName }}</h2>
-                    <p class="text-gray-600 mb-4">has successfully completed</p>
-                    <h3 class="text-xl font-bold text-gray-800 mb-1">{{ certification.session.formation.title }}</h3>
-                    <p class="text-gray-700">{{ certification.session.title }}</p>
-                    <p class="text-gray-600 mt-3">with a score of</p>
-                    <div class="flex justify-center my-3">
-                        <div class="text-xl font-bold py-1 px-4 rounded-full"
-                            [ngClass]="getScoreClass(certification.score)">
-                            {{ certification.score }}%
-                        </div>
-                    </div>
-                    <div class="flex justify-center">
-                        <div class="px-3 py-1 rounded-full text-sm font-semibold"
-                            [ngClass]="certification.score >= 70 ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'">
-                            {{ getPassStatus(certification.score) }}
-                        </div>
-                    </div>
-                </div>
+                <p class="certificate-text">This certificate is proudly awarded to</p>
+                <h2 class="recipient-name">{{ certification.user.userName }}</h2>
 
-                <!-- Certificate Footer -->
-                <div class="text-center mb-4">
-                    <p class="text-gray-600">
-                        From {{ certification.session.startDate | date:'mediumDate' }} to {{
-                        certification.session.endDate | date:'mediumDate' }}
-                    </p>
-                    <div class="mt-8 border-t pt-4 border-gray-200 inline-block">
-                        <p class="font-bold">Authorized Signature</p>
+                <p class="certificate-text">
+                    This certificate is given to {{ certification.user.userName }} for {{ getGenderPronoun() }}
+                    achievement in completing
+                    <strong>{{ certification.session.formation.title }}</strong> during the period from
+                    {{ certification.session.startDate | date:'MMMM d, y' }} to {{ certification.session.endDate |
+                    date:'MMMM d, y' }}.
+                    {{ certification.description }}
+                </p>
+
+                <!-- Certificate Seal -->
+                <img src="https://media-public.canva.com/NqcuY/MAFPLqNqcuY/1/t.png"
+                    class="absolute bottom-10 left-1/2 transform -translate-x-1/2 object-fill w-[109px] h-[139px]"
+                    alt="Certificate seal">
+
+                <!-- Signature Area -->
+                <div class="signature-area">
+                    <div class="signature">
+                        <div class="signature-line"></div>
+                        <p class="signature-title">Company President</p>
+                    </div>
+                    <div class="signature">
+                        <div class="signature-line"></div>
+                        <p class="signature-title">Branch Manager</p>
                     </div>
                 </div>
 
-                <!-- Certificate Description -->
-                <div class="mt-6 text-center text-gray-500 text-sm">
-                    <p>{{ certification.description }}</p>
-                </div>
-
-                <!-- Certificate ID -->
+                <!-- Certificate ID (small and discreet) -->
                 <div class="mt-4 text-center text-gray-400 text-xs">
-                    <p>Certificate ID: {{ certification.id }}</p>
-                    <p>Issued on: {{ certification.createdAt | date:'medium' }}</p>
+                    <p>Certificate ID: {{ certification.id }} | Issued on: {{ certification.createdAt | date:'MMMM d, y'
+                        }}</p>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Print Button -->
+    <!-- PDF Button -->
     <div class="fixed bottom-4 right-4 print:hidden">
-        <button (click)="printCertificate()"
-            class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md flex items-center shadow-lg">
+        <button (click)="printCertificate()" [disabled]="generatingPdf"
+            class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-md flex items-center shadow-lg">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24"
                 stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+                    d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
             </svg>
-            Print Certificate
+            <span *ngIf="!generatingPdf">Download PDF</span>
+            <span *ngIf="generatingPdf">Generating PDF...</span>
         </button>
     </div>
 </div>

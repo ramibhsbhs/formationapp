@@ -52,6 +52,85 @@
             </div>
         </div>
 
+
+
+        <!-- Modules -->
+        <div class="space-y-6">
+            <!-- Module List -->
+            <div *ngFor="let module of formation.modules" class="bg-white rounded-lg shadow-md p-6">
+                <div class="flex justify-between mb-4">
+                    <div class="flex items-center gap-2">
+                        <span class="text-gray-500 font-medium text-md">Titre : </span>
+                        <h2 class="text-2xl font-bold text-gray-600 !mb-0">{{ module.title }}</h2>
+                    </div>
+                    <span class="text-gray-500 font-bold text-xs">Module {{ module.id }}</span>
+                </div>
+
+                <div class="flex items-center gap-2">
+                    <span class="text-gray-500 font-medium text-md">Description : </span>
+                    <p class="text-gray-500 text-lg font-medium !mb-0">{{ module.description }}</p>
+                </div>
+                <div class="w-full h-[1px] bg-gray-200 rounded-full my-4"></div>
+                <!-- Attachments -->
+                <div class="mt-4">
+                    <h3 class="font-semibold text-lg text-gray-900 mb-3">Ressources</h3>
+                    <div *ngIf="module.attachments.length > 0"
+                        class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                        <a *ngFor="let attachment of module.attachments" [href]="attachment.lien" target="_blank"
+                            class="group border rounded-lg p-4 bg-secondary hover:border-blue-500 transition-colors">
+                            <div class="flex items-center space-x-3">
+                                <img [src]="getFileIcon(attachment.type)" alt="File Icon" class="w-14" />
+                                <div>
+                                    <p class="font-medium text-gray-700 group-hover:text-blue-600 truncate !mb-0">
+                                        {{ getFileName(attachment.lien) }}
+                                    </p>
+                                    <p class="text-sm" [ngClass]="getFileIconColor(attachment.type)">{{ attachment.type
+                                        }}</p>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                    <div *ngIf="module.attachments.length === 0"
+                        class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+
+                        <a
+                            class="group border rounded-lg p-4 bg-red-200/20 hover:border-blue-500 transition-colors cursor-none">
+                            <div class="flex items-center space-x-3">
+                                <img src="/assets/icons/nofile.svg" alt="File Icon" class="w-14" />
+                                <div>
+                                    <p class="font-medium text-gray-700 group-hover:text-blue-600 truncate !mb-0">
+                                        Aucun Fichier
+                                    </p>
+                                    <p class="text-sm text-gray-500 truncate !mb-0">Aucun fichier attaché</p>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+
+
+            </div>
+
+            <!-- No Modules Message -->
+            <div *ngIf="formation.modules.length === 0" class="bg-white rounded-lg shadow-md p-6">
+                <h2 class="text-2xl font-bold text-gray-900 mb-4">Modules de Formation</h2>
+
+                <div class="flex">
+                    <a class="w-full relative group border rounded-lg p-4 bg-red-200/20 transition-colors">
+                        <div class="flex items-center space-x-3">
+                            <img src="/assets/icons/nofile.svg" alt="File Icon" class="w-14" />
+                            <div>
+                                <p class="font-medium text-gray-700 truncate !mb-0">
+                                    Aucun Module
+                                </p>
+                                <p class="text-sm text-gray-500 truncate !mb-0">Aucun module attaché</p>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+
         <!-- Sessions -->
         <div class="bg-white rounded-lg shadow-md p-6">
             <h2 class="text-2xl font-bold text-gray-900 mb-4">Sessions de Formation</h2>
@@ -139,82 +218,6 @@
                                     Aucune Session
                                 </p>
                                 <p class="text-sm text-gray-500 truncate !mb-0">Aucune session disponible</p>
-                            </div>
-                        </div>
-                    </a>
-                </div>
-            </div>
-        </div>
-
-        <!-- Modules -->
-        <div class="space-y-6">
-            <!-- Module List -->
-            <div *ngFor="let module of formation.modules" class="bg-white rounded-lg shadow-md p-6">
-                <div class="flex justify-between mb-4">
-                    <div class="flex items-center gap-2">
-                        <span class="text-gray-500 font-medium text-md">Titre : </span>
-                        <h2 class="text-2xl font-bold text-gray-600 !mb-0">{{ module.title }}</h2>
-                    </div>
-                    <span class="text-gray-500 font-bold text-xs">Module {{ module.id }}</span>
-                </div>
-
-                <div class="flex items-center gap-2">
-                    <span class="text-gray-500 font-medium text-md">Description : </span>
-                    <p class="text-gray-500 text-lg font-medium !mb-0">{{ module.description }}</p>
-                </div>
-                <div class="w-full h-[1px] bg-gray-200 rounded-full my-4"></div>
-                <!-- Attachments -->
-                <div class="mt-4">
-                    <h3 class="font-semibold text-lg text-gray-900 mb-3">Ressources</h3>
-                    <div *ngIf="module.attachments.length > 0"
-                        class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-                        <a *ngFor="let attachment of module.attachments" [href]="attachment.lien" target="_blank"
-                            class="group border rounded-lg p-4 bg-secondary hover:border-blue-500 transition-colors">
-                            <div class="flex items-center space-x-3">
-                                <img [src]="getFileIcon(attachment.type)" alt="File Icon" class="w-14" />
-                                <div>
-                                    <p class="font-medium text-gray-700 group-hover:text-blue-600 truncate !mb-0">
-                                        Fichier {{ attachment.type }}
-                                    </p>
-                                    <p class="text-sm text-gray-500 truncate !mb-0">Cliquer pour voir</p>
-                                </div>
-                            </div>
-                        </a>
-                    </div>
-                    <div *ngIf="module.attachments.length === 0"
-                        class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-
-                        <a
-                            class="group border rounded-lg p-4 bg-red-200/20 hover:border-blue-500 transition-colors cursor-none">
-                            <div class="flex items-center space-x-3">
-                                <img src="/assets/icons/nofile.svg" alt="File Icon" class="w-14" />
-                                <div>
-                                    <p class="font-medium text-gray-700 group-hover:text-blue-600 truncate !mb-0">
-                                        Aucun Fichier
-                                    </p>
-                                    <p class="text-sm text-gray-500 truncate !mb-0">Aucun fichier attaché</p>
-                                </div>
-                            </div>
-                        </a>
-                    </div>
-                </div>
-
-
-            </div>
-
-            <!-- No Modules Message -->
-            <div *ngIf="formation.modules.length === 0" class="bg-white rounded-lg shadow-md p-6">
-                <h2 class="text-2xl font-bold text-gray-900 mb-4">Modules de Formation</h2>
-
-                <div class="flex">
-                    <a class="w-full relative group border rounded-lg p-4 bg-red-200/20 transition-colors">
-                        <div class="flex items-center space-x-3">
-                            <img src="/assets/icons/nofile.svg" alt="File Icon" class="w-14" />
-                            <div>
-                                <p class="font-medium text-gray-700 truncate !mb-0">
-                                    Aucun Module
-                                </p>
-                                <p class="text-sm text-gray-500 truncate !mb-0">Aucun module attaché</p>
                             </div>
                         </div>
                     </a>

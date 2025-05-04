@@ -164,24 +164,7 @@ export class AttachmentService {
     }
   }
 
-  /**
-   * Extract filename from URL
-   * @param url The URL of the file
-   * @returns The filename
-   */
-  getFileName(url: string): string {
-    if (!url) return '';
 
-    // Remove query parameters if any
-    const urlWithoutParams = url.split('?')[0];
-
-    // Get the last part of the URL (the filename)
-    const parts = urlWithoutParams.split('/');
-    const filename = parts[parts.length - 1];
-
-    // Decode URI components to handle special characters
-    return decodeURIComponent(filename);
-  }
 
   /**
    * Get file type from filename
@@ -201,6 +184,40 @@ export class AttachmentService {
     }
 
     return FileType.UNKNOWN;
+  }
+
+  /**
+   * Extract filename from URL
+   * @param url The URL of the file
+   * @returns The filename
+   */
+  getFileName(url: string): string {
+    if (!url) return 'Unknown file';
+
+    // Extract filename from URL
+    const parts = url.split('/');
+    let filename = parts[parts.length - 1];
+
+    // Remove query parameters if any
+    if (filename.includes('?')) {
+      filename = filename.split('?')[0];
+    }
+
+    // Try to decode the filename (in case it's URL encoded)
+    try {
+      filename = decodeURIComponent(filename);
+    } catch (e) {
+      // If decoding fails, use the original filename
+    }
+
+    // If the filename is too long, truncate it
+    if (filename.length > 25) {
+      const extension = filename.split('.').pop() || '';
+      const name = filename.substring(0, 20);
+      filename = `${name}...${extension ? '.' + extension : ''}`;
+    }
+
+    return filename;
   }
 
   /**

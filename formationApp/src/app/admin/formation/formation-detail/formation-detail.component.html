@@ -230,17 +230,14 @@
 
                     <!-- Results Tab -->
                     <div *ngIf="activeTab === 'results'">
-                        <h2 class="text-2xl font-bold mb-6">Résultats de formation</h2>
-                        <div class="bg-gray-50 p-8 rounded-lg text-center">
-                            <p class="text-gray-500">Les résultats de formation seront affichés ici.</p>
-                        </div>
+                        <app-quiz-results *ngIf="formation" [formationId]="formation.id!"></app-quiz-results>
                     </div>
                 </div>
             </div>
         </div>
 
         <!-- Edit Button (Fixed) -->
-        <a [routerLink]="['/admin/formations/update', formation?.id]"
+        <a [routerLink]="['/admin/formations/edit', formation?.id]"
             class="fixed bottom-8 right-8 bg-primary text-white rounded-full p-4 shadow-lg hover:bg-primary-dark transition-colors">
             <i class="fas fa-edit text-xl"></i>
         </a>

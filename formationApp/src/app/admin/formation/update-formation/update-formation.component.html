@@ -42,11 +42,7 @@
                             class="py-4 px-6 font-medium text-sm border-b-2 focus:outline-none">
                             Modules
                         </button>
-                        <button (click)="setActiveTab('results')"
-                            [ngClass]="{'border-primary text-primary': activeTab === 'results', 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300': activeTab !== 'results'}"
-                            class="py-4 px-6 font-medium text-sm border-b-2 focus:outline-none">
-                            Résultats de formation
-                        </button>
+
                     </nav>
                 </div>
 
@@ -486,13 +482,6 @@
                         </form>
                     </div>
 
-                    <!-- Results Tab -->
-                    <div *ngIf="activeTab === 'results'">
-                        <h2 class="text-2xl font-bold mb-6">Résultats de formation</h2>
-                        <div class="bg-gray-50 p-8 rounded-lg text-center">
-                            <p class="text-gray-500">Les résultats de formation seront affichés ici.</p>
-                        </div>
-                    </div>
                 </div>
             </div>
         </div>

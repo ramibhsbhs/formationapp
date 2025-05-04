@@ -17,6 +17,7 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { SelectQuizComponent } from './components/select-quiz/select-quiz.component';
 import { SelectGroupPopupComponent } from './components/select-group-popup/select-group-popup.component';
+import { QuizResultsComponent } from './quiz-results/quiz-results.component';
 
 @NgModule({
   declarations: [
@@ -28,7 +29,8 @@ import { SelectGroupPopupComponent } from './components/select-group-popup/selec
     CreateUserDialogComponent,
     SessionPopupComponent,
     SelectQuizComponent,
-    SelectGroupPopupComponent
+    SelectGroupPopupComponent,
+    QuizResultsComponent
   ],
   imports: [
     CommonModule,
@@ -49,6 +51,7 @@ import { SelectGroupPopupComponent } from './components/select-group-popup/selec
     CreateGroupDialogComponent,
     CreateUserDialogComponent,
     SessionPopupComponent,
+    QuizResultsComponent
   ]
 })
 export class SharedModule { }

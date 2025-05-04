@@ -1,22 +1,136 @@
-// A4 landscape aspect ratio (297mm × 210mm, approximately 1.414:1)
+// A4 portrait aspect ratio (210mm × 297mm, approximately 1:1.414)
 .certificate-wrapper {
     width: 100%;
-    max-width: 100%; // Adjust for screen display (wider for landscape)
-    aspect-ratio: 297 / 210; // A4 landscape ratio
-    margin: 0 auto;
+    max-width: 100%;
+    aspect-ratio: 297 / 210; // A4 portrait ratio
     overflow: hidden;
+    position: relative;
 }
 
 .certificate-container {
     width: 100%;
     height: 100%;
     box-sizing: border-box;
+    background-color: #fff;
+    position: relative;
+    border: 12px solid #1a2e4a;
+    padding: 20px;
 }
 
-// Ensure only the certificate is printed in landscape
+.certificate-border {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    pointer-events: none;
+}
+
+.corner {
+    position: absolute;
+    width: 120px;
+    height: 120px;
+}
+
+.top-left {
+    top: 10px;
+    left: 10px;
+}
+
+.top-right {
+    top: 10px;
+    right: 10px;
+    transform: scaleX(-1);
+}
+
+.bottom-left {
+    bottom: 10px;
+    left: 10px;
+    transform: scaleY(-1);
+}
+
+.bottom-right {
+    bottom: 10px;
+    right: 10px;
+    transform: scale(-1);
+}
+
+.certificate-title {
+    font-family: 'Times New Roman', Times, serif;
+    color: #1a2e4a;
+    font-size: 48px;
+    letter-spacing: 2px;
+    text-align: center;
+    margin-top: 40px;
+    margin-bottom: 5px;
+}
+
+.certificate-subtitle {
+    font-family: 'Times New Roman', Times, serif;
+    color: #1a2e4a;
+    font-size: 20px;
+    letter-spacing: 3px;
+    text-align: center;
+    margin-bottom: 40px;
+    text-transform: uppercase;
+}
+
+.recipient-name {
+    font-family: 'Brush Script MT', cursive;
+    color: #1a2e4a;
+    font-size: 42px;
+    text-align: center;
+    margin: 30px 0;
+    line-height: 1.2;
+}
+
+.certificate-text {
+    font-family: 'Times New Roman', Times, serif;
+    color: #333;
+    font-size: 16px;
+    text-align: center;
+    line-height: 1.5;
+    margin: 20px 40px;
+    font-style: italic;
+}
+
+.signature-area {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 60px;
+    padding: 0 60px;
+}
+
+.signature {
+    text-align: center;
+    width: 200px;
+}
+
+.signature-line {
+    width: 100%;
+    border-top: 1px solid #1a2e4a;
+    margin-bottom: 10px;
+}
+
+.signature-title {
+    font-family: 'Times New Roman', Times, serif;
+    font-size: 14px;
+    color: #1a2e4a;
+}
+
+.certificate-seal {
+    position: absolute;
+    bottom: 100px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80px;
+    height: 80px;
+}
+
+// Ensure only the certificate is printed in portrait
 @media print {
     @page {
-        size: A4 landscape; // Force A4 landscape
+        size: A4 portrait; // Force A4 portrait
         margin: 0;
     }
 
@@ -33,16 +147,16 @@
         position: absolute;
         top: 0;
         left: 0;
-        width: 297mm; // A4 landscape width
-        height: 210mm; // A4 landscape height
+        width: 210mm; // A4 portrait width
+        height: 297mm; // A4 portrait height
         margin: 0;
         padding: 0;
         box-shadow: none;
     }
 
     .certificate-container {
-        border: none;
+        border: 12px solid #1a2e4a;
         margin: 0;
-        padding: 1mm; // Minimal padding for print
+        padding: 20px;
     }
 }

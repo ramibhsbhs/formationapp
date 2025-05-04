@@ -3,6 +3,7 @@ import { CondidatFormation } from '../../core/models';
 import { CondidatService } from '../../core/condidat.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription, interval } from 'rxjs';
+import { AttachmentService } from 'src/app/core/services/attachment.service';
 
 @Component({
   selector: 'app-formation-details',
@@ -17,7 +18,8 @@ export class FormationDetailsComponent implements OnInit {
   constructor(
     private condidatService: CondidatService,
     private route: ActivatedRoute,
-    private router: Router
+    private router: Router,
+    private attachmentService: AttachmentService
   ) { }
 
   ngOnInit(): void {
@@ -41,34 +43,31 @@ export class FormationDetailsComponent implements OnInit {
       }
     });
   }
-  getFileIcon(type: string): string {
-    switch (type.toLowerCase()) {
-      case 'pdf':
-        return '/assets/icons/pdf.svg';
-      case 'image':
-        return 'fas fa-image';
-      case 'video':
-        return 'fas fa-video';
-      case 'document':
-        return 'fas fa-file-word';
-      default:
-        return 'fas fa-file';
-    }
-
+  /**
+   * Get file icon based on file type
+   * @param fileType The type of the file
+   * @returns Path to the icon image
+   */
+  getFileIcon(fileType: string): string {
+    return this.attachmentService.getFileIcon(fileType);
   }
-  getFileIconColor(type: string): string {
-    switch (type.toLowerCase()) {
-      case 'pdf':
-        return 'text-red-500';
-      case 'image':
-        return 'text-blue-500';
-      case 'video':
-        return 'text-green-500';
-      case 'document':
-        return 'text-yellow-500';
-      default:
-        return 'text-gray-500';
-    }
+
+  /**
+   * Get file icon color based on file type
+   * @param fileType The type of the file
+   * @returns Tailwind CSS color class
+   */
+  getFileIconColor(fileType: string): string {
+    return this.attachmentService.getFileIconColor(fileType);
+  }
+
+  /**
+   * Extract filename from URL
+   * @param url The URL of the file
+   * @returns The filename
+   */
+  getFileName(url: string): string {
+    return this.attachmentService.getFileName(url);
   }
 
 
