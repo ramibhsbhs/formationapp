@@ -49,6 +49,7 @@ export class CreateFormationComponent implements OnInit {
             groupIds: [[]],
             roles: [[]],
             finalQuizId: [null],
+            canPassFinalWithoutModules: [false],
             sessions: this.fb.array([]),
             modules: this.fb.array([])
         });
@@ -87,13 +88,22 @@ export class CreateFormationComponent implements OnInit {
             title: ['', [Validators.required, Validators.minLength(3)]],
             description: ['', [Validators.required, Validators.minLength(10)]],
             position: [this.modules.length + 1, Validators.required],
-            quizId: [null]
+            quizId: [null],
+            maxAttempts: [3, [Validators.required, Validators.min(0)]]
         });
     }
 
     addModule(): void {
         this.modules.push(this.createModuleFormGroup());
         this.updateModulePositions();
+
+        // Faire défiler la page vers le bas après l'ajout d'un module
+        setTimeout(() => {
+            window.scrollTo({
+                top: document.body.scrollHeight,
+                behavior: 'smooth'
+            });
+        }, 100);
     }
 
     removeModule(index: number): void {
@@ -124,6 +134,14 @@ export class CreateFormationComponent implements OnInit {
 
     addSession(): void {
         this.sessions.push(this.createSessionFormGroup());
+
+        // Faire défiler la page vers le bas après l'ajout d'une session
+        setTimeout(() => {
+            window.scrollTo({
+                top: document.body.scrollHeight,
+                behavior: 'smooth'
+            });
+        }, 100);
     }
 
     removeSession(index: number): void {

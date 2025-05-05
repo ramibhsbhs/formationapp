@@ -16,7 +16,9 @@ const routes: Routes = [
   { path: "formations/:id", component: FormationDetailsComponent },
   { path: "formations/:formationId/finaltest/:quizId", component: QuizPassingComponent },
   { path: "validate-quiz/:sessionId", component: QuizValidationComponent },
+  { path: "validate-quiz", component: QuizValidationComponent },
   { path: "quiz/:quizId/:sessionId", component: QuizPassingComponent },
+  { path: "quiz/:quizId", component: QuizPassingComponent },
 
   // Routes pour les modules
   { path: "module/:formationId/:moduleId", component: ModuleViewComponent },

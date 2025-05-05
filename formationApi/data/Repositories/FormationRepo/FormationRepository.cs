@@ -49,6 +49,8 @@ namespace formationApi.data.Repositories.FormationRepo
             return await _dbContext.Formations
                 .Where(x => x.Enable && x.Id == id)
                 .Include(f => f.Sessions.Where(s => s.Enable))
+                .Include(f => f.Modules)
+                    .ThenInclude(m => m.Quiz)
                 .Include(f => f.Modules.Where(m => m.Enable))
                     .ThenInclude(m => m.Attachments.Where(a => a.Enable))
                 .Include(f => f.Groups.Where(g => g.Enable))

@@ -16,6 +16,7 @@ namespace formationApi.dtos.response
         public string Category { get; set; }
         public int? FinalQuizId { get; set; }
         public QuizDto FinalQuiz { get; set; }
+        public bool CanPassFinalWithoutModules { get; set; } = false;
         public ICollection<SessionDto> Sessions { get; set; } = new List<SessionDto>();
         public ICollection<ModuleDto> Modules { get; set; } = new List<ModuleDto>();
         public ICollection<int> GroupIds { get; set; } = new List<int>();
@@ -37,6 +38,7 @@ namespace formationApi.dtos.response
             public int Position { get; set; }
             public int? QuizId { get; set; }
             public QuizDto Quiz { get; set; }
+            public int MaxAttempts { get; set; } = 3;
             public ICollection<AttachmentDto> Attachments { get; set; } = new List<AttachmentDto>();
         }
 
@@ -66,7 +68,8 @@ namespace formationApi.dtos.response
                 RoleNames = formation.Roles?.Select(r => r.Name).ToList() ?? new List<string>(),
                 Category = formation.Category,
                 FinalQuizId = formation.FinalQuizId,
-                FinalQuiz = formation.FinalQuiz?.ToDto()
+                FinalQuiz = formation.FinalQuiz?.ToDto(),
+                CanPassFinalWithoutModules = formation.CanPassFinalWithoutModules
             };
         }
 
@@ -91,7 +94,8 @@ namespace formationApi.dtos.response
                 Position = module.Position,
                 Attachments = module.Attachments?.Select(attachment => attachment.ToDto()).ToList() ?? new List<FormationDto.AttachmentDto>(),
                 QuizId = module.QuizId,
-                Quiz = module.Quiz?.ToDto()
+                Quiz = module.Quiz?.ToDto(),
+                MaxAttempts = module.MaxAttempts
             };
         }
 

@@ -14,6 +14,8 @@ namespace formationApi.dtos.request
 
         [Required]
         public string Content { get; set; }
+        [Required]
+        public bool CanPassFinalWithoutModules { get; set; }
     }
 
     public class UpdateFormationCategoryDto

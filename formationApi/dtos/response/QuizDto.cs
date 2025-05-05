@@ -30,6 +30,7 @@ namespace formationApi.dtos.response
     {
         public static QuizDto ToDto(this Quiz quiz)
         {
+            if (quiz == null) return null;
             return new QuizDto
             {
                 Id = quiz.Id,
@@ -64,4 +65,4 @@ namespace formationApi.dtos.response
             return quizzes.Select(quiz => quiz.ToDto()).ToArray();
         }
     }
-} 
+}

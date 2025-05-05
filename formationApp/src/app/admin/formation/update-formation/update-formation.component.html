@@ -122,6 +122,28 @@
                                             </div>
                                         </div>
                                     </div>
+
+                                    <!-- Option pour permettre de passer le quiz final sans compléter tous les modules -->
+                                    <div class="mt-6 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                                        <div class="flex items-center">
+                                            <div class="flex items-center h-5">
+                                                <input type="checkbox" id="canPassFinalWithoutModules"
+                                                    formControlName="canPassFinalWithoutModules"
+                                                    class="h-5 w-5 rounded border-blue-300 text-blue-600 focus:ring-blue-500">
+                                            </div>
+                                            <div class="ml-3 text-sm">
+                                                <label for="canPassFinalWithoutModules"
+                                                    class="font-medium text-gray-700">
+                                                    Permettre aux utilisateurs de passer le quiz final sans avoir
+                                                    complété tous les quiz des modules
+                                                </label>
+                                                <p class="text-gray-500 mt-1">
+                                                    Si activé, les utilisateurs pourront accéder au quiz final même
+                                                    s'ils n'ont pas réussi tous les quiz des modules.
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                             <div *ngIf="formationForm.dirty"
@@ -347,6 +369,36 @@
                                                                     <i class="fas fa-times"></i>
                                                                 </button>
                                                             </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <!-- Nombre maximum de tentatives -->
+                                                <div *ngIf="module.get('quizId')?.value"
+                                                    class="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+                                                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                                                        Nombre maximum de tentatives
+                                                    </label>
+                                                    <div class="flex items-center">
+                                                        <div class="relative rounded-md shadow-sm w-full">
+                                                            <div
+                                                                class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                                                <i class="fas fa-redo text-yellow-500"></i>
+                                                            </div>
+                                                            <input type="number" formControlName="maxAttempts" min="0"
+                                                                class="pl-10 block w-32 rounded-md border-yellow-300 shadow-sm focus:border-yellow-500 focus:ring-yellow-500" />
+                                                        </div>
+                                                    </div>
+                                                    <div class="mt-2 flex items-start">
+                                                        <div class="flex-shrink-0">
+                                                            <i class="fas fa-info-circle text-yellow-600"></i>
+                                                        </div>
+                                                        <div class="ml-2">
+                                                            <p class="text-sm text-gray-600">
+                                                                Définissez le nombre maximum de tentatives autorisées
+                                                                pour ce quiz. Utilisez <strong>0</strong> pour des
+                                                                tentatives illimitées.
+                                                            </p>
                                                         </div>
                                                     </div>
                                                 </div>

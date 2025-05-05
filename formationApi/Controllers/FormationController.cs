@@ -127,6 +127,18 @@ namespace formationApi.Controllers
                     Sessions = new List<CandidateFormationSessionDto>()
                 };
 
+                // Vérifier si l'utilisateur a réussi le quiz final
+                bool finalQuizPassed = false;
+                if (formation.FinalQuizId.HasValue)
+                {
+                    // Rechercher une tentative réussie pour le quiz final
+                    finalQuizPassed = userQuizAttempts
+                        .Any(a => a.QuizId == formation.FinalQuizId.Value && a.HasPassed);
+                }
+
+                // Ajouter l'information sur le quiz final passé
+                formationDto.FinalQuizPassed = finalQuizPassed;
+
                 foreach (var session in formation.Sessions)
                 {
                     var attempt = userQuizAttempts
@@ -162,9 +174,12 @@ namespace formationApi.Controllers
             {
                 return NotFound();
             }
+
+            var userId = User.GetUserId();
             var userQuizAttempts = await _repositoryWrapper.QuizAttempt.GetAllAsQueryable()
-                              .Where(a => a.UserId == User.GetUserId())
+                              .Where(a => a.UserId == userId)
                               .ToListAsync();
+
             var formationDto = new CandidateFormationDto
             {
                 Id = formation.Id,
@@ -173,9 +188,22 @@ namespace formationApi.Controllers
                 Content = formation.Content,
                 Category = formation.Category,
                 QuizId = formation.FinalQuizId,
+                Quiz = formation.FinalQuiz?.ToDto(),
                 Modules = formation.Modules.FromModules(),
                 Sessions = new List<CandidateFormationSessionDto>()
             };
+
+            // Vérifier si l'utilisateur a réussi le quiz final
+            bool finalQuizPassed = false;
+            if (formation.FinalQuizId.HasValue)
+            {
+                // Rechercher une tentative réussie pour le quiz final
+                finalQuizPassed = userQuizAttempts
+                    .Any(a => a.QuizId == formation.FinalQuizId.Value && a.HasPassed);
+            }
+
+            // Ajouter l'information sur le quiz final passé
+            formationDto.FinalQuizPassed = finalQuizPassed;
 
             foreach (var session in formation.Sessions)
             {
@@ -220,6 +248,8 @@ namespace formationApi.Controllers
                 Sessions = new List<Session>(),
                 Modules = new List<Module>(),
                 FinalQuiz = finalQuiz,
+                FinalQuizId = formationCreateDto.FinalQuizId,
+                CanPassFinalWithoutModules = formationCreateDto.CanPassFinalWithoutModules
             };
 
             // Add roles using RoleManager
@@ -272,6 +302,7 @@ namespace formationApi.Controllers
                 Position = dto.Position,
                 FormationId = formation.Id,
                 QuizId = dto.QuizId,
+                MaxAttempts = dto.MaxAttempts
             }).ToList();
 
             if (modules.Any())
@@ -310,6 +341,7 @@ namespace formationApi.Controllers
             formation.Title = dto.Title;
             formation.Description = dto.Description;
             formation.Content = dto.Content;
+            formation.CanPassFinalWithoutModules = dto.CanPassFinalWithoutModules;
             formation.UpdatedAt = DateTime.UtcNow;
 
             await _repositoryWrapper.Formation.Update(formation);
@@ -360,6 +392,92 @@ namespace formationApi.Controllers
 
             await _repositoryWrapper.Formation.Update(formation);
             return Ok(formation.ToDto());
+        }
+
+        [HttpPut("{id}/modules")]
+        [Authorize(Roles = "Administrator")]
+        public async Task<IActionResult> UpdateFormationModules(int id, [FromBody] UpdateFormationModulesDto dto)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            // Récupérer la formation avec ses modules
+            var formation = await _repositoryWrapper.Formation.GetAllAsQueryable()
+                .Include(f => f.Modules)
+                .FirstOrDefaultAsync(f => f.Id == id);
+
+            if (formation == null)
+                return NotFound("Formation non trouvée");
+
+            // Créer une liste pour stocker les modules à mettre à jour
+            var modulesToUpdate = new List<Module>();
+            var modulesToAdd = new List<Module>();
+
+            // Pour chaque module dans le DTO
+            foreach (var moduleDto in dto.Modules)
+            {
+                // Si le module a un ID, c'est une mise à jour
+                if (moduleDto.Id.HasValue)
+                {
+                    // Trouver le module existant
+                    var existingModule = formation.Modules.FirstOrDefault(m => m.Id == moduleDto.Id.Value);
+                    if (existingModule != null)
+                    {
+                        // Mettre à jour les propriétés du module
+                        existingModule.Title = moduleDto.Title;
+                        existingModule.Description = moduleDto.Description;
+                        existingModule.Position = moduleDto.Position;
+                        existingModule.QuizId = moduleDto.QuizId;
+                        existingModule.MaxAttempts = moduleDto.MaxAttempts;
+                        existingModule.Enable = moduleDto.Enable;
+                        existingModule.UpdatedAt = DateTime.UtcNow;
+
+                        modulesToUpdate.Add(existingModule);
+                    }
+                }
+                else
+                {
+                    // C'est un nouveau module
+                    var newModule = new Module
+                    {
+                        Title = moduleDto.Title,
+                        Description = moduleDto.Description,
+                        Position = moduleDto.Position,
+                        QuizId = moduleDto.QuizId,
+                        MaxAttempts = moduleDto.MaxAttempts,
+                        Enable = moduleDto.Enable,
+                        FormationId = id,
+                        CreatedAt = DateTime.UtcNow,
+                        UpdatedAt = DateTime.UtcNow
+                    };
+
+                    modulesToAdd.Add(newModule);
+                }
+            }
+
+            // Mettre à jour les modules existants
+            if (modulesToUpdate.Any())
+            {
+                foreach (var module in modulesToUpdate)
+                {
+                    await _repositoryWrapper.Module.Update(module);
+                }
+            }
+
+            // Ajouter les nouveaux modules
+            if (modulesToAdd.Any())
+            {
+                await _repositoryWrapper.Module.InsertMany(modulesToAdd);
+            }
+
+            // Mettre à jour la date de mise à jour de la formation
+            formation.UpdatedAt = DateTime.UtcNow;
+            await _repositoryWrapper.Formation.Update(formation);
+
+            // Récupérer la formation mise à jour avec tous ses modules
+            var updatedFormation = await _repositoryWrapper.Formation.GetFormationWithEnabledItemsAsync(id);
+
+            return Ok(updatedFormation.ToDto());
         }
 
 

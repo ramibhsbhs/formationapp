@@ -25,6 +25,13 @@ export class ModuleViewComponent implements OnInit {
   isLastModule: boolean = false;
   currentSession: any = null;
 
+  // Données du quiz
+  moduleQuiz: any = null;
+  quizResults: any = null;
+  loadingQuiz: boolean = false;
+  quizError: string | null = null;
+  canTakeQuiz: boolean = false;
+
   constructor(
     private route: ActivatedRoute,
     private router: Router,
@@ -92,6 +99,9 @@ export class ModuleViewComponent implements OnInit {
         }
 
         this.loading = false;
+
+        // Charger les informations du quiz du module
+        this.loadModuleQuiz();
       },
       error: (err) => {
         this.error = err?.message || 'Erreur lors du chargement de la formation';
@@ -101,12 +111,106 @@ export class ModuleViewComponent implements OnInit {
   }
 
   /**
-   * Marque le module actuel comme complété et passe au module suivant
+   * Charge les informations du quiz associé au module
+   */
+  loadModuleQuiz(): void {
+    if (!this.currentModule || !this.currentModule.quizId) {
+      // Ce module n'a pas de quiz associé
+      return;
+    }
+
+    this.loadingQuiz = true;
+    this.quizError = null;
+
+    // D'abord, vérifier si l'utilisateur a déjà passé le quiz
+    this.loadQuizResults();
+
+    // Ensuite, vérifier si l'utilisateur peut passer le quiz
+    this.checkQuizEligibility();
+  }
+
+  /**
+   * Charge les résultats du quiz du module pour l'utilisateur courant
+   */
+  loadQuizResults(): void {
+    if (!this.currentModule) return;
+
+    this.condidatService.getModuleQuizResults(this.formationId, this.moduleId, this.sessionId || undefined)
+      .subscribe({
+        next: (results) => {
+          this.quizResults = results;
+          console.log('Résultats du quiz:', results);
+        },
+        error: (err) => {
+          // Ignorer les erreurs ici, car l'utilisateur peut ne pas avoir encore passé le quiz
+          console.log('Pas de résultats de quiz disponibles:', err);
+        }
+      });
+  }
+
+  /**
+   * Vérifie si l'utilisateur peut passer le quiz du module
+   */
+  checkQuizEligibility(): void {
+    if (!this.currentModule || !this.currentModule.quizId) return;
+
+    this.condidatService.checkModuleQuizEligibility(
+      this.formationId,
+      this.moduleId,
+      this.sessionId || undefined
+    ).subscribe({
+      next: (response) => {
+        this.canTakeQuiz = response.canTakeQuiz;
+        this.moduleQuiz = {
+          id: response.quizId,
+          title: response.moduleTitle,
+          previousAttempt: response.previousAttempt
+        };
+        this.loadingQuiz = false;
+      },
+      error: (err) => {
+        this.quizError = err?.message || 'Erreur lors de la vérification de l\'éligibilité au quiz';
+        this.loadingQuiz = false;
+      }
+    });
+  }
+
+  /**
+   * Continue la progression : passe au quiz du module, au module suivant ou au quiz final
    */
   completeAndContinue(): void {
     if (!this.formation || !this.currentModule) return;
 
-    // Simuler la complétion du module (dans une implémentation réelle, on appellerait une API)
+    // Vérifier si le module a un quiz et si l'utilisateur peut le passer
+    if (this.currentModule.quizId) {
+      // Vérifier si l'utilisateur peut passer le quiz (en fonction du nombre de tentatives)
+      if (this.hasAttemptedModuleQuiz() && !this.hasPassedModuleQuiz()) {
+        // L'utilisateur a déjà tenté le quiz mais ne l'a pas réussi
+        if (this.canRetakeQuiz()) {
+          // L'utilisateur peut repasser le quiz
+          this.goToModuleQuiz();
+          return;
+        } else {
+          // L'utilisateur a atteint le nombre maximum de tentatives
+          this.toaster.showInfo('Vous avez atteint le nombre maximum de tentatives pour ce quiz.', 'Information');
+
+          // Si la formation permet de passer le quiz final sans avoir réussi tous les modules
+          if (this.formation.canPassFinalWithoutModules) {
+            // On continue quand même
+            this.currentModule.isCompleted = true;
+          } else {
+            // Sinon, on ne peut pas continuer
+            return;
+          }
+        }
+      } else if (!this.hasAttemptedModuleQuiz() && this.canTakeQuiz) {
+        // L'utilisateur n'a pas encore tenté le quiz et peut le passer
+        this.goToModuleQuiz();
+        return;
+      }
+    }
+
+    // Marquer le module comme complété
     this.currentModule.isCompleted = true;
 
     // Si c'est le dernier module, rediriger vers le quiz final
@@ -115,16 +219,7 @@ export class ModuleViewComponent implements OnInit {
 
       // Rediriger vers le quiz final avec la session si disponible
       setTimeout(() => {
-        const queryParams: any = {
-          formationId: this.formationId,
-          type: 'final'
-        };
-
-        if (this.sessionId) {
-          queryParams.sessionId = this.sessionId;
-        }
-
-        this.router.navigate(['/condidat/validate-quiz'], { queryParams });
+        this.goToFinalQuiz();
       }, 2000);
 
       return;
@@ -132,13 +227,208 @@ export class ModuleViewComponent implements OnInit {
 
     // Sinon, passer au module suivant
     if (this.nextModuleId) {
-      if (this.sessionId) {
-        // Inclure la session dans la navigation
-        this.router.navigate(['/condidat/module', this.formationId, this.nextModuleId, this.sessionId]);
-      } else {
-        // Navigation sans session
-        this.router.navigate(['/condidat/module', this.formationId, this.nextModuleId]);
-      }
+      this.goToNextModule();
+    }
+  }
+
+  /**
+   * Redirige vers le quiz du module actuel
+   */
+  goToModuleQuiz(): void {
+    if (!this.currentModule || !this.currentModule.quizId) return;
+
+    // Vérifier si le module a un quiz associé
+    if (!this.currentModule.quizId) {
+      this.toaster.showInfo('Ce module n\'a pas de quiz associé.', 'Information');
+      return;
+    }
+
+    // Construire les paramètres de requête
+    const queryParams: any = {
+      formationId: this.formationId,
+      moduleId: this.moduleId,
+      type: 'module'
+    };
+
+    // Ajouter le sessionId s'il existe
+    if (this.sessionId) {
+      queryParams.sessionId = this.sessionId;
+    }
+
+    // Naviguer vers la page de validation du quiz
+    this.router.navigate(['/condidat/validate-quiz'], { queryParams });
+
+    // Afficher un message de débogage
+    console.log('Navigation vers le quiz du module avec les paramètres :', queryParams);
+  }
+
+  /**
+   * Redirige vers le module suivant
+   */
+  goToNextModule(): void {
+    if (!this.nextModuleId) return;
+
+    if (this.sessionId) {
+      // Inclure la session dans la navigation
+      this.router.navigate(['/condidat/module', this.formationId, this.nextModuleId, this.sessionId]);
+    } else {
+      // Navigation sans session
+      this.router.navigate(['/condidat/module', this.formationId, this.nextModuleId]);
+    }
+  }
+
+  /**
+   * Redirige vers le quiz final
+   */
+  goToFinalQuiz(): void {
+    if (!this.formation) return;
+
+    // Vérifier si la formation a un quiz final
+    if (!this.formation.quizId) {
+      this.toaster.showInfo('Cette formation n\'a pas de quiz final.', 'Information');
+      return;
+    }
+
+    // Vérifier si l'utilisateur a déjà passé le quiz final avec succès
+    if (this.formation.finalQuizPassed === true) {
+      this.toaster.showInfo('Vous avez déjà réussi le quiz final de cette formation.', 'Information');
+      return;
+    }
+
+    // Vérifier si l'utilisateur peut passer le quiz final
+    if (!this.formation.canPassFinalWithoutModules) {
+      // Vérifier si tous les modules avec quiz ont été complétés avec succès
+      // Récupérer les résultats des quiz pour tous les modules
+      this.condidatService.getFormationProgress(this.formationId, this.sessionId || undefined).subscribe({
+        next: (progress: Array<{
+          moduleId: number;
+          quizId: number;
+          hasAttempted: boolean;
+          hasPassed: boolean;
+          score: number;
+          attemptDate: Date;
+          attemptCount: number;
+          isFinalQuiz?: boolean;
+        }>) => {
+          if (!this.formation) return;
+
+          // Vérifier si tous les modules avec quiz ont été complétés avec succès
+          const allModulesCompleted = this.formation.modules.every(module => {
+            // Si le module n'a pas de quiz, il est considéré comme complété
+            if (!module.quizId) return true;
+
+            // Chercher le résultat du quiz pour ce module
+            const moduleProgress = progress.find(p => p.moduleId === module.id);
+
+            // Si on n'a pas trouvé de résultat, le module n'est pas complété
+            if (!moduleProgress) return false;
+
+            // Vérifier si le quiz a été réussi
+            return moduleProgress.hasPassed === true;
+          });
+
+          if (!allModulesCompleted) {
+            // Vérifier si l'utilisateur a déjà tenté le quiz final
+            const finalQuizProgress = progress.find(p => p.isFinalQuiz === true);
+
+            if (finalQuizProgress && finalQuizProgress.hasAttempted) {
+              // Si l'utilisateur a déjà tenté le quiz final mais ne l'a pas réussi
+              if (!finalQuizProgress.hasPassed) {
+                // Vérifier s'il peut le repasser (nombre de tentatives)
+                if (finalQuizProgress.attemptCount < 3) { // Supposons une limite de 3 tentatives
+                  this.navigateToFinalQuiz();
+                } else {
+                  this.toaster.showInfo('Vous avez atteint le nombre maximum de tentatives pour le quiz final.', 'Information');
+                }
+              }
+            } else {
+              this.toaster.showInfo('Vous devez d\'abord réussir tous les quiz des modules de la formation.', 'Information');
+            }
+            return;
+          }
+
+          // Si tous les modules sont complétés, naviguer vers le quiz final
+          this.navigateToFinalQuiz();
+        },
+        error: (err) => {
+          this.toaster.showError('Erreur lors de la récupération de votre progression.', 'Erreur');
+          console.error('Erreur lors de la récupération de la progression:', err);
+        }
+      });
+    } else {
+      // Si la formation permet de passer le quiz final sans avoir complété tous les modules
+      this.navigateToFinalQuiz();
+    }
+  }
+
+  /**
+   * Navigue vers la page du quiz final
+   */
+  private navigateToFinalQuiz(): void {
+    const queryParams: any = {
+      formationId: this.formationId,
+      type: 'final'
+    };
+
+    if (this.sessionId) {
+      queryParams.sessionId = this.sessionId;
+    }
+
+    this.router.navigate(['/condidat/validate-quiz'], { queryParams });
+  }
+
+  /**
+   * Vérifie si l'utilisateur a déjà passé le quiz du module avec succès
+   */
+  hasPassedModuleQuiz(): boolean {
+    if (!this.quizResults) return false;
+    if (!this.currentModule || !this.currentModule.quizId) return false;
+
+    // Vérifier que le quiz passé correspond bien au quiz du module actuel
+    if (this.quizResults.quizId !== this.currentModule.quizId) return false;
+
+    return this.quizResults.hasPassed === true;
+  }
+
+  /**
+   * Vérifie si l'utilisateur a déjà tenté de passer le quiz du module
+   */
+  hasAttemptedModuleQuiz(): boolean {
+    if (!this.quizResults) return false;
+    if (!this.currentModule || !this.currentModule.quizId) return false;
+
+    // Vérifier que le quiz tenté correspond bien au quiz du module actuel
+    if (this.quizResults.quizId !== this.currentModule.quizId) return false;
+
+    return this.quizResults.hasAttempted === true;
+  }
+
+  /**
+   * Vérifie si l'utilisateur peut encore passer le quiz en fonction du nombre de tentatives
+   */
+  canRetakeQuiz(): boolean {
+    if (!this.quizResults || !this.currentModule) return true;
+
+    // Si l'utilisateur a déjà réussi le quiz, il ne peut pas le repasser
+    if (this.hasPassedModuleQuiz()) return false;
+
+    // Si le nombre de tentatives est illimité (0), l'utilisateur peut toujours repasser le quiz
+    if (this.currentModule.maxAttempts === 0) return true;
+
+    // Vérifier si l'utilisateur a atteint le nombre maximum de tentatives
+    return (this.quizResults.attemptCount || 0) < this.currentModule.maxAttempts;
+  }
+
+  /**
+   * Obtient le texte du bouton de continuation en fonction de l'état actuel
+   */
+  getContinueButtonText(): string {
+    if (this.currentModule?.quizId && this.canTakeQuiz) {
+      return 'Passer le quiz du module';
+    } else if (this.isLastModule) {
+      return 'Terminer et passer au quiz final';
+    } else {
+      return 'Module suivant';
     }
   }
 

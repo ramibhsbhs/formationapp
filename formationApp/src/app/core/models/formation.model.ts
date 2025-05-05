@@ -13,6 +13,7 @@ export class Formation {
     category: string;
     roleNames: string[];
     finalQuizId?: number;
+    canPassFinalWithoutModules?: boolean;
 
     constructor(data: Partial<Formation> = {}) {
         this.id = data.id;
@@ -26,6 +27,7 @@ export class Formation {
         this.roleNames = data.roleNames ?? [];
         this.groupIds = data.groupIds || [];
         this.finalQuizId = data.finalQuizId;
+        this.canPassFinalWithoutModules = data.canPassFinalWithoutModules || false;
     }
 
     totalUsersCount(): number {
@@ -61,6 +63,7 @@ export interface Module {
     formationId?: number;
     attachments: Attachment[];
     quizId: number;
+    maxAttempts?: number;
 }
 
 export interface Attachment {

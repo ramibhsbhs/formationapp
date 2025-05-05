@@ -190,6 +190,187 @@ namespace formationApi.Controllers
         }
 
         /// <summary>
+        /// Récupère les résultats de quiz pour un module spécifique
+        /// </summary>
+        /// <param name="formationId">ID de la formation</param>
+        /// <param name="moduleId">ID du module</param>
+        /// <param name="sessionId">ID de la session (optionnel)</param>
+        /// <returns>Résultats de quiz pour le module</returns>
+        [HttpGet("module/{formationId:int}/{moduleId:int}")]
+        [Authorize]
+        public async Task<ActionResult<object>> GetModuleQuizResults(int formationId, int moduleId, [FromQuery] int? sessionId = null)
+        {
+            // Récupérer l'utilisateur actuel
+            var user = await _repositoryWrapper.UserManager.GetUserAsync(User);
+            if (user == null) return Unauthorized();
+
+            // Récupérer le module avec son quiz
+            var module = await _repositoryWrapper.Module.GetAllAsQueryable()
+                .Include(m => m.Quiz)
+                .FirstOrDefaultAsync(m => m.Id == moduleId && m.FormationId == formationId);
+
+            if (module == null) return NotFound("Module non trouvé");
+            if (module.QuizId == null) return BadRequest("Aucun quiz associé à ce module");
+
+            // Récupérer les tentatives de quiz pour ce module et cet utilisateur
+            // Assurez-vous que le quizId correspond exactement au quizId du module
+            var attemptsQuery = _repositoryWrapper.QuizAttempt.GetAllAsQueryable()
+                .Where(a => a.UserId == user.Id && a.QuizId == module.QuizId.Value);
+
+            // Si un sessionId est fourni, filtrer par session
+            if (sessionId.HasValue)
+            {
+                attemptsQuery = attemptsQuery.Where(a => a.SessionId == sessionId.Value);
+            }
+
+            var attempts = await attemptsQuery
+                .OrderByDescending(a => a.CreatedAt)
+                .ToListAsync();
+
+            // Vérifier si l'utilisateur a déjà passé le quiz
+            var hasAttempted = attempts.Any();
+            var latestAttempt = attempts.FirstOrDefault();
+            var hasPassed = latestAttempt != null && latestAttempt.HasPassed;
+            var score = latestAttempt?.Score ?? 0;
+            var attemptDate = latestAttempt?.AttemptedAt ?? latestAttempt?.CreatedAt;
+
+            // Compter le nombre de tentatives pour ce quiz et cet utilisateur
+            var attemptCount = await attemptsQuery.CountAsync();
+
+            // Construire la réponse
+            var response = new
+            {
+                HasAttempted = hasAttempted,
+                HasPassed = hasPassed,
+                Score = score,
+                AttemptDate = attemptDate,
+                ModuleId = moduleId,
+                ModuleTitle = module.Title,
+                QuizId = module.QuizId.Value,
+                // Ajouter l'ID de la tentative si elle existe
+                AttemptId = latestAttempt?.Id,
+                // Ajouter le nombre de tentatives
+                AttemptCount = attemptCount
+            };
+
+            return Ok(response);
+        }
+
+        /// <summary>
+        /// Récupère la progression d'un utilisateur pour une formation spécifique
+        /// </summary>
+        /// <param name="formationId">ID de la formation</param>
+        /// <param name="sessionId">ID de la session (optionnel)</param>
+        /// <returns>Progression de l'utilisateur pour la formation</returns>
+        [HttpGet("formation/{formationId:int}/progress")]
+        [Authorize]
+        public async Task<ActionResult<List<object>>> GetFormationProgress(int formationId, [FromQuery] int? sessionId = null)
+        {
+            // Récupérer l'utilisateur actuel
+            var user = await _repositoryWrapper.UserManager.GetUserAsync(User);
+            if (user == null) return Unauthorized();
+
+            // Récupérer la formation avec ses modules
+            var formation = await _repositoryWrapper.Formation.GetAllAsQueryable()
+                .Include(f => f.Modules)
+                .ThenInclude(m => m.Quiz)
+                .FirstOrDefaultAsync(f => f.Id == formationId);
+
+            if (formation == null) return NotFound("Formation non trouvée");
+
+            // Récupérer tous les modules avec quiz
+            var modulesWithQuiz = formation.Modules
+                .Where(m => m.QuizId.HasValue)
+                .ToList();
+
+            // Préparer la liste des résultats
+            var progressList = new List<object>();
+
+            // Pour chaque module avec quiz, récupérer les tentatives de l'utilisateur
+            foreach (var module in modulesWithQuiz)
+            {
+                if (!module.QuizId.HasValue) continue;
+
+                // Récupérer les tentatives de quiz pour ce module et cet utilisateur
+                var attemptsQuery = _repositoryWrapper.QuizAttempt.GetAllAsQueryable()
+                    .Where(a => a.UserId == user.Id && a.QuizId == module.QuizId.Value);
+
+                // Si un sessionId est fourni, filtrer par session
+                if (sessionId.HasValue)
+                {
+                    attemptsQuery = attemptsQuery.Where(a => a.SessionId == sessionId.Value);
+                }
+
+                var attempts = await attemptsQuery
+                    .OrderByDescending(a => a.CreatedAt)
+                    .ToListAsync();
+
+                // Vérifier si l'utilisateur a déjà passé le quiz
+                var hasAttempted = attempts.Any();
+                var latestAttempt = attempts.FirstOrDefault();
+                var hasPassed = latestAttempt != null && latestAttempt.HasPassed;
+                var score = latestAttempt?.Score ?? 0;
+                var attemptDate = latestAttempt?.AttemptedAt ?? latestAttempt?.CreatedAt;
+
+                // Compter le nombre de tentatives pour ce quiz et cet utilisateur
+                var attemptCount = attempts.Count;
+
+                // Ajouter les résultats à la liste
+                progressList.Add(new
+                {
+                    ModuleId = module.Id,
+                    ModuleTitle = module.Title,
+                    QuizId = module.QuizId.Value,
+                    HasAttempted = hasAttempted,
+                    HasPassed = hasPassed,
+                    Score = score,
+                    AttemptDate = attemptDate,
+                    AttemptCount = attemptCount,
+                    AttemptId = latestAttempt?.Id
+                });
+            }
+
+            // Si un sessionId est fourni, récupérer également les tentatives pour le quiz final
+            if (sessionId.HasValue && formation.FinalQuizId.HasValue)
+            {
+                // Récupérer les tentatives de quiz final pour cet utilisateur et cette session
+                var finalQuizAttemptsQuery = _repositoryWrapper.QuizAttempt.GetAllAsQueryable()
+                    .Where(a => a.UserId == user.Id && a.QuizId == formation.FinalQuizId.Value && a.SessionId == sessionId.Value);
+
+                var finalQuizAttempts = await finalQuizAttemptsQuery
+                    .OrderByDescending(a => a.CreatedAt)
+                    .ToListAsync();
+
+                // Vérifier si l'utilisateur a déjà passé le quiz final
+                var hasAttemptedFinal = finalQuizAttempts.Any();
+                var latestFinalAttempt = finalQuizAttempts.FirstOrDefault();
+                var hasPassedFinal = latestFinalAttempt != null && latestFinalAttempt.HasPassed;
+                var finalScore = latestFinalAttempt?.Score ?? 0;
+                var finalAttemptDate = latestFinalAttempt?.AttemptedAt ?? latestFinalAttempt?.CreatedAt;
+
+                // Compter le nombre de tentatives pour le quiz final
+                var finalAttemptCount = finalQuizAttempts.Count;
+
+                // Ajouter les résultats du quiz final à la liste
+                progressList.Add(new
+                {
+                    ModuleId = 0, // 0 pour indiquer qu'il s'agit du quiz final
+                    ModuleTitle = "Quiz Final",
+                    QuizId = formation.FinalQuizId.Value,
+                    HasAttempted = hasAttemptedFinal,
+                    HasPassed = hasPassedFinal,
+                    Score = finalScore,
+                    AttemptDate = finalAttemptDate,
+                    AttemptCount = finalAttemptCount,
+                    AttemptId = latestFinalAttempt?.Id,
+                    IsFinalQuiz = true
+                });
+            }
+
+            return Ok(progressList);
+        }
+
+        /// <summary>
         /// Récupère une tentative de quiz spécifique
         /// </summary>
         /// <param name="attemptId">ID de la tentative</param>

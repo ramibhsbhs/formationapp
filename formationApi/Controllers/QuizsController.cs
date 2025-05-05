@@ -138,6 +138,182 @@ namespace formationApi.Controllers
         }
 
         /// <summary>
+        /// Vérifie si l'utilisateur peut passer un quiz pour un module donné
+        /// </summary>
+        /// <param name="formationId">ID de la formation</param>
+        /// <param name="moduleId">ID du module</param>
+        /// <param name="sessionId">ID de la session (optionnel)</param>
+        /// <returns>Informations d'éligibilité au quiz de module</returns>
+        [HttpGet("validate/module/{formationId:int}/{moduleId:int}")]
+        [Authorize]
+        public async Task<ActionResult<ModuleQuizEligibilityDto>> CheckModuleQuizEligibility(int formationId, int moduleId, [FromQuery] int? sessionId = null)
+        {
+            // Récupérer l'utilisateur actuel
+            var user = await _repositoryWrapper.UserManager.GetUserAsync(User);
+            if (user == null) return Unauthorized();
+
+            // Récupérer le module avec son quiz
+            var module = await _repositoryWrapper.Module.GetAllAsQueryable()
+                .Include(m => m.Quiz)
+                .Include(m => m.Formation)
+                .FirstOrDefaultAsync(m => m.Id == moduleId && m.FormationId == formationId);
+
+            if (module == null) return NotFound("Module non trouvé");
+            if (module.QuizId == null) return BadRequest("Aucun quiz associé à ce module");
+
+            // Vérifier si l'utilisateur a déjà passé ce quiz
+            var previousAttemptQuery = _repositoryWrapper.QuizAttempt.GetAllAsQueryable()
+                .Where(a => a.UserId == user.Id && a.QuizId == module.QuizId);
+
+            // Si un sessionId est fourni, filtrer par session
+            if (sessionId.HasValue)
+            {
+                previousAttemptQuery = previousAttemptQuery.Where(a => a.SessionId == sessionId.Value);
+            }
+
+            var previousAttempt = await previousAttemptQuery
+                .OrderByDescending(a => a.CreatedAt)
+                .FirstOrDefaultAsync();
+
+            // Déterminer si l'utilisateur peut passer le quiz
+            bool canTakeQuiz = true;
+
+            // Si l'utilisateur a déjà passé le quiz et l'a réussi, il ne peut pas le repasser
+            if (previousAttempt != null && previousAttempt.HasPassed)
+            {
+                canTakeQuiz = false;
+            }
+
+            // Si un sessionId est fourni, vérifier que la session est active
+            if (sessionId.HasValue && canTakeQuiz)
+            {
+                var session = await _repositoryWrapper.Session.GetAllAsQueryable()
+                    .FirstOrDefaultAsync(s => s.Id == sessionId.Value);
+
+                if (session != null)
+                {
+                    var now = DateTime.UtcNow;
+                    var sessionStartDate = session.StartDate;
+                    var sessionEndDate = session.EndDate;
+                    bool sessionIsActive = DateOnly.FromDateTime(now) >= sessionStartDate && DateOnly.FromDateTime(now) <= sessionEndDate;
+
+                    // L'utilisateur ne peut passer le quiz que si la session est active
+                    canTakeQuiz = canTakeQuiz && sessionIsActive;
+                }
+                else
+                {
+                    return NotFound("Session non trouvée");
+                }
+            }
+
+            // Construire la réponse
+            var response = new ModuleQuizEligibilityDto
+            {
+                CanTakeQuiz = canTakeQuiz,
+                QuizId = module.QuizId.Value,
+                FormationTitle = module.Formation.Title,
+                ModuleTitle = module.Title,
+                PreviousAttempt = previousAttempt == null ? null : new PreviousAttemptDto
+                {
+                    Id = previousAttempt.Id,
+                    Score = previousAttempt.Score ?? 0,
+                    CreatedAt = previousAttempt.CreatedAt,
+                    PassedStatus = previousAttempt.HasPassed
+                }
+            };
+
+            return Ok(response);
+        }
+
+        /// <summary>
+        /// Vérifie si l'utilisateur peut passer le quiz final d'une formation
+        /// </summary>
+        /// <param name="formationId">ID de la formation</param>
+        /// <param name="sessionId">ID de la session (optionnel)</param>
+        /// <returns>Informations d'éligibilité au quiz final</returns>
+        [HttpGet("validate/final/{formationId:int}")]
+        [Authorize]
+        public async Task<ActionResult<FinalQuizEligibilityDto>> CheckFinalQuizEligibility(int formationId, [FromQuery] int? sessionId = null)
+        {
+            // Récupérer l'utilisateur actuel
+            var user = await _repositoryWrapper.UserManager.GetUserAsync(User);
+            if (user == null) return Unauthorized();
+
+            // Récupérer la formation avec son quiz final
+            var formation = await _repositoryWrapper.Formation.GetAllAsQueryable()
+                .Include(f => f.FinalQuiz)
+                .FirstOrDefaultAsync(f => f.Id == formationId);
+
+            if (formation == null) return NotFound("Formation non trouvée");
+            if (formation.FinalQuizId == null) return BadRequest("Aucun quiz final associé à cette formation");
+
+            // Vérifier si l'utilisateur a déjà passé ce quiz
+            var previousAttemptQuery = _repositoryWrapper.QuizAttempt.GetAllAsQueryable()
+                .Where(a => a.UserId == user.Id && a.QuizId == formation.FinalQuizId);
+
+            // Si un sessionId est fourni, filtrer par session
+            if (sessionId.HasValue)
+            {
+                previousAttemptQuery = previousAttemptQuery.Where(a => a.SessionId == sessionId.Value);
+            }
+
+            var previousAttempt = await previousAttemptQuery
+                .OrderByDescending(a => a.CreatedAt)
+                .FirstOrDefaultAsync();
+
+            // Déterminer si l'utilisateur peut passer le quiz
+            bool canTakeQuiz = true;
+
+            // Si l'utilisateur a déjà passé le quiz et l'a réussi, il ne peut pas le repasser
+            if (previousAttempt != null && previousAttempt.HasPassed)
+            {
+                canTakeQuiz = false;
+            }
+
+            // Si un sessionId est fourni, vérifier que la session est active
+            if (sessionId.HasValue && canTakeQuiz)
+            {
+                var session = await _repositoryWrapper.Session.GetAllAsQueryable()
+                    .FirstOrDefaultAsync(s => s.Id == sessionId.Value);
+
+                if (session != null)
+                {
+                    var now = DateTime.UtcNow;
+                    var sessionStartDate = session.StartDate;
+                    var sessionEndDate = session.EndDate;
+                    bool sessionIsActive = DateOnly.FromDateTime(now) >= sessionStartDate && DateOnly.FromDateTime(now) <= sessionEndDate;
+
+                    // L'utilisateur ne peut passer le quiz que si la session est active
+                    canTakeQuiz = canTakeQuiz && sessionIsActive;
+                }
+                else
+                {
+                    return NotFound("Session non trouvée");
+                }
+            }
+
+            // Vérifier si l'utilisateur a complété tous les modules de la formation
+            // TODO: Implémenter cette vérification si nécessaire
+
+            // Construire la réponse
+            var response = new FinalQuizEligibilityDto
+            {
+                CanTakeQuiz = canTakeQuiz,
+                QuizId = formation.FinalQuizId.Value,
+                FormationTitle = formation.Title,
+                PreviousAttempt = previousAttempt == null ? null : new PreviousAttemptDto
+                {
+                    Id = previousAttempt.Id,
+                    Score = previousAttempt.Score ?? 0,
+                    CreatedAt = previousAttempt.CreatedAt,
+                    PassedStatus = previousAttempt.HasPassed
+                }
+            };
+
+            return Ok(response);
+        }
+
+        /// <summary>
         /// Soumet les réponses d'un utilisateur à un quiz
         /// </summary>
         /// <param name="quizId">ID du quiz</param>
@@ -159,23 +335,118 @@ namespace formationApi.Controllers
 
             if (quiz == null) return NotFound("Quiz non trouvé");
 
-            // Récupérer la session
-            var session = await _repositoryWrapper.Session.GetAllAsQueryable()
-                .Include(s => s.Formation)
-                .FirstOrDefaultAsync(s => s.Id == submitQuizDto.SessionId);
+            // Variables pour stocker les informations de formation et de session
+            Formation formation = null;
+            Session session = null;
+            Module module = null;
+            int sessionId;
 
-            if (session == null) return NotFound("Session non trouvée");
+            // Traiter différemment selon le type de quiz
+            switch (submitQuizDto.QuizType)
+            {
+                case "module":
+                    // Vérifier les paramètres requis
+                    if (!submitQuizDto.FormationId.HasValue || !submitQuizDto.ModuleId.HasValue)
+                    {
+                        return BadRequest("FormationId et ModuleId sont requis pour les quiz de module");
+                    }
 
-            // Vérifier si l'utilisateur a déjà passé ce quiz pour cette session
-            var existingAttempt = await _repositoryWrapper.QuizAttempt.GetAllAsQueryable()
-                .Where(a => a.UserId == user.Id && a.SessionId == submitQuizDto.SessionId && a.QuizId == quizId)
+                    // Récupérer le module avec sa formation et le quiz final de la formation
+                    module = await _repositoryWrapper.Module.GetAllAsQueryable()
+                        .Include(m => m.Formation)
+                            .ThenInclude(f => f.FinalQuiz)
+                        .FirstOrDefaultAsync(m => m.Id == submitQuizDto.ModuleId.Value && m.FormationId == submitQuizDto.FormationId.Value);
+
+                    if (module == null) return NotFound("Module non trouvé");
+                    formation = module.Formation;
+
+                    // Si un sessionId est fourni, récupérer la session
+                    if (submitQuizDto.SessionId.HasValue)
+                    {
+                        session = await _repositoryWrapper.Session.GetAllAsQueryable()
+                            .FirstOrDefaultAsync(s => s.Id == submitQuizDto.SessionId.Value);
+
+                        if (session == null) return NotFound("Session non trouvée");
+                        sessionId = session.Id;
+                    }
+                    else
+                    {
+                        // Créer une session temporaire pour stocker les résultats
+                        sessionId = 0; // Valeur spéciale pour indiquer qu'il n'y a pas de session
+                    }
+                    break;
+
+                case "final":
+                    // Vérifier les paramètres requis
+                    if (!submitQuizDto.FormationId.HasValue)
+                    {
+                        return BadRequest("FormationId est requis pour les quiz finaux");
+                    }
+
+                    // Récupérer la formation avec son quiz final
+                    formation = await _repositoryWrapper.Formation.GetAllAsQueryable()
+                        .Include(f => f.FinalQuiz)
+                        .FirstOrDefaultAsync(f => f.Id == submitQuizDto.FormationId.Value);
+
+                    if (formation == null) return NotFound("Formation non trouvée");
+
+                    // Si un sessionId est fourni, récupérer la session
+                    if (submitQuizDto.SessionId.HasValue)
+                    {
+                        session = await _repositoryWrapper.Session.GetAllAsQueryable()
+                            .FirstOrDefaultAsync(s => s.Id == submitQuizDto.SessionId.Value);
+
+                        if (session == null) return NotFound("Session non trouvée");
+                        sessionId = session.Id;
+                    }
+                    else
+                    {
+                        // Créer une session temporaire pour stocker les résultats
+                        sessionId = 0; // Valeur spéciale pour indiquer qu'il n'y a pas de session
+                    }
+                    break;
+
+                default:
+                    // Cas par défaut - traiter comme un quiz final
+                    // Vérifier les paramètres requis
+                    if (!submitQuizDto.SessionId.HasValue)
+                    {
+                        return BadRequest("SessionId est requis");
+                    }
+
+                    // Récupérer la session avec sa formation et le quiz final de la formation
+                    session = await _repositoryWrapper.Session.GetAllAsQueryable()
+                        .Include(s => s.Formation)
+                            .ThenInclude(f => f.FinalQuiz)
+                        .FirstOrDefaultAsync(s => s.Id == submitQuizDto.SessionId.Value);
+
+                    if (session == null) return NotFound("Session non trouvée");
+                    formation = session.Formation;
+                    sessionId = session.Id;
+
+                    // Définir le type de quiz comme "final" pour la suite du traitement
+                    submitQuizDto.QuizType = "final";
+                    break;
+            }
+
+            // Vérifier si l'utilisateur a déjà passé ce quiz
+            var existingAttemptQuery = _repositoryWrapper.QuizAttempt.GetAllAsQueryable()
+                .Where(a => a.UserId == user.Id && a.QuizId == quizId);
+
+            // Filtrer par session si nécessaire
+            if (sessionId > 0)
+            {
+                existingAttemptQuery = existingAttemptQuery.Where(a => a.SessionId == sessionId);
+            }
+
+            var existingAttempt = await existingAttemptQuery
                 .OrderByDescending(a => a.CreatedAt)
                 .FirstOrDefaultAsync();
 
             // Vérifier si l'utilisateur peut passer le quiz
-            if (existingAttempt != null)
+            if (existingAttempt != null && existingAttempt.HasPassed)
             {
-                return BadRequest("Vous avez déjà passé ce quiz pour cette session et ne pouvez pas le repasser");
+                return BadRequest("Vous avez déjà réussi ce quiz et ne pouvez pas le repasser");
             }
 
             // Calculer le score
@@ -187,7 +458,7 @@ namespace formationApi.Controllers
             {
                 UserId = user.Id,
                 QuizId = quizId,
-                SessionId = submitQuizDto.SessionId,
+                SessionId = sessionId,
                 StartTime = DateTime.UtcNow,
                 AttemptedAt = DateTime.UtcNow,
                 IsCompleted = true,
@@ -230,41 +501,57 @@ namespace formationApi.Controllers
             // Enregistrer la tentative dans la base de données
             await _repositoryWrapper.QuizAttempt.Create(attempt);
 
-            // Créer une certification si l'utilisateur a réussi
-            if (passed)
+            // Vérifier si c'est vraiment le quiz final de la formation
+            bool isFinalQuiz = formation.FinalQuizId.HasValue && formation.FinalQuizId.Value == quizId;
+
+            // Créer une certification uniquement si l'utilisateur a réussi le quiz final de la formation
+            if (passed && isFinalQuiz && sessionId > 0)
             {
                 // Créer la certification
                 var certification = new Certification
                 {
                     UserId = user.Id,
-                    SessionId = submitQuizDto.SessionId,
-                    Description = $"Certification pour {session.Formation.Title} - {session.Title}",
+                    SessionId = sessionId,
+                    Description = $"Certification pour {formation.Title}" + (session != null ? $" - {session.Title}" : ""),
                     Score = scorePercentage,
                     CreatedAt = DateTime.UtcNow
                 };
 
                 await _repositoryWrapper.Certifications.Create(certification);
 
-                // Envoyer une notification de félicitations
+                // Envoyer une notification de félicitations uniquement pour le quiz final
                 await _notificationService.SendNotificationAsync(
                     userId: user.Id,
                     title: "Félicitations pour votre certification !",
-                    body: $"Vous avez réussi le test de la formation \"{session.Formation.Title}\" avec un score de {scorePercentage:F1}%. Votre certification est maintenant disponible.",
+                    body: $"Vous avez réussi le test final de la formation \"{formation.Title}\" avec un score de {scorePercentage:F1}%. Votre certification est maintenant disponible.",
                     type: NotificationType.Success,
                     actionUrl: $"/condidat/certification/{certification.Id}"
                 );
             }
-            else
+            // Ne pas envoyer de notifications pour les quiz qui ne sont pas le quiz final de la formation
+            else if (passed && isFinalQuiz)
             {
-                // Envoyer une notification d'encouragement
+                // Envoyer une notification de félicitations uniquement pour le quiz final
                 await _notificationService.SendNotificationAsync(
                     userId: user.Id,
-                    title: "Résultat de votre test",
-                    body: $"Vous avez obtenu un score de {scorePercentage:F1}% au test de la formation \"{session.Formation.Title}\". Continuez vos efforts et réessayez !",
-                    type: NotificationType.Warning,
-                    actionUrl: $"/condidat/validate-quiz/{submitQuizDto.SessionId}"
+                    title: "Félicitations !",
+                    body: $"Vous avez réussi le test final avec un score de {scorePercentage:F1}%.",
+                    type: NotificationType.Success,
+                    actionUrl: $"/condidat/formations/{formation.Id}"
                 );
             }
+            else if (!passed && isFinalQuiz)
+            {
+                // Envoyer une notification d'encouragement uniquement pour le quiz final
+                await _notificationService.SendNotificationAsync(
+                    userId: user.Id,
+                    title: "Résultat de votre test final",
+                    body: $"Vous avez obtenu un score de {scorePercentage:F1}% au test final. Continuez vos efforts et réessayez !",
+                    type: NotificationType.Warning,
+                    actionUrl: $"/condidat/formations/{formation.Id}"
+                );
+            }
+            // Pour tous les autres quiz (modules, etc.), ne pas envoyer de notification
 
             // Retourner le résultat
             return Ok(new QuizResultDto

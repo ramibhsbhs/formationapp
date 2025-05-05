@@ -37,11 +37,69 @@ export class QuizService {
         return this.http.delete<void>(`${this.apiUrl}/${id}`);
     }
 
-    submitQuizAnswer(quizId: number, sessionId: number, answers: { questionId: number, selectedAnswerId: number }[]): Observable<{ score: number, passed: boolean }> {
-        return this.http.post<{ score: number, passed: boolean }>(`${this.apiUrl}/${quizId}/submit`, {
+    submitQuizAnswer(quizId: number, sessionId: number, answers: { questionId: number, selectedAnswerId: number }[]): Observable<{ score: number, passed: boolean, attemptId: number }> {
+        return this.http.post<{ score: number, passed: boolean, attemptId: number }>(`${this.apiUrl}/${quizId}/submit`, {
             sessionId,
-            answers
+            answers,
+            quizType: 'session'
         });
+    }
+
+    /**
+     * Soumet les réponses d'un utilisateur à un quiz de module
+     * @param quizId ID du quiz
+     * @param formationId ID de la formation
+     * @param moduleId ID du module
+     * @param sessionId ID de la session (optionnel)
+     * @param answers Réponses de l'utilisateur
+     * @returns Observable avec le résultat du quiz
+     */
+    submitModuleQuizAnswer(
+        quizId: number,
+        formationId: number,
+        moduleId: number,
+        answers: { questionId: number, selectedAnswerId: number }[],
+        sessionId?: number
+    ): Observable<{ score: number, passed: boolean, attemptId: number }> {
+        const payload: any = {
+            formationId,
+            moduleId,
+            answers,
+            quizType: 'module'
+        };
+
+        if (sessionId) {
+            payload.sessionId = sessionId;
+        }
+
+        return this.http.post<{ score: number, passed: boolean, attemptId: number }>(`${this.apiUrl}/${quizId}/submit`, payload);
+    }
+
+    /**
+     * Soumet les réponses d'un utilisateur à un quiz final
+     * @param quizId ID du quiz
+     * @param formationId ID de la formation
+     * @param sessionId ID de la session (optionnel)
+     * @param answers Réponses de l'utilisateur
+     * @returns Observable avec le résultat du quiz
+     */
+    submitFinalQuizAnswer(
+        quizId: number,
+        formationId: number,
+        answers: { questionId: number, selectedAnswerId: number }[],
+        sessionId?: number
+    ): Observable<{ score: number, passed: boolean, attemptId: number }> {
+        const payload: any = {
+            formationId,
+            answers,
+            quizType: 'final'
+        };
+
+        if (sessionId) {
+            payload.sessionId = sessionId;
+        }
+
+        return this.http.post<{ score: number, passed: boolean, attemptId: number }>(`${this.apiUrl}/${quizId}/submit`, payload);
     }
 
     /**

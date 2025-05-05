@@ -11,6 +11,9 @@ namespace formationApi.dtos.response
         public string Content { get; set; }
         public string Category { get; set; }
         public int? QuizId { get; set; }
+        public QuizDto Quiz { get; set; }
+        public bool FinalQuizPassed { get; set; } = false; // Indique si l'utilisateur a réussi le quiz final
+        public bool CanPassFinalWithoutModules { get; set; } = false; // Indique si l'utilisateur peut passer le quiz final sans avoir réussi tous les modules
         public List<CandidateFormationSessionDto> Sessions { get; set; }
         public ICollection<CondidatFormationModuleDto> Modules { get; set; } = new List<CondidatFormationModuleDto>();
     }
@@ -34,9 +37,9 @@ namespace formationApi.dtos.response
         public string Description { get; set; }
         public int Position { get; set; }
         public int? QuizId { get; set; }
+        public QuizDto Quiz { get; set; }
+        public int MaxAttempts { get; set; } = 3; // Nombre de tentatives autorisées pour le quiz du module
         public ICollection<AttachmentDto> Attachments { get; set; } = new List<AttachmentDto>();
-
-
     }
 
 
@@ -51,6 +54,8 @@ namespace formationApi.dtos.response
                 Description = module.Description,
                 Position = module.Position,
                 QuizId = module.QuizId,
+                Quiz = module.Quiz.ToDto(),
+                MaxAttempts = module.MaxAttempts,
                 Attachments = module.Attachments.ToDtos()
             };
 

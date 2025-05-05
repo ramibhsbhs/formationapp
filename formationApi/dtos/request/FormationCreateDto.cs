@@ -25,6 +25,8 @@ namespace formationApi.dtos.request
         [Range(0, int.MaxValue, ErrorMessage = "FinalQuizId must be a valid quiz ID.")]
         public int? FinalQuizId { get; set; }
 
+        public bool CanPassFinalWithoutModules { get; set; } = false;
+
         public List<SessionDto> Sessions { get; set; } = new List<SessionDto>();
 
         public List<ModuleDto> Modules { get; set; } = new List<ModuleDto>();
@@ -74,6 +76,8 @@ namespace formationApi.dtos.request
             [Range(0, int.MaxValue, ErrorMessage = "QuizId must be a valid quiz ID.")]
             public int? QuizId { get; set; }
 
+            [Range(0, int.MaxValue, ErrorMessage = "MaxAttempts must be a non-negative integer. Use 0 for unlimited attempts.")]
+            public int MaxAttempts { get; set; } = 3;
 
             public ICollection<CreateAttachmentDto> Attachments { get; set; } = new List<CreateAttachmentDto>();
 

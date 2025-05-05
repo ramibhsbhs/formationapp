@@ -8,6 +8,8 @@ export interface CondidatFormation {
     sessions: Session[]
     modules: Module[]
     quizId?: number // Quiz final
+    finalQuizPassed?: boolean // Indique si l'utilisateur a réussi le quiz final
+    canPassFinalWithoutModules?: boolean // Indique si l'utilisateur peut passer le quiz final sans avoir réussi tous les modules
     userProgress?: ModuleProgress[] // Progression de l'utilisateur dans les modules
 }
 
@@ -28,6 +30,7 @@ export interface Module {
     position: number;
     attachments: Attachment[];
     quizId?: number; // ID du quiz associé au module
+    maxAttempts: number; // Nombre maximum de tentatives pour le quiz du module (0 = illimité)
     isCompleted?: boolean; // Indique si le module est complété
     isAccessible?: boolean; // Indique si le module est accessible
 }

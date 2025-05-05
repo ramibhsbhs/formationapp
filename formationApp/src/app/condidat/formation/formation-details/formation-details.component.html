@@ -109,7 +109,8 @@
                             <h3 class="text-lg font-medium text-amber-800">Formation en cours</h3>
                             <div class="mt-2 text-sm text-amber-700">
                                 <p>Vous avez commencé cette formation mais ne l'avez pas encore terminée.
-                                    {{ hasAvailableSessions() ? 'Des sessions sont disponibles pour passer le test.' :
+                                    {{ hasAvailableSessions() ? 'Cliquez sur "Continuer la formation" pour reprendre ou
+                                    vous vous êtes arrêté .' :
                                     'Attendez une nouvelle session pour repasser le test.' }}</p>
                             </div>
                         </div>
@@ -153,17 +154,24 @@
                 </div>
             </div>
 
-            <!-- Bouton pour commencer la formation -->
-            <div *ngIf="!hasPassedFormation() && hasAvailableSessions()" class="mt-6 flex justify-center">
+            <!-- Bouton pour commencer ou continuer la formation -->
+            <div *ngIf="!hasPassedFormation() && hasAvailableSessions()" class="mt-6 flex justify-center space-x-4">
                 <button (click)="startFormation()"
                     class="px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-medium flex items-center transition-colors shadow-md">
                     <i class="fas fa-play-circle mr-2"></i>
-                    <span>Commencer la formation</span>
+                    <span>{{ hasAttemptedFormation() ? 'Continuer la formation' : 'Commencer la formation' }}</span>
+                </button>
+
+                <!-- Bouton pour passer directement le quiz final si autorisé -->
+                <button *ngIf="canTakeFinalQuiz() && formation && formation.quizId " (click)="goToFinalQuiz()"
+                    class="px-6 py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium flex items-center transition-colors shadow-md">
+                    <i class="fas fa-check-circle mr-2"></i>
+                    <span>Passer le quiz final</span>
                 </button>
             </div>
 
             <!-- Message si aucun module -->
-            <div *ngIf="formation.modules.length === 0" class="flex mt-4">
+            <div *ngIf="formation && formation.modules && formation.modules.length === 0" class="flex mt-4">
                 <div class="w-full relative group border rounded-lg p-4 bg-red-50 border-red-200">
                     <div class="flex items-center space-x-3">
                         <i class="fas fa-exclamation-circle text-red-500 text-2xl"></i>

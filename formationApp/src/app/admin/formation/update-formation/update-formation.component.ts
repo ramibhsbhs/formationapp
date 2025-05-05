@@ -71,7 +71,8 @@ export class UpdateFormationComponent implements OnInit, OnDestroy {
       title: ['', [Validators.required, Validators.minLength(3)]],
       description: ['', [Validators.required, Validators.minLength(10)]],
       content: ['', Validators.required],
-      finalQuizId: [null]
+      finalQuizId: [null],
+      canPassFinalWithoutModules: [false]
     });
 
     this.categoryForm = this.fb.group({
@@ -321,7 +322,8 @@ export class UpdateFormationComponent implements OnInit, OnDestroy {
       title: formation.title,
       description: formation.description,
       content: formation.content,
-      finalQuizId: formation.finalQuizId
+      finalQuizId: formation.finalQuizId,
+      canPassFinalWithoutModules: formation.canPassFinalWithoutModules || false
     });
     this.formationForm.markAsPristine();
   }
@@ -376,6 +378,9 @@ export class UpdateFormationComponent implements OnInit, OnDestroy {
     const formData = {
       ...this.formationForm.getRawValue()
     };
+    console.log(formData);
+    console.log(this.formationForm.value);
+
 
     this.formationService.updateFormationContent(this.formationId, formData).subscribe({
       next: () => {
@@ -423,13 +428,22 @@ export class UpdateFormationComponent implements OnInit, OnDestroy {
       title: ['', [Validators.required, Validators.minLength(3)]],
       description: ['', [Validators.required, Validators.minLength(10)]],
       position: [this.modules.length + 1, Validators.required],
-      quizId: [null]
+      quizId: [null],
+      maxAttempts: [3, [Validators.required, Validators.min(0)]]
     });
   }
 
   addModule(): void {
     this.modules.push(this.createModuleFormGroup());
     this.updateModulePositions();
+
+    // Faire défiler la page vers le bas après l'ajout d'un module
+    setTimeout(() => {
+      window.scrollTo({
+        top: document.body.scrollHeight,
+        behavior: 'smooth'
+      });
+    }, 100);
   }
 
   removeModule(index: number): void {
@@ -441,6 +455,23 @@ export class UpdateFormationComponent implements OnInit, OnDestroy {
     this.modules.controls.forEach((control, index) => {
       control.patchValue({ position: index + 1 });
     });
+  }
+
+  /**
+   * Supprime le quiz final de la formation
+   */
+  removeFinalQuiz(): void {
+    this.formationForm.patchValue({ finalQuizId: null });
+    this.formationForm.markAsDirty();
+  }
+
+  /**
+   * Supprime le quiz d'un module
+   * @param moduleIndex Index du module dans le tableau de modules
+   */
+  removeQuiz(moduleIndex: number): void {
+    this.modules.at(moduleIndex).patchValue({ quizId: null });
+    this.modules.markAsDirty();
   }
   moveModule(fromIndex: number, toIndex: number): void {
     const module = this.modules.at(fromIndex);
@@ -456,7 +487,8 @@ export class UpdateFormationComponent implements OnInit, OnDestroy {
       title: [module.title, [Validators.required, Validators.minLength(3)]],
       description: [module.description, [Validators.required, Validators.minLength(10)]],
       position: [module.position, Validators.required],
-      quizId: [module.quizId]
+      quizId: [module.quizId],
+      maxAttempts: [module.maxAttempts || 3, [Validators.required, Validators.min(0)]]
     }));
   }
 
@@ -642,15 +674,6 @@ export class UpdateFormationComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Remove the quiz from a module
-   * @param moduleIndex Index of the module in the form array
-   */
-  removeQuiz(moduleIndex: number): void {
-    this.modules.at(moduleIndex).patchValue({ quizId: null });
-    this.modules.markAsDirty();
-  }
-
-  /**
    * Get the title of a quiz by its ID
    * @param quizId ID of the quiz
    * @returns Title of the quiz or a default message
@@ -697,13 +720,5 @@ export class UpdateFormationComponent implements OnInit, OnDestroy {
         this.formationForm.markAsDirty();
       }
     });
-  }
-
-  /**
-   * Remove the final quiz from the formation
-   */
-  removeFinalQuiz(): void {
-    this.formationForm.patchValue({ finalQuizId: null });
-    this.formationForm.markAsDirty();
   }
 }

@@ -18,7 +18,10 @@ export class QuizPassingComponent implements OnInit {
   isFinished = false;
   score = 0;
   quizId!: number;
-  sessionId!: number;
+  sessionId?: number;
+  formationId?: number;
+  moduleId?: number;
+  quizType: string = 'session'; // 'session', 'module', ou 'final'
 
   constructor(
     private route: ActivatedRoute,
@@ -28,14 +31,65 @@ export class QuizPassingComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    this.quizId = +this.route.snapshot.paramMap.get('quizId')!;
-    this.sessionId = +this.route.snapshot.paramMap.get('sessionId')!;
+    // Récupérer les paramètres de l'URL
+    const params = this.route.snapshot.paramMap;
+    const queryParams = this.route.snapshot.queryParams;
 
-    if (!this.quizId || !this.sessionId) {
-      this.error = 'Paramètres invalides';
+    // Récupérer l'ID du quiz (obligatoire)
+    this.quizId = +params.get('quizId')!;
+
+    if (!this.quizId) {
+      this.error = 'ID de quiz invalide';
       return;
     }
 
+    // Récupérer le type de quiz (via les query params)
+    if (queryParams['type']) {
+      this.quizType = queryParams['type'];
+    }
+
+    // Récupérer les autres paramètres en fonction du type de quiz
+    if (this.quizType === 'module') {
+      // Quiz de module
+      this.formationId = +queryParams['formationId'];
+      this.moduleId = +queryParams['moduleId'];
+
+      // Récupérer le sessionId s'il existe
+      if (queryParams['sessionId']) {
+        this.sessionId = +queryParams['sessionId'];
+      }
+
+      if (!this.formationId || !this.moduleId) {
+        this.error = 'Paramètres invalides pour le quiz de module';
+        return;
+      }
+    } else if (this.quizType === 'final') {
+      // Quiz final
+      this.formationId = +queryParams['formationId'];
+
+      // Récupérer le sessionId s'il existe
+      if (queryParams['sessionId']) {
+        this.sessionId = +queryParams['sessionId'];
+      }
+
+      if (!this.formationId) {
+        this.error = 'Paramètres invalides pour le quiz final';
+        return;
+      }
+    } else {
+      // Cas par défaut - traiter comme un quiz final
+      this.sessionId = +params.get('sessionId')!;
+
+      if (!this.sessionId) {
+        this.error = 'ID de session invalide';
+        return;
+      }
+
+      // Définir le type de quiz comme "final" pour la suite du traitement
+      this.quizType = 'final';
+    }
+
+    // Charger le quiz
     this.loadQuiz(this.quizId);
   }
 
@@ -98,27 +152,140 @@ export class QuizPassingComponent implements OnInit {
       };
     });
 
-    // Soumettre les réponses à l'API
-    this.quizService.submitQuizAnswer(this.quizId, this.sessionId, formattedAnswers)
-      .subscribe({
-        next: (result) => {
-          this.isLoading = false;
-          this.isFinished = true;
-          this.score = result.score * this.totalPossiblePoints / 100; // Convertir le pourcentage en points
+    // Soumettre les réponses à l'API en fonction du type de quiz
+    let submitObservable;
 
-          // Afficher un message de succès
-          const message = result.passed
-            ? 'Félicitations ! Vous avez réussi le test.'
-            : 'Vous n\'avez pas obtenu le score minimum requis.';
-
-          this.toaster.showInfo(message, 'Résultat du test');
-        },
-        error: (err) => {
+    switch (this.quizType) {
+      case 'module':
+        if (!this.formationId || !this.moduleId) {
+          this.error = 'Paramètres invalides pour le quiz de module';
           this.isLoading = false;
-          this.error = err?.error?.message || 'Une erreur est survenue lors de la soumission du test.';
-          this.toaster.showInfo('Erreur lors de la soumission du test', 'Erreur');
+          return;
         }
-      });
+        submitObservable = this.quizService.submitModuleQuizAnswer(
+          this.quizId,
+          this.formationId,
+          this.moduleId,
+          formattedAnswers,
+          this.sessionId
+        );
+        break;
+
+      case 'final':
+        if (!this.formationId) {
+          this.error = 'Paramètres invalides pour le quiz final';
+          this.isLoading = false;
+          return;
+        }
+        submitObservable = this.quizService.submitFinalQuizAnswer(
+          this.quizId,
+          this.formationId,
+          formattedAnswers,
+          this.sessionId
+        );
+        break;
+
+      default:
+        // Traiter comme un quiz final par défaut
+        if (!this.sessionId) {
+          this.error = 'ID de session invalide';
+          this.isLoading = false;
+          return;
+        }
+
+        // Si nous avons un formationId, soumettre comme un quiz final
+        if (this.formationId) {
+          submitObservable = this.quizService.submitFinalQuizAnswer(
+            this.quizId,
+            this.formationId,
+            formattedAnswers,
+            this.sessionId
+          );
+        } else {
+          // Sinon, utiliser la méthode par défaut
+          submitObservable = this.quizService.submitQuizAnswer(
+            this.quizId,
+            this.sessionId,
+            formattedAnswers
+          );
+        }
+        break;
+    }
+
+    // S'abonner à l'observable
+    submitObservable.subscribe({
+      next: (result) => {
+        this.isLoading = false;
+        this.isFinished = true;
+        this.score = result.score * this.totalPossiblePoints / 100; // Convertir le pourcentage en points
+
+        // Afficher un message de succès
+        const message = result.passed
+          ? 'Félicitations ! Vous avez réussi le test.'
+          : 'Vous n\'avez pas obtenu le score minimum requis.';
+
+        this.toaster.showInfo(message, 'Résultat du test');
+
+        // Rediriger vers la page appropriée après un délai
+        setTimeout(() => {
+          this.navigateAfterQuiz(result.passed);
+        }, 3000);
+      },
+      error: (err) => {
+        this.isLoading = false;
+        this.error = err?.error?.message || 'Une erreur est survenue lors de la soumission du test.';
+        this.toaster.showInfo('Erreur lors de la soumission du test', 'Erreur');
+      }
+    });
+  }
+
+  /**
+   * Redirige l'utilisateur après avoir terminé le quiz
+   * @param passed Indique si l'utilisateur a réussi le quiz
+   */
+  navigateAfterQuiz(passed: boolean): void {
+    switch (this.quizType) {
+      case 'module':
+        // Toujours rediriger vers le module, qu'il ait réussi ou non
+        if (this.formationId && this.moduleId) {
+          // Construire l'URL du module
+          const moduleUrl = `/condidat/module/${this.formationId}/${this.moduleId}`;
+
+          // Ajouter le sessionId s'il existe
+          if (this.sessionId) {
+            this.router.navigate([moduleUrl, this.sessionId]);
+          } else {
+            this.router.navigate([moduleUrl]);
+          }
+
+          // Afficher un message de succès ou d'échec
+          if (passed) {
+            this.toaster.showInfo('Vous avez réussi le quiz du module !', 'Félicitations');
+          } else {
+            this.toaster.showInfo('Vous n\'avez pas obtenu le score minimum requis. Vous pouvez réessayer.', 'Information');
+          }
+        }
+        break;
+
+      case 'final':
+        // Rediriger vers la page de détails de la formation
+        if (this.formationId) {
+          this.router.navigate([`/condidat/formations/${this.formationId}`]);
+
+          // Afficher un message de succès ou d'échec
+          if (passed) {
+            this.toaster.showInfo('Vous avez réussi le quiz final de la formation !', 'Félicitations');
+          } else {
+            this.toaster.showInfo('Vous n\'avez pas obtenu le score minimum requis pour le quiz final. Vous pouvez réessayer.', 'Information');
+          }
+        }
+        break;
+
+      default:
+        // Rediriger vers la liste des formations
+        this.router.navigate(['/condidat/formations']);
+        break;
+    }
   }
 
 

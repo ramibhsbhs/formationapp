@@ -3,19 +3,20 @@
         <div class="rounded-2xl overflow-hidden">
             <!-- Header -->
             <div class="px-8 py-6">
-                <h1 class="text-3xl font-bold">Create New Formation</h1>
-                <p class="mt-1 text-sm text-gray-600">Fill in the details below to create a new training formation</p>
+                <h1 class="text-3xl font-bold">Créer une nouvelle formation</h1>
+                <p class="mt-1 text-sm text-gray-600">Remplissez les détails ci-dessous pour créer une nouvelle
+                    formation</p>
             </div>
 
             <!-- Form Content -->
             <div class="p-8">
                 <form [formGroup]="formationForm" (ngSubmit)="onSubmit()" class="space-y-8">
-                    <!-- Basic Information -->
+                    <!-- Informations de base -->
                     <div class="bg-white shadow rounded-lg p-6">
-                        <h2 class="text-2xl font-bold mb-6">Basic Information</h2>
+                        <h2 class="text-2xl font-bold mb-6">Informations de base</h2>
                         <div class="grid grid-cols-1 gap-6">
                             <div>
-                                <label class="block text-sm font-medium text-gray-700">Title</label>
+                                <label class="block text-sm font-medium text-gray-700">Titre</label>
                                 <input type="text" formControlName="title"
                                     class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring-primary" />
                             </div>
@@ -25,16 +26,16 @@
                                     class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring-primary"></textarea>
                             </div>
                             <div>
-                                <label class="block text-sm font-medium text-gray-700">Content</label>
+                                <label class="block text-sm font-medium text-gray-700">Contenu</label>
                                 <textarea formControlName="content" rows="5"
                                     class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring-primary"></textarea>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Categories Section -->
+                    <!-- Section Catégories -->
                     <div class="bg-white shadow rounded-lg p-6">
-                        <h2 class="text-2xl font-bold mb-6">Category</h2>
+                        <h2 class="text-2xl font-bold mb-6">Catégorie</h2>
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                             <div *ngFor="let category of categories" class="category-item">
                                 <input type="radio" [id]="'category-' + category" [value]="category"
@@ -51,9 +52,9 @@
                         </div>
                     </div>
 
-                    <!-- Roles Section -->
+                    <!-- Section Rôles -->
                     <div class="bg-white shadow rounded-lg p-6">
-                        <h2 class="text-2xl font-bold mb-6">Roles</h2>
+                        <h2 class="text-2xl font-bold mb-6">Rôles</h2>
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                             <div *ngFor="let role of availableRoles" class="role-item">
                                 <input type="checkbox" [id]="'role-' + role"
@@ -71,12 +72,13 @@
                         </div>
                     </div>
 
-                    <!-- Final Quiz Section -->
+                    <!-- Section Quiz Final -->
                     <div class="bg-white shadow rounded-lg p-6">
-                        <h2 class="text-2xl font-bold mb-6">Final Quiz</h2>
+                        <h2 class="text-2xl font-bold mb-6">Quiz Final</h2>
                         <div class="flex items-center space-x-4">
                             <div class="flex-1">
-                                <label class="block text-sm font-medium text-gray-700">Select Final Quiz</label>
+                                <label class="block text-sm font-medium text-gray-700">Sélectionner un Quiz
+                                    Final</label>
                                 <div class="mt-1">
                                     <button type="button" (click)="openQuizSelectionDialog('formation')"
                                         class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
@@ -86,11 +88,30 @@
                                 </div>
                             </div>
                         </div>
+                        <div class="mt-6 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                            <div class="flex items-center">
+                                <div class="flex items-center h-5">
+                                    <input type="checkbox" id="canPassFinalWithoutModules"
+                                        formControlName="canPassFinalWithoutModules"
+                                        class="h-4 w-4 rounded border-blue-300 text-blue-600 focus:ring-blue-500">
+                                </div>
+                                <div class="ml-3 text-sm">
+                                    <label for="canPassFinalWithoutModules" class="font-medium text-gray-700">
+                                        Permettre aux utilisateurs de passer le quiz final sans avoir complété tous les
+                                        quiz des modules
+                                    </label>
+                                    <p class="text-gray-500 mt-1">
+                                        Si activé, les utilisateurs pourront accéder au quiz final même s'ils n'ont pas
+                                        réussi tous les quiz des modules.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
-                    <!-- Groups Section -->
+                    <!-- Section Groupes -->
                     <div class="bg-white shadow rounded-lg p-6">
-                        <h2 class="text-2xl font-bold mb-6">Target Groups</h2>
+                        <h2 class="text-2xl font-bold mb-6">Groupes Cibles</h2>
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                             <div *ngFor="let group of groups" class="group-item">
                                 <input type="checkbox" [id]="'group-' + group.id"
@@ -110,14 +131,14 @@
                         </div>
                     </div>
 
-                    <!-- Modules Section -->
+                    <!-- Section Modules -->
                     <div class="bg-white shadow rounded-lg p-6">
                         <div class="flex justify-between items-center mb-6">
                             <h2 class="text-2xl font-bold">Modules</h2>
                             <button type="button" (click)="addModule()"
                                 class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-primary hover:bg-primary-dark">
                                 <i class="fas fa-plus mr-2"></i>
-                                Add Module
+                                Ajouter un Module
                             </button>
                         </div>
 
@@ -128,7 +149,7 @@
                                     <div class="flex-1">
                                         <div class="grid grid-cols-1 gap-4">
                                             <div>
-                                                <label class="block text-sm font-medium text-gray-700">Title</label>
+                                                <label class="block text-sm font-medium text-gray-700">Titre</label>
                                                 <input type="text" formControlName="title"
                                                     class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring-primary" />
                                             </div>
@@ -146,6 +167,34 @@
                                                         {{ getQuizTitle(module.get('quizId')?.value) }}
                                                         <i class="fas fa-chevron-down ml-2"></i>
                                                     </button>
+                                                </div>
+                                            </div>
+                                            <div *ngIf="module.get('quizId')?.value"
+                                                class="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+                                                <label class="block text-sm font-medium text-gray-700 mb-2">
+                                                    Nombre maximum de tentatives
+                                                </label>
+                                                <div class="flex items-center">
+                                                    <div class="relative rounded-md shadow-sm w-full">
+                                                        <div
+                                                            class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                                            <i class="fas fa-redo text-yellow-500"></i>
+                                                        </div>
+                                                        <input type="number" formControlName="maxAttempts" min="0"
+                                                            class="pl-10 block w-32 rounded-md border-yellow-300 shadow-sm focus:border-yellow-500 focus:ring-yellow-500" />
+                                                    </div>
+                                                </div>
+                                                <div class="mt-2 flex items-start">
+                                                    <div class="flex-shrink-0">
+                                                        <i class="fas fa-info-circle text-yellow-600"></i>
+                                                    </div>
+                                                    <div class="ml-2">
+                                                        <p class="text-sm text-gray-600">
+                                                            Définissez le nombre maximum de tentatives autorisées pour
+                                                            ce quiz. Utilisez <strong>0</strong> pour des tentatives
+                                                            illimitées.
+                                                        </p>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
@@ -176,14 +225,14 @@
                         </div>
                     </div>
 
-                    <!-- Sessions Section -->
+                    <!-- Section Sessions -->
                     <div class="bg-white shadow rounded-lg p-6">
                         <div class="flex justify-between items-center mb-6">
                             <h2 class="text-2xl font-bold">Sessions</h2>
                             <button type="button" (click)="addSession()"
                                 class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-primary hover:bg-primary-dark">
                                 <i class="fas fa-plus mr-2"></i>
-                                Add Session
+                                Ajouter une Session
                             </button>
                         </div>
 
@@ -192,17 +241,17 @@
                                 class="session-item">
                                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                                     <div>
-                                        <label class="block text-sm font-medium text-gray-700">Title</label>
+                                        <label class="block text-sm font-medium text-gray-700">Titre</label>
                                         <input type="text" formControlName="title"
                                             class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring-primary" />
                                     </div>
                                     <div>
-                                        <label class="block text-sm font-medium text-gray-700">Start Date</label>
+                                        <label class="block text-sm font-medium text-gray-700">Date de début</label>
                                         <input type="date" formControlName="startDate"
                                             class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring-primary" />
                                     </div>
                                     <div>
-                                        <label class="block text-sm font-medium text-gray-700">End Date</label>
+                                        <label class="block text-sm font-medium text-gray-700">Date de fin</label>
                                         <input type="date" formControlName="endDate"
                                             class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring-primary" />
                                     </div>
@@ -217,11 +266,11 @@
                         </div>
                     </div>
 
-                    <!-- Submit Button -->
+                    <!-- Bouton de soumission -->
                     <div class="flex justify-end">
                         <button type="submit"
                             class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-primary hover:bg-primary-dark disabled:opacity-50">
-                            Create Formation
+                            Créer la Formation
                         </button>
                     </div>
                 </form>
