@@ -8,7 +8,7 @@ import { AttachmentService } from 'src/app/core/services/attachment.service';
 import { FormationService } from 'src/app/core/services/formation.service';
 import { QuizService } from 'src/app/core/services/quiz.service';
 
-type ActiveTabText = "info" | "sessions" | "groups" | "modules" | "results";
+type ActiveTabText = "info" | "sessions" | "groups" | "modules" | "results" | "feedbacks";
 @Component({
   selector: 'app-formation-detail',
   templateUrl: './formation-detail.component.html',

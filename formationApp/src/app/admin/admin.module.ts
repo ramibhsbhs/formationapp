@@ -20,6 +20,8 @@ import { CreateFormationComponent } from './formation/create-formation/create-fo
 import { UpdateFormationComponent } from './formation/update-formation/update-formation.component';
 import { QuizPassingComponent } from '../condidat/quiz/quiz-passing/quiz-passing.component';
 import { FormationDetailComponent } from './formation/formation-detail/formation-detail.component';
+import { AdminCertificationListComponent } from './certification/certification-list/certification-list.component';
+
 
 @NgModule({
   declarations: [
@@ -35,7 +37,8 @@ import { FormationDetailComponent } from './formation/formation-detail/formation
     QuizDetailsComponent,
     UpdateQuizsComponent,
     UpdateFormationComponent,
-    FormationDetailComponent
+    FormationDetailComponent,
+    AdminCertificationListComponent,
   ],
   imports: [
     CommonModule,
@@ -43,7 +46,7 @@ import { FormationDetailComponent } from './formation/formation-detail/formation
     ReactiveFormsModule,
     MatDialogModule,
     FormsModule,
-    SharedModule
+    SharedModule,
   ]
 })
 export class AdminModule { }

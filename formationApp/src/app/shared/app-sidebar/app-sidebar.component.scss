@@ -9,6 +9,9 @@
     // &:hover {
     //     background-color: var(--sidebar-hover);
     // }
+    &.active {
+        background-color: var(--primary);
+    }
 
     i {
         display: flex;

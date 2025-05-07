@@ -4,7 +4,7 @@ import { HomeComponent } from './home/home.component';
 import { FormationsComponent } from './formation/formations/formations.component';
 import { FormationDetailsComponent } from './formation/formation-details/formation-details.component';
 import { QuizPassingComponent } from './quiz/quiz-passing/quiz-passing.component';
-import { CertificationDeatilsComponent } from './certification/certification-deatils/certification-deatils.component';
+import { CertificationDetailsComponent } from '../shared/certification-details/certification-details.component';
 import { CertificationListComponent } from './certification/certification-list/certification-list.component';
 import { QuizValidationComponent } from './quiz/quiz-validation/quiz-validation.component';
 import { NotificationsComponent } from './notifications/notifications.component';
@@ -25,7 +25,7 @@ const routes: Routes = [
   { path: "module/:formationId/:moduleId/:sessionId", component: ModuleViewComponent },
 
   { path: "certification", component: CertificationListComponent },
-  { path: "certification/:id", component: CertificationDeatilsComponent },
+  { path: "certification/:id", component: CertificationDetailsComponent },
   { path: "notifications", component: NotificationsComponent },
 ];
 

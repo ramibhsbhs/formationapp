@@ -1,3 +1,18 @@
+/**
+ * Type de tentative de quiz
+ */
+export enum AttemptType {
+    /**
+     * Quiz de module
+     */
+    Module = 0,
+
+    /**
+     * Quiz final de formation
+     */
+    Formation = 1
+}
+
 export interface QuizAttempt {
     id: number;
     userId: number;
@@ -9,6 +24,13 @@ export interface QuizAttempt {
     score: number;
     hasPassed: boolean;
     createdAt: Date;
+
+    // Type de tentative (Module ou Formation)
+    attemptType?: AttemptType;
+
+    // ID du module associé (si attemptType = Module)
+    moduleId?: number;
+
     user?: {
         id: number;
         userName: string;
@@ -23,6 +45,17 @@ export interface QuizAttempt {
     session?: {
         id: number;
         title: string;
+        startDate?: string;
+        endDate?: string;
+        formation?: {
+            id: number;
+            title: string;
+        }
+    };
+    module?: {
+        id: number;
+        title: string;
+        position: number;
         formation?: {
             id: number;
             title: string;
@@ -55,4 +88,16 @@ export interface FormationResults {
         sessionTitle: string;
         attempts: QuizAttempt[];
     }[];
+}
+
+/**
+ * Résultat d'une tentative de quiz
+ */
+export interface QuizResult {
+    score: number;
+    passed: boolean;
+    attemptId: number;
+    attemptType: AttemptType;
+    moduleId?: number;
+    formationId?: number;
 }

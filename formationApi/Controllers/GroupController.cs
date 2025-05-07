@@ -3,6 +3,9 @@ using formationApi.data.Entities;
 using formationApi.data.Repositories;
 using formationApi.data.Repositories.FormationRepo;
 using formationApi.dtos.request;
+using formationApi.dtos.response;
+using formationApi.Extensions;
+using formationApi.Helper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -28,14 +31,42 @@ namespace formationApi.Controllers
             return Ok(groups.ToDtoList());
         }
 
+
+
+        /// <summary>
+        /// Get the group of the current supervisor
+        /// </summary>
+        /// <returns>The group of the current supervisor</returns>
+        [HttpGet("current")]
+        [Authorize]
+        public async Task<ActionResult<GroupDto>> GetSupervisorGroup()
+        {
+            // Vérifier si l'utilisateur est un superviseur
+            if (!User.IsSupervisor())
+            {
+                return Forbid("Only supervisors can access their group information.");
+            }
+
+            int userId = User.GetUserId();
+            var group = await _repositoryWrapper.Group.GetGroupByUserId(userId);
+
+            if (group == null)
+                return NotFound("You are not assigned to any group.");
+
+            return Ok(group.ToDto());
+        }
         /// <summary>
         /// Get all groups
         /// </summary>
         /// <returns>A list of all groups</returns>
-        [HttpGet("{id}")]
+        [HttpGet("{id:int}")]
         public async Task<ActionResult<Group>> Get(int id)
         {
-            return Ok(await _repositoryWrapper.Group.Get(id));
+            var group = await _repositoryWrapper.Group.Get(id);
+            if (group == null)
+                return NotFound($"Group with ID {id} not found.");
+
+            return Ok(group.ToDto());
         }
         /// <summary>
         /// Create a new group (Admin only)
@@ -78,7 +109,7 @@ namespace formationApi.Controllers
         /// <param name="userIds">List of user IDs to add to the group</param>
         /// <returns>The updated group</returns>
         [Authorize(Roles = "Administrator")]
-        [HttpPut("{groupId}/users")]
+        [HttpPut("{groupId:int}/users")]
         public async Task<ActionResult> AddUsersToGroup(int groupId, [FromBody] ICollection<int> userIds)
         {
             if (userIds == null || !userIds.Any())
@@ -132,7 +163,7 @@ namespace formationApi.Controllers
         /// <param name="userIds">List of user IDs to remove from the group</param>
         /// <returns>The updated group</returns>
         [Authorize(Roles = "Administrator")]
-        [HttpDelete("{groupId}/users")]
+        [HttpDelete("{groupId:int}/users")]
         public async Task<ActionResult> RemoveUsersFromGroup(int groupId, [FromBody] ICollection<int> userIds)
         {
             if (userIds == null || !userIds.Any())

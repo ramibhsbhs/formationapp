@@ -35,6 +35,7 @@ namespace formationApi.Controllers
             var isHierarchicalLeader = userRoles.Contains("HierarchicalLeader");
             var isTeamLeader = userRoles.Contains("TeamLeader");
             var isPostLeader = userRoles.Contains("PostLeader");
+            var isQualityAgent = userRoles.Contains("QualityAgent");
 
             var formations = await _repositoryWrapper.Formation.GetAll();
 
@@ -63,10 +64,17 @@ namespace formationApi.Controllers
                 formations = formations.Where(f => f.Groups.Contains(userGroup)).ToList();
                 return formations.ToDtoList();
             }
-            else if (isTeamLeader || isPostLeader)
+            else if (isTeamLeader || isPostLeader || isQualityAgent)
             {
-                // TeamLeader and PostLeader see formations where their role is required and their group is assigned
-                var roleName = isTeamLeader ? "TeamLeader" : "PostLeader";
+                // TeamLeader, PostLeader and QualityAgent see formations where their role is required and their group is assigned
+                string roleName;
+                if (isTeamLeader)
+                    roleName = "TeamLeader";
+                else if (isPostLeader)
+                    roleName = "PostLeader";
+                else
+                    roleName = "QualityAgent";
+
                 formations = formations.Where(f =>
                     f.Roles.Any(r => r.Name == roleName) &&
                     f.Groups.Any(g => g.Users.Any(u => u.Id == user.Id))
@@ -89,7 +97,7 @@ namespace formationApi.Controllers
                 return new List<CandidateFormationDto>();
 
             var userRoles = await _repositoryWrapper.UserManager.GetRolesAsync(user);
-            var isCandidate = userRoles.Contains("TeamLeader") || userRoles.Contains("PostLeader");
+            var isCandidate = userRoles.Contains("TeamLeader") || userRoles.Contains("PostLeader") || userRoles.Contains("QualityAgent");
 
             if (!isCandidate)
                 return new List<CandidateFormationDto>();
@@ -105,7 +113,7 @@ namespace formationApi.Controllers
                                 .ToListAsync();
 
             var userFormations = formations
-                .Where(f => f.Roles.Any(r => r.Name == "TeamLeader" || r.Name == "PostLeader") &&
+                .Where(f => f.Roles.Any(r => r.Name == "TeamLeader" || r.Name == "PostLeader" || r.Name == "QualityAgent") &&
                             f.Groups.Any(g => g.Users.Any(u => u.Id == user.Id)))
                 .ToList();
             var userQuizAttempts = await _repositoryWrapper.QuizAttempt.GetAllAsQueryable()

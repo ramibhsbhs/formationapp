@@ -1,0 +1,75 @@
+<div class="bg-white rounded-lg shadow-xl max-w-4xl w-full mx-auto">
+    <!-- Header -->
+    <div class="px-8 py-5 border-b border-gray-200">
+        <div class="flex items-center justify-between">
+            <h2 class="text-2xl font-semibold text-gray-900">Donnez votre avis</h2>
+            <button (click)="onCancel()" class="text-gray-400 hover:text-gray-500 transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+        </div>
+    </div>
+
+    <!-- Form Content -->
+    <div class="p-8">
+        <form [formGroup]="form" (ngSubmit)="onSubmit()">
+            <div class="space-y-8">
+                <!-- Formation Title -->
+                <div class="text-center">
+                    <h3 class="text-lg font-medium text-gray-700">Formation: {{ data.formationTitle }}</h3>
+                    <p class="text-sm text-gray-500 mt-1">Merci de nous donner votre avis sur cette formation</p>
+                </div>
+
+                <!-- Star Rating -->
+                <div class="flex flex-col items-center">
+                    <label class="block text-base font-medium text-gray-700 mb-4">Votre note</label>
+                    <div class="flex space-x-4">
+                        <button *ngFor="let star of stars" type="button" (click)="setRating(star)"
+                            (mouseenter)="setHoverRating(star)" (mouseleave)="resetHoverRating()"
+                            class="text-3xl focus:outline-none star-btn px-1">
+                            <i class="fas fa-star" [class.text-yellow-400]="(hoverRating || selectedRating) >= star"
+                                [class.text-gray-300]="(hoverRating || selectedRating) < star"></i>
+                        </button>
+                    </div>
+                    <div class="mt-2 text-sm"
+                        [ngClass]="{'text-yellow-500': selectedRating > 0, 'text-gray-500': selectedRating === 0}">
+                        {{ selectedRating > 0 ? selectedRating + '/5' : 'Cliquez pour noter' }}
+                    </div>
+                </div>
+
+                <!-- Description -->
+                <div>
+                    <label for="description" class="block text-base font-medium text-gray-700 mb-2">Commentaire
+                        (optionnel)</label>
+                    <div class="mt-1">
+                        <textarea id="description" formControlName="description" rows="4"
+                            class="block w-full px-4 py-3 text-base border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-primary focus:border-primary text-black"
+                            placeholder="Partagez votre expérience..."></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Actions -->
+            <div class="mt-8 flex justify-end space-x-4">
+                <button type="button" (click)="onCancel()"
+                    class="inline-flex justify-center px-6 py-3 text-base font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary">
+                    Annuler
+                </button>
+                <button type="submit" [disabled]="!form.valid || selectedRating === 0 || isLoading"
+                    class="inline-flex justify-center px-6 py-3 text-base font-medium text-white bg-primary border border-transparent rounded-md shadow-sm hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary disabled:opacity-50 disabled:cursor-not-allowed">
+                    <svg *ngIf="isLoading" class="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+                        xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4">
+                        </circle>
+                        <path class="opacity-75" fill="currentColor"
+                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                        </path>
+                    </svg>
+                    Envoyer
+                </button>
+            </div>
+        </form>
+    </div>
+</div>

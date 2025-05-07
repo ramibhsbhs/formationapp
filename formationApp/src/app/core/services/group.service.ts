@@ -9,7 +9,7 @@ import { User } from '../models/user.model';
     providedIn: 'root'
 })
 export class GroupService {
-    
+
     private apiUrl = `${environment.baseUrl}/group`;
 
     constructor(private http: HttpClient) { }
@@ -22,11 +22,19 @@ export class GroupService {
         return this.http.get<Group>(`${this.apiUrl}/${id}`);
     }
 
+    /**
+     * Récupère le groupe du superviseur connecté
+     * @returns Le groupe du superviseur
+     */
+    getSupervisorGroup(): Observable<Group> {
+        return this.http.get<Group>(`${this.apiUrl}/current`);
+    }
+
     createGroup(newGroup: Partial<Group>) {
-       return this.http.post<Group>(this.apiUrl, newGroup);
+        return this.http.post<Group>(this.apiUrl, newGroup);
     }
 
     createUser(model: any) {
         return this.http.post<User>(`${environment.baseUrl}/users/create-user`, model);
     }
-} 
+}

@@ -1,0 +1,31 @@
+.primary {
+  color: #4a90e2; /* Example primary color */
+}
+
+.primary-dark {
+  color: #357abd; /* Darker shade for hover */
+}
+
+.border-primary {
+  border-color: #4a90e2;
+}
+
+.bg-primary {
+  background-color: #4a90e2;
+}
+
+.text-primary {
+  color: #4a90e2;
+}
+
+.hover\:bg-primary-dark:hover {
+  background-color: #357abd;
+}
+
+.min-h-\[80px\] {
+  min-height: 80px;
+}
+
+.min-h-\[120px\] {
+  min-height: 120px;
+}

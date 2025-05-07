@@ -45,6 +45,7 @@ namespace formationApi.Controllers
                 .Include(a => a.Quiz)
                 .Include(a => a.Session)
                 .ThenInclude(s => s.Formation)
+                .Include(a => a.Module)
                 .Include(a => a.QuestionResponses)
                 .ThenInclude(qr => qr.Question)
                 .ThenInclude(q => q.Answers)
@@ -68,6 +69,8 @@ namespace formationApi.Controllers
                     Score = a.Score ?? 0,
                     HasPassed = a.HasPassed,
                     CreatedAt = a.CreatedAt,
+                    AttemptType = a.AttemptType,
+                    ModuleId = a.ModuleId,
                     User = new UserDto
                     {
                         Id = a.User.Id,
@@ -89,6 +92,17 @@ namespace formationApi.Controllers
                             Title = a.Session.Formation.Title
                         }
                     },
+                    Module = a.Module != null ? new ModuleBasicDto
+                    {
+                        Id = a.Module.Id,
+                        Title = a.Module.Title,
+                        Position = a.Module.Position,
+                        Formation = new FormationBasicDto
+                        {
+                            Id = a.Module.FormationId,
+                            Title = a.Module.Formation?.Title ?? ""
+                        }
+                    } : null,
                     QuestionResponses = a.QuestionResponses.Select(qr => new QuestionResponseDto
                     {
                         Id = qr.Id,
@@ -157,6 +171,7 @@ namespace formationApi.Controllers
                 .Where(a => a.SessionId == sessionId)
                 .Include(a => a.User)
                 .Include(a => a.Quiz)
+                .Include(a => a.Module)
                 .OrderByDescending(a => a.Score)
                 .ToListAsync();
 
@@ -173,6 +188,8 @@ namespace formationApi.Controllers
                 Score = a.Score ?? 0,
                 HasPassed = a.HasPassed,
                 CreatedAt = a.CreatedAt,
+                AttemptType = a.AttemptType,
+                ModuleId = a.ModuleId,
                 User = new UserDto
                 {
                     Id = a.User.Id,
@@ -183,7 +200,13 @@ namespace formationApi.Controllers
                 {
                     Id = a.Quiz.Id,
                     Title = a.Quiz.Title
-                }
+                },
+                Module = a.Module != null ? new ModuleBasicDto
+                {
+                    Id = a.Module.Id,
+                    Title = a.Module.Title,
+                    Position = a.Module.Position
+                } : null
             }).ToList();
 
             return Ok(resultsDto);
@@ -371,6 +394,155 @@ namespace formationApi.Controllers
         }
 
         /// <summary>
+        /// Récupère les résultats de quiz pour une formation spécifique, filtrés par le groupe du superviseur
+        /// </summary>
+        /// <param name="formationId">ID de la formation</param>
+        /// <returns>Résultats de quiz pour la formation, filtrés par groupe</returns>
+        [HttpGet("formation/{formationId:int}/supervisor")]
+        [Authorize(Roles = "HierarchicalLeader,TeamLeader,PostLeader")]
+        public async Task<ActionResult<FormationResultsDto>> GetFormationResultsForSupervisor(int formationId)
+        {
+            // Récupérer l'utilisateur courant (superviseur)
+            var user = await _repositoryWrapper.UserManager.GetUserAsync(User);
+            if (user == null)
+                return Unauthorized("Utilisateur non trouvé");
+
+            // Vérifier si l'utilisateur appartient à un groupe
+            if (!user.GroupId.HasValue)
+                return BadRequest("Vous n'êtes pas associé à un groupe");
+
+            // Récupérer la formation
+            var formation = await _repositoryWrapper.Formation.GetAllAsQueryable()
+                .Include(f => f.Sessions)
+                .FirstOrDefaultAsync(f => f.Id == formationId);
+
+            if (formation == null)
+                return NotFound("Formation non trouvée");
+
+            // Récupérer toutes les sessions de la formation
+            var sessionIds = formation.Sessions.Select(s => s.Id).ToList();
+
+            // Récupérer les utilisateurs du même groupe que le superviseur
+            var usersInGroup = await _repositoryWrapper.UserManager.Users
+                .Where(u => u.GroupId == user.GroupId)
+                .Select(u => u.Id)
+                .ToListAsync();
+
+            // Récupérer toutes les tentatives de quiz pour ces sessions et pour les utilisateurs du groupe
+            var attempts = await _repositoryWrapper.QuizAttempt.GetAllAsQueryable()
+                .Where(a => sessionIds.Contains(a.SessionId) && usersInGroup.Contains(a.UserId))
+                .Include(a => a.User)
+                .Include(a => a.Quiz)
+                .Include(a => a.Session)
+                .ThenInclude(s => s.Formation)
+                .Include(a => a.Module)
+                .Include(a => a.QuestionResponses)
+                .ThenInclude(qr => qr.Question)
+                .ThenInclude(q => q.Answers)
+                .OrderByDescending(a => a.Score)
+                .ToListAsync();
+
+            // Créer le DTO de résultats
+            var resultsDto = new FormationResultsDto
+            {
+                FormationId = formationId,
+                FormationTitle = formation.Title,
+                Attempts = attempts.Select(a => new QuizAttemptDto
+                {
+                    Id = a.Id,
+                    UserId = a.UserId,
+                    QuizId = a.QuizId,
+                    SessionId = a.SessionId,
+                    StartTime = a.StartTime,
+                    AttemptedAt = a.AttemptedAt ?? a.CreatedAt,
+                    IsCompleted = a.IsCompleted,
+                    Score = a.Score ?? 0,
+                    HasPassed = a.HasPassed,
+                    CreatedAt = a.CreatedAt,
+                    AttemptType = a.AttemptType,
+                    ModuleId = a.ModuleId,
+                    User = new UserDto
+                    {
+                        Id = a.User.Id,
+                        UserName = a.User.UserName,
+                        Email = a.User.Email
+                    },
+                    Quiz = new QuizBasicDto
+                    {
+                        Id = a.Quiz.Id,
+                        Title = a.Quiz.Title
+                    },
+                    Session = new SessionBasicDto
+                    {
+                        Id = a.Session.Id,
+                        Title = a.Session.Title,
+                        Formation = new FormationBasicDto
+                        {
+                            Id = a.Session.Formation.Id,
+                            Title = a.Session.Formation.Title
+                        }
+                    },
+                    Module = a.Module != null ? new ModuleBasicDto
+                    {
+                        Id = a.Module.Id,
+                        Title = a.Module.Title,
+                        Position = a.Module.Position,
+                        Formation = new FormationBasicDto
+                        {
+                            Id = a.Module.FormationId,
+                            Title = a.Module.Formation?.Title ?? ""
+                        }
+                    } : null,
+                    QuestionResponses = a.QuestionResponses.Select(qr => new QuestionResponseDto
+                    {
+                        Id = qr.Id,
+                        QuestionId = qr.QuestionId,
+                        SelectedAnswerIds = qr.SelectedAnswerIds,
+                        Question = new QuestionWithAnswersDto
+                        {
+                            Id = qr.Question.Id,
+                            Title = qr.Question.Title,
+                            Answers = qr.Question.Answers.Select(ans => new AnswerDto
+                            {
+                                Id = ans.Id,
+                                Text = ans.Text,
+                                IsCorrect = ans.IsCorrect
+                            }).ToList()
+                        }
+                    }).ToList()
+                }).ToList(),
+                SessionResults = formation.Sessions.Select(s => new SessionResultsDto
+                {
+                    SessionId = s.Id,
+                    SessionTitle = s.Title,
+                    Attempts = attempts
+                        .Where(a => a.SessionId == s.Id)
+                        .Select(a => new QuizAttemptDto
+                        {
+                            Id = a.Id,
+                            UserId = a.UserId,
+                            QuizId = a.QuizId,
+                            SessionId = a.SessionId,
+                            StartTime = a.StartTime,
+                            AttemptedAt = a.AttemptedAt ?? a.CreatedAt,
+                            IsCompleted = a.IsCompleted,
+                            Score = a.Score ?? 0,
+                            HasPassed = a.HasPassed,
+                            CreatedAt = a.CreatedAt,
+                            User = new UserDto
+                            {
+                                Id = a.User.Id,
+                                UserName = a.User.UserName,
+                                Email = a.User.Email
+                            }
+                        }).ToList()
+                }).ToList()
+            };
+
+            return Ok(resultsDto);
+        }
+
+        /// <summary>
         /// Récupère une tentative de quiz spécifique
         /// </summary>
         /// <param name="attemptId">ID de la tentative</param>
@@ -385,6 +557,7 @@ namespace formationApi.Controllers
                 .Include(a => a.User)
                 .Include(a => a.Quiz)
                 .Include(a => a.Session)
+                .Include(a => a.Module)
                 .Include(a => a.QuestionResponses)
                 .ThenInclude(qr => qr.Question)
                 .ThenInclude(q => q.Answers)
@@ -413,6 +586,8 @@ namespace formationApi.Controllers
                 Score = attempt.Score ?? 0,
                 HasPassed = attempt.HasPassed,
                 CreatedAt = attempt.CreatedAt,
+                AttemptType = attempt.AttemptType,
+                ModuleId = attempt.ModuleId,
                 User = new UserDto
                 {
                     Id = attempt.User.Id,
@@ -429,6 +604,12 @@ namespace formationApi.Controllers
                     Id = attempt.Session.Id,
                     Title = attempt.Session.Title
                 },
+                Module = attempt.Module != null ? new ModuleBasicDto
+                {
+                    Id = attempt.Module.Id,
+                    Title = attempt.Module.Title,
+                    Position = attempt.Module.Position
+                } : null,
                 QuestionResponses = attempt.QuestionResponses.Select(qr => new QuestionResponseDto
                 {
                     Id = qr.Id,

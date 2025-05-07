@@ -34,7 +34,6 @@ namespace formationApi.dtos.request
 
         [Required(ErrorMessage = "At least one role is required.")]
         [MinLength(1, ErrorMessage = "At least one role must be specified.")]
-        [ValidateRoleNames(ErrorMessage = "One or more role names are invalid. Must be one of:  TeamLeader, PostLeader")]
         public ICollection<string> Roles { get; set; } = new List<string>();
 
         public class SessionDto : IValidatableObject
@@ -94,34 +93,34 @@ namespace formationApi.dtos.request
             }
         }
         // Custom validation attribute for RoleNames collection
-        public class ValidateRoleNamesAttribute : ValidationAttribute
-        {
-            private static readonly HashSet<string> AllowedRoles = new() { "TeamLeader", "PostLeader" };
+        // public class ValidateRoleNamesAttribute : ValidationAttribute
+        // {
+        //     private static readonly HashSet<string> AllowedRoles = new() { "TeamLeader", "PostLeader", "QualityAgent" };
 
-            protected override ValidationResult IsValid(object value, ValidationContext validationContext)
-            {
-                var roleNames = value as ICollection<string>;
-                if (roleNames == null || !roleNames.Any())
-                {
-                    return new ValidationResult("At least one role name is required.");
-                }
+        //     protected override ValidationResult IsValid(object value, ValidationContext validationContext)
+        //     {
+        //         var roleNames = value as ICollection<string>;
+        //         if (roleNames == null || !roleNames.Any())
+        //         {
+        //             return new ValidationResult("At least one role name is required.");
+        //         }
 
-                foreach (var roleName in roleNames)
-                {
-                    if (string.IsNullOrWhiteSpace(roleName))
-                    {
-                        return new ValidationResult("Role names cannot be empty or whitespace.");
-                    }
+        //         foreach (var roleName in roleNames)
+        //         {
+        //             if (string.IsNullOrWhiteSpace(roleName))
+        //             {
+        //                 return new ValidationResult("Role names cannot be empty or whitespace.");
+        //             }
 
-                    if (!AllowedRoles.Contains(roleName))
-                    {
-                        return new ValidationResult($"Invalid role '{roleName}'. Must be one of: {string.Join(", ", AllowedRoles)}.");
-                    }
-                }
+        //             if (!AllowedRoles.Contains(roleName))
+        //             {
+        //                 return new ValidationResult($"Invalid role '{roleName}'. Must be one of: {string.Join(", ", AllowedRoles)}.");
+        //             }
+        //         }
 
-                return ValidationResult.Success;
-            }
-        }
+        //         return ValidationResult.Success;
+        //     }
+        // }
 
     }
 

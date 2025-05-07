@@ -3,6 +3,21 @@ using formationApi.data.models;
 
 namespace formationApi.data.Entities
 {
+    /// <summary>
+    /// Type de tentative de quiz
+    /// </summary>
+    public enum AttemptType
+    {
+        /// <summary>
+        /// Quiz de module
+        /// </summary>
+        Module = 0,
+
+        /// <summary>
+        /// Quiz final de formation
+        /// </summary>
+        Formation = 1
+    }
     [Table("UserQuizAttempts")]
     public class UserQuizAttempt : BaseEntity
     {
@@ -15,8 +30,25 @@ namespace formationApi.data.Entities
         public bool IsCompleted { get; set; }
         public double? Score { get; set; }
         public bool HasPassed { get; set; }
-        public int SessionId { get; set; } 
+        public int SessionId { get; set; }
         public Session Session { get; set; }
+
+        /// <summary>
+        /// Type de tentative (Module ou Formation)
+        /// </summary>
+        public AttemptType AttemptType { get; set; }
+
+        /// <summary>
+        /// ID du module associé (si AttemptType = Module)
+        /// Peut être null si c'est un quiz final de formation
+        /// </summary>
+        public int? ModuleId { get; set; }
+
+        /// <summary>
+        /// Module associé (si AttemptType = Module)
+        /// </summary>
+        public Module Module { get; set; }
+
         // Collection of responses for this attempt
         public ICollection<UserQuestionResponse> QuestionResponses { get; set; }
     }

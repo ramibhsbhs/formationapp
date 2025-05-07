@@ -239,9 +239,11 @@ namespace formationApi.Controllers
             var user = await _repositoryWrapper.UserManager.GetUserAsync(User);
             if (user == null) return Unauthorized();
 
-            // Récupérer la formation avec son quiz final
+            // Récupérer la formation avec son quiz final et ses modules
             var formation = await _repositoryWrapper.Formation.GetAllAsQueryable()
                 .Include(f => f.FinalQuiz)
+                .Include(f => f.Modules)
+                    .ThenInclude(m => m.Quiz)
                 .FirstOrDefaultAsync(f => f.Id == formationId);
 
             if (formation == null) return NotFound("Formation non trouvée");
@@ -292,8 +294,40 @@ namespace formationApi.Controllers
                 }
             }
 
-            // Vérifier si l'utilisateur a complété tous les modules de la formation
-            // TODO: Implémenter cette vérification si nécessaire
+            // Vérifier si l'utilisateur peut passer le quiz final sans avoir complété tous les modules
+            if (!formation.CanPassFinalWithoutModules && canTakeQuiz)
+            {
+                // Récupérer tous les modules avec quiz
+                var modulesWithQuiz = formation.Modules.Where(m => m.QuizId.HasValue).ToList();
+
+                if (modulesWithQuiz.Any())
+                {
+                    // Vérifier si l'utilisateur a réussi tous les quiz des modules
+                    foreach (var module in modulesWithQuiz)
+                    {
+                        // Vérifier si l'utilisateur a réussi le quiz de ce module
+                        var moduleQuizAttemptQuery = _repositoryWrapper.QuizAttempt.GetAllAsQueryable()
+                            .Where(a => a.UserId == user.Id && a.QuizId == module.QuizId && a.AttemptType == AttemptType.Module);
+
+                        // Si un sessionId est fourni, filtrer par session
+                        if (sessionId.HasValue)
+                        {
+                            moduleQuizAttemptQuery = moduleQuizAttemptQuery.Where(a => a.SessionId == sessionId.Value);
+                        }
+
+                        var moduleQuizAttempt = await moduleQuizAttemptQuery
+                            .OrderByDescending(a => a.CreatedAt)
+                            .FirstOrDefaultAsync();
+
+                        // Si l'utilisateur n'a pas réussi le quiz de ce module, il ne peut pas passer le quiz final
+                        if (moduleQuizAttempt == null || !moduleQuizAttempt.HasPassed)
+                        {
+                            canTakeQuiz = false;
+                            break;
+                        }
+                    }
+                }
+            }
 
             // Construire la réponse
             var response = new FinalQuizEligibilityDto
@@ -342,9 +376,9 @@ namespace formationApi.Controllers
             int sessionId;
 
             // Traiter différemment selon le type de quiz
-            switch (submitQuizDto.QuizType)
+            switch (submitQuizDto.AttemptType)
             {
-                case "module":
+                case AttemptType.Module:
                     // Vérifier les paramètres requis
                     if (!submitQuizDto.FormationId.HasValue || !submitQuizDto.ModuleId.HasValue)
                     {
@@ -376,7 +410,7 @@ namespace formationApi.Controllers
                     }
                     break;
 
-                case "final":
+                case AttemptType.Formation:
                     // Vérifier les paramètres requis
                     if (!submitQuizDto.FormationId.HasValue)
                     {
@@ -424,8 +458,8 @@ namespace formationApi.Controllers
                     formation = session.Formation;
                     sessionId = session.Id;
 
-                    // Définir le type de quiz comme "final" pour la suite du traitement
-                    submitQuizDto.QuizType = "final";
+                    // Définir le type de quiz comme Formation pour la suite du traitement
+                    submitQuizDto.AttemptType = AttemptType.Formation;
                     break;
             }
 
@@ -462,6 +496,8 @@ namespace formationApi.Controllers
                 StartTime = DateTime.UtcNow,
                 AttemptedAt = DateTime.UtcNow,
                 IsCompleted = true,
+                AttemptType = submitQuizDto.AttemptType,
+                ModuleId = submitQuizDto.AttemptType == AttemptType.Module ? submitQuizDto.ModuleId : null,
                 QuestionResponses = new List<UserQuestionResponse>()
             };
 
@@ -558,7 +594,10 @@ namespace formationApi.Controllers
             {
                 Score = scorePercentage,
                 Passed = passed,
-                AttemptId = attempt.Id
+                AttemptId = attempt.Id,
+                AttemptType = attempt.AttemptType,
+                ModuleId = attempt.ModuleId,
+                FormationId = formation?.Id
             });
         }
     }

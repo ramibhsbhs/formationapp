@@ -295,70 +295,29 @@ export class ModuleViewComponent implements OnInit {
       return;
     }
 
-    // Vérifier si l'utilisateur peut passer le quiz final
-    if (!this.formation.canPassFinalWithoutModules) {
-      // Vérifier si tous les modules avec quiz ont été complétés avec succès
-      // Récupérer les résultats des quiz pour tous les modules
-      this.condidatService.getFormationProgress(this.formationId, this.sessionId || undefined).subscribe({
-        next: (progress: Array<{
-          moduleId: number;
-          quizId: number;
-          hasAttempted: boolean;
-          hasPassed: boolean;
-          score: number;
-          attemptDate: Date;
-          attemptCount: number;
-          isFinalQuiz?: boolean;
-        }>) => {
-          if (!this.formation) return;
-
-          // Vérifier si tous les modules avec quiz ont été complétés avec succès
-          const allModulesCompleted = this.formation.modules.every(module => {
-            // Si le module n'a pas de quiz, il est considéré comme complété
-            if (!module.quizId) return true;
-
-            // Chercher le résultat du quiz pour ce module
-            const moduleProgress = progress.find(p => p.moduleId === module.id);
-
-            // Si on n'a pas trouvé de résultat, le module n'est pas complété
-            if (!moduleProgress) return false;
-
-            // Vérifier si le quiz a été réussi
-            return moduleProgress.hasPassed === true;
-          });
-
-          if (!allModulesCompleted) {
-            // Vérifier si l'utilisateur a déjà tenté le quiz final
-            const finalQuizProgress = progress.find(p => p.isFinalQuiz === true);
-
-            if (finalQuizProgress && finalQuizProgress.hasAttempted) {
-              // Si l'utilisateur a déjà tenté le quiz final mais ne l'a pas réussi
-              if (!finalQuizProgress.hasPassed) {
-                // Vérifier s'il peut le repasser (nombre de tentatives)
-                if (finalQuizProgress.attemptCount < 3) { // Supposons une limite de 3 tentatives
-                  this.navigateToFinalQuiz();
-                } else {
-                  this.toaster.showInfo('Vous avez atteint le nombre maximum de tentatives pour le quiz final.', 'Information');
-                }
-              }
-            } else {
-              this.toaster.showInfo('Vous devez d\'abord réussir tous les quiz des modules de la formation.', 'Information');
-            }
-            return;
-          }
-
-          // Si tous les modules sont complétés, naviguer vers le quiz final
+    // Utiliser directement l'API pour vérifier l'éligibilité au quiz final
+    // Le backend prendra en compte la propriété canPassFinalWithoutModules
+    this.condidatService.checkFinalQuizEligibility(this.formationId, this.sessionId || undefined).subscribe({
+      next: (response) => {
+        if (response.canTakeQuiz) {
+          // Si l'utilisateur peut passer le quiz final, naviguer vers la page de validation
           this.navigateToFinalQuiz();
-        },
-        error: (err) => {
-          this.toaster.showError('Erreur lors de la récupération de votre progression.', 'Erreur');
-          console.error('Erreur lors de la récupération de la progression:', err);
+        } else {
+          // Si l'utilisateur ne peut pas passer le quiz final, afficher un message
+          if (response.previousAttempt && response.previousAttempt.passedStatus) {
+            this.toaster.showInfo('Vous avez déjà réussi le quiz final de cette formation.', 'Information');
+          } else if (response.previousAttempt) {
+            this.toaster.showInfo('Vous avez déjà tenté le quiz final. Veuillez réessayer plus tard.', 'Information');
+          } else {
+            this.toaster.showInfo('Vous devez d\'abord réussir tous les quiz des modules de la formation.', 'Information');
+          }
         }
-      });
-    } else {
-      // Si la formation permet de passer le quiz final sans avoir complété tous les modules
-      this.navigateToFinalQuiz();
-    }
+      },
+      error: (err) => {
+        this.toaster.showError('Erreur lors de la vérification de l\'éligibilité au quiz final.', 'Erreur');
+        console.error('Erreur lors de la vérification de l\'éligibilité au quiz final:', err);
+      }
+    });
   }
 
   /**

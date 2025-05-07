@@ -13,6 +13,8 @@ import { UpdateFormationComponent } from './formation/update-formation/update-fo
 import { QuizPassingComponent } from '../condidat/quiz/quiz-passing/quiz-passing.component';
 import { FormationDetailComponent } from './formation/formation-detail/formation-detail.component';
 import { CreateFormationComponent } from './formation/create-formation/create-formation.component';
+import { AdminCertificationListComponent } from './certification/certification-list/certification-list.component';
+import { CertificationDetailsComponent } from '../shared/certification-details/certification-details.component';
 
 const routes: Routes = [
   { path: "", component: HomeComponent },
@@ -28,6 +30,8 @@ const routes: Routes = [
   { path: "quizs/:id", component: QuizDetailsComponent },
   { path: "quizs/edit/:id", component: UpdateQuizsComponent },
   { path: "quizs/test/:id", component: QuizPassingComponent },
+  { path: "certifications", component: AdminCertificationListComponent },
+  { path: "certifications/:id", component: CertificationDetailsComponent },
 ];
 
 @NgModule({

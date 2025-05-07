@@ -8,6 +8,7 @@ import { SharedModule } from '../shared/shared.module';
 import { FormsModule } from '@angular/forms';
 import { SessionComponent } from './session/session.component';
 import { FormationDetailComponent } from './formation-detail/formation-detail.component';
+import { ManagerCertificationListComponent } from './certification/certification-list/certification-list.component';
 
 
 @NgModule({
@@ -15,7 +16,8 @@ import { FormationDetailComponent } from './formation-detail/formation-detail.co
     HomeComponent,
     FormationComponent,
     SessionComponent,
-    FormationDetailComponent
+    FormationDetailComponent,
+    ManagerCertificationListComponent,
   ],
   imports: [
     CommonModule,

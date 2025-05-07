@@ -56,7 +56,7 @@ const routes: Routes = [
   {
     path: '', component: TeamLeaderLayoutComponent, children: [
       {
-        path: 'team-leader',
+        path: 'supervisor',
         loadChildren: () => import('./supervisor/supervisor.module').then(m => m.SupervisorModule)
       }
     ],

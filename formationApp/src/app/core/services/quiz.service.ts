@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, map } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { Quiz, Question } from '../models/quiz.model';
-import { FormationResults, QuizAttempt } from '../models/quiz-result.model';
+import { FormationResults, QuizAttempt, AttemptType, QuizResult } from '../models/quiz-result.model';
 
 @Injectable({
     providedIn: 'root'
@@ -37,11 +37,11 @@ export class QuizService {
         return this.http.delete<void>(`${this.apiUrl}/${id}`);
     }
 
-    submitQuizAnswer(quizId: number, sessionId: number, answers: { questionId: number, selectedAnswerId: number }[]): Observable<{ score: number, passed: boolean, attemptId: number }> {
-        return this.http.post<{ score: number, passed: boolean, attemptId: number }>(`${this.apiUrl}/${quizId}/submit`, {
+    submitQuizAnswer(quizId: number, sessionId: number, answers: { questionId: number, selectedAnswerId: number }[]): Observable<QuizResult> {
+        return this.http.post<QuizResult>(`${this.apiUrl}/${quizId}/submit`, {
             sessionId,
             answers,
-            quizType: 'session'
+            attemptType: AttemptType.Module // Par défaut, on considère que c'est un quiz de module
         });
     }
 
@@ -60,19 +60,19 @@ export class QuizService {
         moduleId: number,
         answers: { questionId: number, selectedAnswerId: number }[],
         sessionId?: number
-    ): Observable<{ score: number, passed: boolean, attemptId: number }> {
+    ): Observable<QuizResult> {
         const payload: any = {
             formationId,
             moduleId,
             answers,
-            quizType: 'module'
+            attemptType: AttemptType.Module
         };
 
         if (sessionId) {
             payload.sessionId = sessionId;
         }
 
-        return this.http.post<{ score: number, passed: boolean, attemptId: number }>(`${this.apiUrl}/${quizId}/submit`, payload);
+        return this.http.post<QuizResult>(`${this.apiUrl}/${quizId}/submit`, payload);
     }
 
     /**
@@ -88,18 +88,18 @@ export class QuizService {
         formationId: number,
         answers: { questionId: number, selectedAnswerId: number }[],
         sessionId?: number
-    ): Observable<{ score: number, passed: boolean, attemptId: number }> {
+    ): Observable<QuizResult> {
         const payload: any = {
             formationId,
             answers,
-            quizType: 'final'
+            attemptType: AttemptType.Formation
         };
 
         if (sessionId) {
             payload.sessionId = sessionId;
         }
 
-        return this.http.post<{ score: number, passed: boolean, attemptId: number }>(`${this.apiUrl}/${quizId}/submit`, payload);
+        return this.http.post<QuizResult>(`${this.apiUrl}/${quizId}/submit`, payload);
     }
 
     /**
@@ -109,6 +109,15 @@ export class QuizService {
      */
     getQuizAttemptsByFormation(formationId: number): Observable<FormationResults> {
         return this.http.get<FormationResults>(`${environment.baseUrl}/quizresults/formation/${formationId}`);
+    }
+
+    /**
+     * Récupère les tentatives de quiz pour une formation spécifique, filtrées par le groupe du superviseur
+     * @param formationId ID de la formation
+     * @returns Observable avec les résultats de la formation filtrés par groupe
+     */
+    getQuizAttemptsByFormationForSupervisor(formationId: number): Observable<FormationResults> {
+        return this.http.get<FormationResults>(`${environment.baseUrl}/quizresults/formation/${formationId}/supervisor`);
     }
 
     /**
@@ -127,5 +136,16 @@ export class QuizService {
      */
     getQuizAttempt(attemptId: number): Observable<QuizAttempt> {
         return this.http.get<QuizAttempt>(`${environment.baseUrl}/quizresults/attempt/${attemptId}`);
+    }
+
+    /**
+     * Récupère le titre d'une formation
+     * @param formationId ID de la formation
+     * @returns Observable avec le titre de la formation
+     */
+    getFormationTitle(formationId: number): Observable<string> {
+        return this.http.get<any>(`${environment.baseUrl}/formations/${formationId}`).pipe(
+            map(formation => formation.title || 'Formation')
+        );
     }
 }

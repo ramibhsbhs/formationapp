@@ -1,0 +1,124 @@
+<div class="container mx-auto px-4 py-8">
+    <div class="flex items-center mb-6">
+        <button (click)="goBack()" class="mr-4 text-gray-600 hover:text-gray-900">
+            <i class="fas fa-arrow-left"></i>
+        </button>
+        <h1 class="text-2xl font-bold text-gray-800">Détails de la formation</h1>
+    </div>
+
+    <div *ngIf="isLoading" class="flex justify-center items-center py-10">
+        <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+    </div>
+
+    <div *ngIf="error" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6">
+        {{ error }}
+    </div>
+
+    <div *ngIf="formation && !isLoading" class="bg-white rounded-lg shadow-md overflow-hidden">
+        <div class="p-6">
+            <!-- Tabs -->
+            <div class="border-b border-gray-200 mb-6">
+                <nav class="-mb-px flex space-x-8">
+                    <button (click)="setActiveTab('info')"
+                        class="py-4 px-1 border-b-2 font-medium text-sm"
+                        [ngClass]="activeTab === 'info' ? 'border-blue-500 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'">
+                        Informations
+                    </button>
+                    <button (click)="setActiveTab('modules')"
+                        class="py-4 px-1 border-b-2 font-medium text-sm"
+                        [ngClass]="activeTab === 'modules' ? 'border-blue-500 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'">
+                        Modules
+                    </button>
+                    <button (click)="setActiveTab('results')"
+                        class="py-4 px-1 border-b-2 font-medium text-sm"
+                        [ngClass]="activeTab === 'results' ? 'border-blue-500 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'">
+                        Résultats
+                    </button>
+                </nav>
+            </div>
+
+            <!-- Tab Content -->
+            <div class="mt-6">
+                <!-- Info Tab -->
+                <div *ngIf="activeTab === 'info'">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div class="md:col-span-2">
+                            <h2 class="text-xl font-semibold text-gray-800 mb-4">{{ formation.title }}</h2>
+                            <div class="mb-6">
+                                <h3 class="text-lg font-medium text-gray-700 mb-2">Description</h3>
+                                <p class="text-gray-600">{{ formation.description }}</p>
+                            </div>
+                            <div class="mb-6">
+                                <h3 class="text-lg font-medium text-gray-700 mb-2">Contenu</h3>
+                                <div class="prose max-w-none text-gray-600" [innerHTML]="formation.content"></div>
+                            </div>
+                        </div>
+                        <div class="md:col-span-1">
+                            <div class="bg-gray-50 p-4 rounded-lg">
+                                <h3 class="text-lg font-medium text-gray-700 mb-4">Détails</h3>
+                                <div class="space-y-3">
+                                    <div>
+                                        <span class="text-sm font-medium text-gray-500">Catégorie:</span>
+                                        <span class="ml-2 px-2 py-1 text-xs font-semibold rounded-full"
+                                            [ngClass]="{
+                                                'bg-blue-100 text-blue-800': formation.category === 'safety',
+                                                'bg-green-100 text-green-800': formation.category === 'technical',
+                                                'bg-purple-100 text-purple-800': formation.category === 'soft',
+                                                'bg-yellow-100 text-yellow-800': formation.category === 'management',
+                                                'bg-gray-100 text-gray-800': !['safety', 'technical', 'soft', 'management'].includes(formation.category)
+                                            }">
+                                            {{ formation.category }}
+                                        </span>
+                                    </div>
+                                    <div>
+                                        <span class="text-sm font-medium text-gray-500">Modules:</span>
+                                        <span class="ml-2 text-gray-700">{{ formation.modules?.length || 0 }}</span>
+                                    </div>
+                                    <div>
+                                        <span class="text-sm font-medium text-gray-500">Sessions:</span>
+                                        <span class="ml-2 text-gray-700">{{ formation.sessions?.length || 0 }}</span>
+                                    </div>
+                                    <div>
+                                        <span class="text-sm font-medium text-gray-500">Quiz final:</span>
+                                        <span class="ml-2 text-gray-700">{{ formation.finalQuizId ? 'Oui' : 'Non' }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Modules Tab -->
+                <div *ngIf="activeTab === 'modules'">
+                    <h2 class="text-xl font-semibold text-gray-800 mb-4">Modules</h2>
+                    <div class="space-y-4">
+                        <div *ngFor="let module of formation.modules" class="border border-gray-200 rounded-lg p-4 hover:bg-gray-50">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <h3 class="text-lg font-medium text-gray-800">{{ module.title }}</h3>
+                                    <p class="text-gray-600 mt-1">{{ module.description }}</p>
+                                    <div class="text-sm text-gray-500 mt-2">
+                                        Position: {{ module.position }}
+                                    </div>
+                                </div>
+                                <div class="flex items-center">
+                                    <span *ngIf="module.quizId" class="px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800 mr-2">
+                                        Quiz
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div *ngIf="formation.modules.length === 0" class="text-center py-8 text-gray-500">
+                            Aucun module disponible pour cette formation
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Results Tab -->
+                <div *ngIf="activeTab === 'results'">
+                    <app-quiz-results *ngIf="formation" [formationId]="formation.id!"></app-quiz-results>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

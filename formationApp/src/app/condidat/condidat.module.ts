@@ -9,10 +9,10 @@ import { QuizPassingComponent } from './quiz/quiz-passing/quiz-passing.component
 import { FormsModule } from '@angular/forms';
 import { FormationDetailsComponent } from './formation/formation-details/formation-details.component';
 import { CertificationListComponent } from './certification/certification-list/certification-list.component';
-import { CertificationDeatilsComponent } from './certification/certification-deatils/certification-deatils.component';
 import { QuizValidationComponent } from './quiz/quiz-validation/quiz-validation.component';
 import { NotificationsComponent } from './notifications/notifications.component';
 import { ModuleViewComponent } from './module/module-view/module-view.component';
+import { SharedModule } from '../shared/shared.module';
 
 
 @NgModule({
@@ -23,7 +23,6 @@ import { ModuleViewComponent } from './module/module-view/module-view.component'
     QuizPassingComponent,
     FormationDetailsComponent,
     CertificationListComponent,
-    CertificationDeatilsComponent,
     QuizValidationComponent,
     NotificationsComponent,
     ModuleViewComponent
@@ -31,7 +30,8 @@ import { ModuleViewComponent } from './module/module-view/module-view.component'
   imports: [
     CommonModule,
     CondidatRoutingModule,
-    FormsModule
+    FormsModule,
+    SharedModule
   ]
 })
 export class CondidatModule { }

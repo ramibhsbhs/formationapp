@@ -4,6 +4,8 @@ import { HomeComponent } from './home/home.component';
 import { FormationComponent } from './formation/formation.component';
 import { SessionComponent } from './session/session.component';
 import { FormationDetailComponent } from './formation-detail/formation-detail.component';
+import { ManagerCertificationListComponent } from './certification/certification-list/certification-list.component';
+import { CertificationDetailsComponent } from '../shared/certification-details/certification-details.component';
 
 
 const routes: Routes = [
@@ -11,6 +13,8 @@ const routes: Routes = [
   { path: "formations", component: FormationComponent },
   { path: "formations/:id", component: FormationDetailComponent },
   { path: "sessions", component: SessionComponent },
+  { path: "certifications", component: ManagerCertificationListComponent },
+  { path: "certifications/:id", component: CertificationDetailsComponent },
 ];
 
 @NgModule({

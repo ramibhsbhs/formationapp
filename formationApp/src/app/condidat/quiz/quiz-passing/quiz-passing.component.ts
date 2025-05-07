@@ -1,8 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { MatDialog } from '@angular/material/dialog';
 import { Quiz } from 'src/app/core/models/quiz.model';
 import { QuizService } from 'src/app/core/services/quiz.service';
 import { ToasterService } from 'src/app/core/services/toaster.service';
+import { FeedbackDialogComponent } from 'src/app/shared/components/feedback-dialog/feedback-dialog.component';
 
 @Component({
   selector: 'app-quiz-passing',
@@ -16,18 +18,21 @@ export class QuizPassingComponent implements OnInit {
   currentQuestionIndex = 0;
   selectedAnswers: { [qid: number]: number[] } = {};
   isFinished = false;
+  isRedirecting = false;
   score = 0;
   quizId!: number;
   sessionId?: number;
   formationId?: number;
   moduleId?: number;
   quizType: string = 'session'; // 'session', 'module', ou 'final'
+  formationTitle: string = '';
 
   constructor(
     private route: ActivatedRoute,
     private router: Router,
     private quizService: QuizService,
-    private toaster: ToasterService
+    private toaster: ToasterService,
+    private dialog: MatDialog
   ) { }
 
   ngOnInit(): void {
@@ -100,6 +105,18 @@ export class QuizPassingComponent implements OnInit {
       next: quiz => {
         this.quiz = quiz;
         this.isLoading = false;
+
+        // Si c'est un quiz final, récupérer le titre de la formation
+        if (this.quizType === 'final' && this.formationId) {
+          this.quizService.getFormationTitle(this.formationId).subscribe({
+            next: (title) => {
+              this.formationTitle = title;
+            },
+            error: (err) => {
+              console.error('Erreur lors de la récupération du titre de la formation:', err);
+            }
+          });
+        }
       },
       error: err => {
         this.error = err?.error?.message || 'Failed to load quiz.';
@@ -228,7 +245,16 @@ export class QuizPassingComponent implements OnInit {
 
         // Rediriger vers la page appropriée après un délai
         setTimeout(() => {
-          this.navigateAfterQuiz(result.passed);
+          // Si c'est un quiz final et que l'utilisateur a réussi, afficher le dialogue de feedback
+          if (this.quizType === 'final' && result.passed && this.formationId) {
+            this.openFeedbackDialog();
+          } else {
+            // Sinon, rediriger normalement
+            this.isRedirecting = true;
+            setTimeout(() => {
+              this.navigateAfterQuiz(result.passed);
+            }, 1500);
+          }
         }, 3000);
       },
       error: (err) => {
@@ -243,7 +269,35 @@ export class QuizPassingComponent implements OnInit {
    * Redirige l'utilisateur après avoir terminé le quiz
    * @param passed Indique si l'utilisateur a réussi le quiz
    */
+  /**
+   * Ouvre le dialogue de feedback
+   */
+  openFeedbackDialog(): void {
+    const dialogRef = this.dialog.open(FeedbackDialogComponent, {
+      width: '500px',
+      disableClose: true,
+      data: {
+        formationId: this.formationId,
+        formationTitle: this.formationTitle || 'Formation'
+      }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      // Rediriger après la fermeture du dialogue, que l'utilisateur ait soumis un feedback ou non
+      this.isRedirecting = true;
+      setTimeout(() => {
+        this.navigateAfterQuiz(true);
+      }, 1000);
+    });
+  }
+
+  /**
+   * Redirige l'utilisateur après avoir terminé le quiz
+   * @param passed Indique si l'utilisateur a réussi le quiz
+   */
   navigateAfterQuiz(passed: boolean): void {
+    this.isRedirecting = true;
+
     switch (this.quizType) {
       case 'module':
         // Toujours rediriger vers le module, qu'il ait réussi ou non

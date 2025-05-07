@@ -1,5 +1,7 @@
 
 
+using formationApi.data.Entities;
+
 namespace formationApi.dtos.response
 {
     public class FormationResultsDto
@@ -29,9 +31,18 @@ namespace formationApi.dtos.response
         public double Score { get; set; }
         public bool HasPassed { get; set; }
         public DateTime CreatedAt { get; set; }
+
+        // Type de tentative (Module ou Formation)
+        public AttemptType AttemptType { get; set; } = AttemptType.Module;
+
+        // ID du module associé (si AttemptType = Module)
+        public int? ModuleId { get; set; }
+
+        // Informations sur l'utilisateur, le quiz et la session
         public GroupDto.UserDto User { get; set; }
         public QuizBasicDto Quiz { get; set; }
         public SessionBasicDto Session { get; set; }
+        public ModuleBasicDto Module { get; set; }
         public List<QuestionResponseDto> QuestionResponses { get; set; } = new List<QuestionResponseDto>();
     }
 
@@ -67,6 +78,14 @@ namespace formationApi.dtos.response
     {
         public int Id { get; set; }
         public string Title { get; set; }
+        public FormationBasicDto Formation { get; set; }
+    }
+
+    public class ModuleBasicDto
+    {
+        public int Id { get; set; }
+        public string Title { get; set; }
+        public int Position { get; set; }
         public FormationBasicDto Formation { get; set; }
     }
 

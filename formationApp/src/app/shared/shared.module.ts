@@ -18,6 +18,9 @@ import { MatNativeDateModule } from '@angular/material/core';
 import { SelectQuizComponent } from './components/select-quiz/select-quiz.component';
 import { SelectGroupPopupComponent } from './components/select-group-popup/select-group-popup.component';
 import { QuizResultsComponent } from './quiz-results/quiz-results.component';
+import { FormationFeedbacksComponent } from './components/formation-feedbacks/formation-feedbacks.component';
+import { FeedbackDialogComponent } from './components/feedback-dialog/feedback-dialog.component';
+import { CertificationDetailsComponent } from './certification-details/certification-details.component';
 
 @NgModule({
   declarations: [
@@ -30,7 +33,10 @@ import { QuizResultsComponent } from './quiz-results/quiz-results.component';
     SessionPopupComponent,
     SelectQuizComponent,
     SelectGroupPopupComponent,
-    QuizResultsComponent
+    QuizResultsComponent,
+    FormationFeedbacksComponent,
+    FeedbackDialogComponent,
+    CertificationDetailsComponent,
   ],
   imports: [
     CommonModule,
@@ -51,7 +57,10 @@ import { QuizResultsComponent } from './quiz-results/quiz-results.component';
     CreateGroupDialogComponent,
     CreateUserDialogComponent,
     SessionPopupComponent,
-    QuizResultsComponent
+    QuizResultsComponent,
+    FormationFeedbacksComponent,
+    FeedbackDialogComponent,
+    CertificationDetailsComponent,
   ]
 })
 export class SharedModule { }

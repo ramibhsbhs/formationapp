@@ -1,0 +1,60 @@
+<div class="min-h-screen bg-gray-50 p-8 ">
+    <div class="max-w-4xl mx-auto">
+        <div class="flex justify-between items-center mb-6">
+            <h1 class="text-3xl font-bold text-gray-800">Mes Notifications</h1>
+            <button *ngIf="notifications.length > 0" (click)="markAllAsRead()"
+                class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+                Tout marquer comme lu
+            </button>
+        </div>
+
+        <!-- Loading State -->
+        <div *ngIf="isLoading" class="flex justify-center items-center h-64">
+            <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+        </div>
+
+        <!-- Error State -->
+        <div *ngIf="error" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative"
+            role="alert">
+            <strong class="font-bold">Erreur!</strong>
+            <span class="block sm:inline">{{ error }}</span>
+        </div>
+
+        <!-- Empty State -->
+        <div *ngIf="!isLoading && !error && notifications.length === 0"
+            class="bg-white rounded-lg shadow-md p-8 text-center">
+            <div class="flex flex-col items-center">
+                <i class="fas fa-bell-slash text-gray-400 mb-4" style="font-size: 4rem;"></i>
+                <h2 class="text-xl font-semibold text-gray-700 mb-2">Aucune notification</h2>
+                <p class="text-gray-500">Vous n'avez pas encore reçu de notifications.</p>
+            </div>
+        </div>
+
+        <!-- Notifications List -->
+        <div *ngIf="!isLoading && !error && notifications.length > 0" class="space-y-4">
+            <div *ngFor="let notification of notifications" [ngClass]="getNotificationTypeClass(notification.type)"
+                class="rounded-lg shadow-md p-5 transition-all hover:shadow-lg border-l-4 cursor-pointer"
+                (click)="handleNotificationClick(notification)">
+                <div class="flex">
+                    <div class="flex-shrink-0 mr-4">
+                        <i [ngClass]="getNotificationIconClass(notification.type)" style="font-size: 1.5rem;"></i>
+                    </div>
+                    <div class="flex-1">
+                        <div class="flex items-center mb-1">
+                            <h3 class="font-semibold text-lg text-gray-800 !mb-0 flex-1">{{ notification.title }}</h3>
+                            <div *ngIf="!notification.received" class="ml-2 h-2 w-2 bg-blue-500 rounded-full"></div>
+                        </div>
+                        <p class="text-gray-600 mb-2">{{ notification.body }}</p>
+                        <div class="flex justify-between items-center">
+                            <p class="text-sm text-gray-500">{{ getTimeAgo(notification.date) }}</p>
+                            <div *ngIf="notification.actionUrl" class="text-sm text-blue-600">
+                                <i class="fas fa-arrow-right mr-1"></i>
+                                Voir plus
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

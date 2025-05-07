@@ -13,6 +13,7 @@ export class ManagerLayoutComponent implements OnInit {
     // { path: '/admin/employees', name: 'Employés', icon: 'fas fa-users' },
     // { path: '/admin/quizs', name: 'Quizs', icon: 'fas fa-question' },
     { path: '/manager/sessions', name: 'Sessions', icon: 'fas fa-calendar' },
+    { path: '/manager/certifications', name: 'Certifications', icon: 'fas fa-certificate' },
     { path: '/manager/settings', name: 'Paramètres', icon: 'fas fa-cog' },
     // { path: "/admin/test", name: "Tests", icon: "fas fa-cog" },
   ];

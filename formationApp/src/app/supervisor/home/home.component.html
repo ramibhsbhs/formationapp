@@ -1,1 +1,86 @@
-<p>home works!</p>
+<div class="container mx-auto px-4 py-8">
+    <div class="mb-8" *ngIf="(authService.currentUser$ | async) as user">
+        <h1 class="text-3xl font-bold text-gray-800">Tableau de bord du superviseur</h1>
+        <p class="text-gray-600 mt-2">Bienvenue, {{ user.username }}. Gérez les formations et certifications
+            de votre équipe.</p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <!-- Formations Card -->
+        <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
+            <div class="p-6">
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-xl font-semibold text-gray-800">Formations</h2>
+                    <div class="p-2 bg-blue-100 rounded-full">
+                        <i class="fas fa-book text-blue-600"></i>
+                    </div>
+                </div>
+                <p class="text-gray-600 mb-6">Consultez les formations disponibles pour votre équipe et suivez leur
+                    progression.</p>
+                <button (click)="navigateTo('/supervisor/formations')"
+                    class="w-full px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                    Voir les formations
+                </button>
+            </div>
+        </div>
+
+        <!-- Certifications Card -->
+        <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
+            <div class="p-6">
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-xl font-semibold text-gray-800">Certifications</h2>
+                    <div class="p-2 bg-green-100 rounded-full">
+                        <i class="fas fa-certificate text-green-600"></i>
+                    </div>
+                </div>
+                <p class="text-gray-600 mb-6">Consultez les certifications obtenues par les membres de votre équipe.</p>
+                <button (click)="navigateTo('/supervisor/certifications')"
+                    class="w-full px-4 py-2 bg-green-600 text-white text-sm font-medium rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
+                    Voir les certifications
+                </button>
+            </div>
+        </div>
+
+        <!-- Group Card -->
+        <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
+            <div class="p-6">
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-xl font-semibold text-gray-800">Mon Groupe</h2>
+                    <div class="p-2 bg-purple-100 rounded-full">
+                        <i class="fas fa-users text-purple-600"></i>
+                    </div>
+                </div>
+                <p class="text-gray-600 mb-6">Consultez les informations de votre groupe et les membres qui le
+                    composent.</p>
+                <button (click)="navigateTo('/supervisor/group')"
+                    class="w-full px-4 py-2 bg-purple-600 text-white text-sm font-medium rounded-md hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500">
+                    Voir mon groupe
+                </button>
+            </div>
+        </div>
+
+        <!-- Notifications Card -->
+        <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
+            <div class="p-6">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="flex items-center">
+                        <h2 class="text-xl font-semibold text-gray-800">Notifications</h2>
+                        <div *ngIf="unreadNotificationsCount > 0"
+                            class="ml-2 px-2 py-1 bg-red-500 text-white text-xs font-bold rounded-full">
+                            {{ unreadNotificationsCount }}
+                        </div>
+                    </div>
+                    <div class="p-2 bg-yellow-100 rounded-full">
+                        <i class="fas fa-bell text-yellow-600"></i>
+                    </div>
+                </div>
+                <p class="text-gray-600 mb-6">Consultez vos notifications et restez informé des mises à jour
+                    importantes.</p>
+                <button (click)="navigateTo('/supervisor/notifications')"
+                    class="w-full px-4 py-2 bg-yellow-600 text-white text-sm font-medium rounded-md hover:bg-yellow-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500">
+                    Voir les notifications
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

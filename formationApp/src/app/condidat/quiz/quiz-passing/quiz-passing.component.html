@@ -1,6 +1,9 @@
 <!-- Loading -->
-<div *ngIf="isLoading" class="loading">
-    Loading your quiz...
+<div *ngIf="isLoading" class="flex justify-center items-center py-10">
+    <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+    <div class="ml-4 text-lg font-medium">
+        {{ isRedirecting ? 'Redirection en cours...' : 'Chargement du quiz...' }}
+    </div>
 </div>
 
 <!-- Error -->
@@ -74,7 +77,8 @@
         </ul>
     </div>
 
-    <button [routerLink]="['../../']" class="btn-next disabled:opacity-80 bg-primary disabled:bg-primary/80 rounded-lg mt-4">
-        Back to Home
-    </button>
+    <!-- Message de redirection -->
+    <div *ngIf="isRedirecting" class="mt-6 text-center text-gray-600">
+        <p>Vous allez être redirigé automatiquement...</p>
+    </div>
 </div>

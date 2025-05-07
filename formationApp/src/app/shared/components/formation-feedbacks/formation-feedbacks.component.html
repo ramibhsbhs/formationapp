@@ -1,0 +1,75 @@
+<div class="space-y-6">
+  <!-- Loading State -->
+  <div *ngIf="loading" class="flex justify-center items-center py-10">
+    <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="error" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+    <strong class="font-bold">Erreur!</strong>
+    <span class="block sm:inline">{{ error }}</span>
+  </div>
+
+  <!-- Summary Section -->
+  <div *ngIf="!loading && !error && feedbacks.length > 0" class="bg-white rounded-lg shadow p-6">
+    <div class="flex items-center justify-between mb-4">
+      <h2 class="text-xl font-semibold text-gray-800">Résumé des évaluations</h2>
+      <div class="flex items-center">
+        <div class="flex">
+          <ng-container *ngFor="let starValue of getStarsArray(getAverageRating())">
+            <i *ngIf="starValue === 2" class="fas fa-star text-yellow-400 text-xl mr-1"></i>
+            <i *ngIf="starValue === 1" class="fas fa-star-half-alt text-yellow-400 text-xl mr-1"></i>
+            <i *ngIf="starValue === 0" class="far fa-star text-yellow-400 text-xl mr-1"></i>
+          </ng-container>
+        </div>
+        <span class="ml-2 text-lg font-medium">{{ (getAverageRating() * 5).toFixed(1) }}/5</span>
+      </div>
+    </div>
+    <div class="text-gray-600">
+      <p>Nombre total d'évaluations: <span class="font-medium">{{ feedbacks.length }}</span></p>
+    </div>
+  </div>
+
+  <!-- Empty State -->
+  <div *ngIf="!loading && !error && feedbacks.length === 0" class="bg-white rounded-lg shadow p-8 text-center">
+    <div class="flex flex-col items-center">
+      <i class="fas fa-comment-slash text-gray-400 mb-4 text-5xl"></i>
+      <h2 class="text-xl font-semibold text-gray-700 mb-2">Aucun feedback</h2>
+      <p class="text-gray-500">Cette formation n'a pas encore reçu d'évaluations.</p>
+    </div>
+  </div>
+
+  <!-- Feedbacks List -->
+  <div *ngIf="!loading && !error && feedbacks.length > 0" class="space-y-4">
+    <h2 class="text-xl font-semibold text-gray-800 mb-4">Tous les feedbacks</h2>
+    
+    <div *ngFor="let feedback of feedbacks" class="bg-white rounded-lg shadow p-5 transition-all hover:shadow-lg">
+      <div class="flex justify-between items-start mb-3">
+        <div>
+          <div class="flex items-center mb-2">
+            <div class="flex">
+              <ng-container *ngFor="let starValue of getStarsArray(feedback.value)">
+                <i *ngIf="starValue === 2" class="fas fa-star text-yellow-400 mr-1"></i>
+                <i *ngIf="starValue === 1" class="fas fa-star-half-alt text-yellow-400 mr-1"></i>
+                <i *ngIf="starValue === 0" class="far fa-star text-yellow-400 mr-1"></i>
+              </ng-container>
+            </div>
+            <span class="ml-2 text-sm text-gray-500">{{ (feedback.value * 5).toFixed(1) }}/5</span>
+          </div>
+          <div class="flex items-center">
+            <i class="fas fa-user-circle text-gray-400 mr-2"></i>
+            <span class="font-medium text-gray-700">{{ feedback.user.userName }}</span>
+            <span class="text-xs text-gray-500 ml-2">({{ feedback.user.email }})</span>
+          </div>
+        </div>
+        <div class="flex items-center">
+          <span class="text-sm text-gray-500">{{ formatDate(feedback.createdAt) }}</span>
+          <button *ngIf="canDelete" (click)="deleteFeedback(feedback.id)" class="ml-3 text-red-500 hover:text-red-700">
+            <i class="fas fa-trash-alt"></i>
+          </button>
+        </div>
+      </div>
+      <p class="text-gray-600">{{ feedback.description }}</p>
+    </div>
+  </div>
+</div>

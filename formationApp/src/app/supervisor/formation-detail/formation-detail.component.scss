@@ -1,0 +1,27 @@
+/* Styles pour le composant de détail de formation */
+.prose {
+  max-width: 65ch;
+  
+  h1, h2, h3, h4, h5, h6 {
+    margin-top: 1.5em;
+    margin-bottom: 0.5em;
+    font-weight: 600;
+    line-height: 1.25;
+  }
+  
+  p {
+    margin-top: 1em;
+    margin-bottom: 1em;
+  }
+  
+  ul, ol {
+    margin-top: 1em;
+    margin-bottom: 1em;
+    padding-left: 1.5em;
+  }
+  
+  li {
+    margin-top: 0.5em;
+    margin-bottom: 0.5em;
+  }
+}

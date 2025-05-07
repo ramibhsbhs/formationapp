@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using formationApi.data.Entities;
 
 namespace formationApi.dtos.request
 {
@@ -11,8 +12,8 @@ namespace formationApi.dtos.request
         public int? FormationId { get; set; }
         public int? ModuleId { get; set; }
 
-        // Type de quiz : "session", "module", ou "final"
-        public string QuizType { get; set; } = "session";
+        // Type de tentative : Module ou Formation
+        public AttemptType AttemptType { get; set; }
 
         [Required]
         public List<QuizAnswerDto> Answers { get; set; } = new List<QuizAnswerDto>();

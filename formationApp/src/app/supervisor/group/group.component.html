@@ -1,0 +1,138 @@
+<div class="container mx-auto px-4 py-8">
+    <div class="mb-8">
+        <h1 class="text-3xl font-bold text-gray-800">Mon Groupe</h1>
+        <p class="text-gray-600 mt-2">Consultez les informations de votre groupe et les membres qui le composent.</p>
+    </div>
+
+    <!-- Loader -->
+    <div *ngIf="isLoading" class="flex justify-center items-center py-10">
+        <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+    </div>
+
+    <!-- Error message -->
+    <div *ngIf="error" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-6"
+        role="alert">
+        <span class="block sm:inline">{{ error }}</span>
+    </div>
+
+    <!-- Group information -->
+    <div *ngIf="group && !isLoading" class="bg-white rounded-lg shadow-md p-6 mb-8">
+        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+            <div class="flex flex-col">
+                <span class="text-sm text-gray-500 font-medium">Nom du groupe :</span>
+                <h2 class="text-2xl font-semibold text-gray-800">{{ group.name }}</h2>
+            </div>
+            <div class="flex items-center gap-3">
+                <div class="flex items-center gap-2 bg-blue-100 text-blue-800 px-4 py-2 rounded-lg">
+                    <i class="fas fa-users"></i>
+                    <span class="font-medium">{{ group.count }} membres</span>
+                </div>
+                <div *ngIf="group.createdAt"
+                    class="flex items-center gap-2 bg-gray-100 text-gray-700 px-4 py-2 rounded-lg">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span class="font-medium">Créé le {{ group.createdAt | date:'dd/MM/yyyy' }}</span>
+                </div>
+            </div>
+        </div>
+        <div *ngIf="group.description" class="mt-4 pt-4 border-t border-gray-200">
+            <span class="text-sm text-gray-500 font-medium">Description</span>
+            <p class="text-gray-700 mt-1">{{ group.description }}</p>
+        </div>
+    </div>
+
+    <!-- Employees list -->
+    <div *ngIf="group && !isLoading" class="bg-white rounded-lg shadow-md p-6">
+        <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
+            <div class="flex items-center gap-3">
+                <h2 class="text-xl font-semibold text-gray-800">Membres du groupe</h2>
+                <div class="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium">
+                    {{ filteredEmployees.length }} sur {{ employees.length }}
+                </div>
+            </div>
+
+            <!-- Search input -->
+            <div class="relative w-full md:w-auto">
+                <input type="text" placeholder="Rechercher un membre..."
+                    class="w-full md:w-64 border border-gray-300 rounded-lg px-4 py-2 pl-10 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    (input)="onSearch($event)">
+                <span class="absolute left-3 top-2.5 text-gray-400">
+                    <i class="fas fa-search"></i>
+                </span>
+            </div>
+        </div>
+
+        <!-- Empty state -->
+        <div *ngIf="filteredEmployees.length === 0"
+            class="flex flex-col items-center justify-center py-12 px-4 text-center">
+            <div class="bg-gray-100 rounded-full p-4 mb-4">
+                <i class="fas fa-users-slash text-gray-400 text-3xl"></i>
+            </div>
+            <h3 class="text-lg font-medium text-gray-900 mb-1">Aucun membre trouvé</h3>
+            <p class="text-gray-500 max-w-md">Aucun membre ne correspond à votre recherche. Essayez avec un autre terme
+                ou vérifiez que des membres ont été ajoutés à ce groupe.</p>
+        </div>
+
+        <!-- Employees table -->
+        <div *ngIf="filteredEmployees.length > 0" class="overflow-x-auto mt-4 rounded-lg border border-gray-200">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th scope="col"
+                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Utilisateur
+                        </th>
+                        <th scope="col"
+                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Email
+                        </th>
+                        <th scope="col"
+                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Rôle
+                        </th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                    <tr *ngFor="let employee of filteredEmployees; let even = even" [ngClass]="{'bg-gray-50': even}">
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="flex items-center">
+                                <div class="flex-shrink-0 h-10 w-10">
+                                    <img *ngIf="employee.imageUrl"
+                                        class="h-10 w-10 rounded-full object-cover border-2 border-gray-200"
+                                        [src]="employee.imageUrl" alt="{{ employee.userName }}">
+                                    <div *ngIf="!employee.imageUrl"
+                                        class="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center">
+                                        <span class="text-blue-600 font-medium">{{
+                                            employee.userName.charAt(0).toUpperCase() }}</span>
+                                    </div>
+                                </div>
+                                <div class="ml-4">
+                                    <div class="text-sm font-medium text-gray-900">
+                                        {{ employee.userName }}
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm text-gray-900">{{ employee.email }}</div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="flex flex-wrap gap-1">
+                                <span *ngFor="let role of employee.roles"
+                                    class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full"
+                                    [ngClass]="{
+                                        'bg-green-100 text-green-800': role === 'TeamLeader',
+                                        'bg-blue-100 text-blue-800': role === 'PostLeader',
+                                        'bg-purple-100 text-purple-800': role === 'QualityAgent',
+                                        'bg-yellow-100 text-yellow-800': role === 'HierarchicalLeader',
+                                        'bg-red-100 text-red-800': role === 'Administrator'
+                                    }">
+                                    {{ role }}
+                                </span>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

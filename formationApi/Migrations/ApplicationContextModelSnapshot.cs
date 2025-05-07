@@ -644,6 +644,9 @@ namespace formationApi.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
+                    b.Property<int>("AttemptType")
+                        .HasColumnType("integer");
+
                     b.Property<DateTime?>("AttemptedAt")
                         .HasColumnType("timestamp with time zone");
 
@@ -661,6 +664,9 @@ namespace formationApi.Migrations
 
                     b.Property<bool>("IsCompleted")
                         .HasColumnType("boolean");
+
+                    b.Property<int?>("ModuleId")
+                        .HasColumnType("integer");
 
                     b.Property<int>("QuizId")
                         .HasColumnType("integer");
@@ -681,6 +687,8 @@ namespace formationApi.Migrations
                         .HasColumnType("integer");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("ModuleId");
 
                     b.HasIndex("QuizId");
 
@@ -991,6 +999,10 @@ namespace formationApi.Migrations
 
             modelBuilder.Entity("formationApi.data.Entities.UserQuizAttempt", b =>
                 {
+                    b.HasOne("formationApi.data.Entities.Module", "Module")
+                        .WithMany()
+                        .HasForeignKey("ModuleId");
+
                     b.HasOne("formationApi.data.Entities.Quiz", "Quiz")
                         .WithMany()
                         .HasForeignKey("QuizId")
@@ -1008,6 +1020,8 @@ namespace formationApi.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Module");
 
                     b.Navigation("Quiz");
 
