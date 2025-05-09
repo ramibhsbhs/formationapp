@@ -11,6 +11,7 @@ import { FormationDetailComponent } from './formation-detail/formation-detail.co
 import { ManagerCertificationListComponent } from './certification/certification-list/certification-list.component';
 
 
+
 @NgModule({
   declarations: [
     HomeComponent,

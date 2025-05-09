@@ -15,6 +15,7 @@ import { ModuleViewComponent } from './module/module-view/module-view.component'
 import { SharedModule } from '../shared/shared.module';
 
 
+
 @NgModule({
   declarations: [
     HomeComponent,
@@ -25,7 +26,7 @@ import { SharedModule } from '../shared/shared.module';
     CertificationListComponent,
     QuizValidationComponent,
     NotificationsComponent,
-    ModuleViewComponent
+    ModuleViewComponent,
   ],
   imports: [
     CommonModule,

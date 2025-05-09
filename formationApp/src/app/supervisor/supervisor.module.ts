@@ -13,6 +13,7 @@ import { NotificationsComponent } from './notifications/notifications.component'
 import { GroupComponent } from './group/group.component';
 
 
+
 @NgModule({
   declarations: [
     HomeComponent,
@@ -20,7 +21,7 @@ import { GroupComponent } from './group/group.component';
     FormationDetailComponent,
     CertificationsComponent,
     NotificationsComponent,
-    GroupComponent
+    GroupComponent,
   ],
   imports: [
     CommonModule,

@@ -7,17 +7,19 @@ import { CertificationsComponent } from './certifications/certifications.compone
 import { NotificationsComponent } from './notifications/notifications.component';
 import { CertificationDetailsComponent } from '../shared/certification-details/certification-details.component';
 import { GroupComponent } from './group/group.component';
+import { SettingsComponent } from '../shared/settings/settings.component';
 
 
 const routes: Routes = [
-  // { path: "", component: HomeComponent },
+  { path: "", component: HomeComponent },
   { path: "formations", component: FormationsComponent },
   { path: "formations/:id", component: FormationDetailComponent },
   { path: "certifications", component: CertificationsComponent },
   { path: "certifications/:id", component: CertificationDetailsComponent },
   { path: "notifications", component: NotificationsComponent },
   { path: "group", component: GroupComponent },
-  { path: "", pathMatch: "full", redirectTo: "formations" },
+  { path: "settings", component: SettingsComponent },
+  // { path: "", pathMatch: "full", redirectTo: "formations" },
 ];
 
 @NgModule({

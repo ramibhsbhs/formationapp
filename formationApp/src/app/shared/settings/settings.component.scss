@@ -1,0 +1,150 @@
+// Animations
+.animate-fadeIn {
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// Styles pour les formulaires
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+// Styles pour les boutons toggle
+.toggle-switch {
+  position: relative;
+  display: inline-block;
+  width: 60px;
+  height: 34px;
+}
+
+.toggle-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.toggle-slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  transition: .4s;
+  border-radius: 34px;
+}
+
+.toggle-slider:before {
+  position: absolute;
+  content: "";
+  height: 26px;
+  width: 26px;
+  left: 4px;
+  bottom: 4px;
+  background-color: white;
+  transition: .4s;
+  border-radius: 50%;
+}
+
+input:checked + .toggle-slider {
+  background-color: var(--primary);
+}
+
+input:focus + .toggle-slider {
+  box-shadow: 0 0 1px var(--primary);
+}
+
+input:checked + .toggle-slider:before {
+  transform: translateX(26px);
+}
+
+// Styles pour les options d'apparence
+.theme-option, .font-size-option {
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  
+  &:hover {
+    transform: translateY(-2px);
+  }
+  
+  &.selected {
+    border-color: var(--primary);
+    background-color: rgba(59, 130, 246, 0.1);
+  }
+}
+
+// Styles pour le mode contraste élevé
+:host-context(.high-contrast) {
+  .text-gray-600 {
+    color: #000000 !important;
+  }
+  
+  .text-gray-700 {
+    color: #000000 !important;
+  }
+  
+  .bg-gray-50 {
+    background-color: #ffffff !important;
+    border: 1px solid #000000 !important;
+  }
+  
+  .border-gray-200 {
+    border-color: #000000 !important;
+  }
+  
+  .text-white {
+    color: #ffffff !important;
+  }
+  
+  .bg-primary {
+    background-color: #0000cc !important;
+  }
+}
+
+// Styles pour la réduction des animations
+:host-context(.reduce-motion) {
+  * {
+    animation: none !important;
+    transition: none !important;
+    transform: none !important;
+  }
+}
+
+// Styles responsifs
+@media (max-width: 768px) {
+  .md\:flex-row {
+    flex-direction: column;
+  }
+  
+  .md\:w-64 {
+    width: 100%;
+  }
+  
+  .md\:border-r {
+    border-right: none;
+    border-bottom: 1px solid #e5e7eb;
+    margin-bottom: 1rem;
+    padding-bottom: 1rem;
+  }
+  
+  nav.space-y-1 {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    
+    button {
+      flex: 1 1 auto;
+    }
+  }
+}

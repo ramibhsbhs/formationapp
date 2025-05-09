@@ -1,1 +1,164 @@
-<p>home works!</p>
+<div class="container mx-auto px-4 py-8">
+    <div class="flex justify-between items-center mb-8">
+        <div>
+            <h1 class="text-3xl font-bold text-gray-800">Tableau de bord candidat</h1>
+            <p class="text-gray-600 mt-2">Suivez votre progression et vos formations</p>
+        </div>
+        <button (click)="refreshData()" class="px-4 py-2 bg-primary text-white rounded-md flex items-center">
+            <i class="fas fa-sync-alt mr-2"></i> Actualiser
+        </button>
+    </div>
+
+    <!-- Indicateurs clés -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <div class="stat-card">
+            <div class="flex justify-between items-center mb-2">
+                <h3 class="text-lg font-semibold text-gray-700">Formations</h3>
+                <div class="p-2 bg-blue-100 rounded-full">
+                    <i class="fas fa-graduation-cap text-blue-600"></i>
+                </div>
+            </div>
+            <p class="stat-value text-blue-600">{{ dashboardData && dashboardData.totalFormationsEnrolled || 0 }}</p>
+            <p class="stat-label">Formations inscrites</p>
+        </div>
+
+        <div class="stat-card">
+            <div class="flex justify-between items-center mb-2">
+                <h3 class="text-lg font-semibold text-gray-700">Complétées</h3>
+                <div class="p-2 bg-green-100 rounded-full">
+                    <i class="fas fa-check-circle text-green-600"></i>
+                </div>
+            </div>
+            <p class="stat-value text-green-600">{{ dashboardData && dashboardData.totalFormationsCompleted || 0 }}</p>
+            <p class="stat-label">Formations terminées</p>
+        </div>
+
+        <div class="stat-card">
+            <div class="flex justify-between items-center mb-2">
+                <h3 class="text-lg font-semibold text-gray-700">Certifications</h3>
+                <div class="p-2 bg-purple-100 rounded-full">
+                    <i class="fas fa-certificate text-purple-600"></i>
+                </div>
+            </div>
+            <p class="stat-value text-purple-600">{{ dashboardData && dashboardData.totalCertificationsEarned || 0 }}
+            </p>
+            <p class="stat-label">Certifications obtenues</p>
+        </div>
+
+        <div class="stat-card">
+            <div class="flex justify-between items-center mb-2">
+                <h3 class="text-lg font-semibold text-gray-700">Score moyen</h3>
+                <div class="p-2 bg-yellow-100 rounded-full">
+                    <i class="fas fa-star text-yellow-600"></i>
+                </div>
+            </div>
+            <p class="stat-value text-yellow-600">{{ (dashboardData && dashboardData.averageScore || 0) | number:'1.1-1'
+                }}%</p>
+            <p class="stat-label">Sur tous vos quiz</p>
+        </div>
+    </div>
+
+    <!-- Actions rapides -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+        <div class="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow">
+            <div class="flex items-center mb-4">
+                <div class="p-3 bg-blue-100 rounded-full mr-4">
+                    <i class="fas fa-book text-blue-600 text-xl"></i>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold text-gray-800">Mes formations</h3>
+                    <p class="text-gray-600">Accédez à vos formations et continuez votre apprentissage</p>
+                </div>
+            </div>
+            <button (click)="viewFormations()"
+                class="w-full px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors">
+                Voir mes formations
+            </button>
+        </div>
+
+        <div class="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow">
+            <div class="flex items-center mb-4">
+                <div class="p-3 bg-purple-100 rounded-full mr-4">
+                    <i class="fas fa-certificate text-purple-600 text-xl"></i>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold text-gray-800">Mes certifications</h3>
+                    <p class="text-gray-600">Consultez et téléchargez vos certifications obtenues</p>
+                </div>
+            </div>
+            <button (click)="viewCertifications()"
+                class="w-full px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 transition-colors">
+                Voir mes certifications
+            </button>
+        </div>
+    </div>
+
+    <!-- Progression des formations -->
+    <div class="bg-white p-6 rounded-lg shadow-md mb-8">
+        <h3 class="text-lg font-semibold text-gray-700 mb-4">Progression de vos formations</h3>
+
+        <div *ngIf="!dashboardData || !dashboardData.formationProgress || dashboardData.formationProgress.length === 0"
+            class="text-center py-8 text-gray-500">
+            <i class="fas fa-info-circle text-2xl mb-2"></i>
+            <p>Vous n'avez pas encore commencé de formation.</p>
+        </div>
+
+        <div *ngIf="dashboardData && dashboardData.formationProgress && dashboardData.formationProgress.length > 0">
+            <div class="h-64 mb-4">
+                <canvas #progressChart></canvas>
+            </div>
+
+            <div class="mt-6 space-y-4">
+                <div *ngFor="let formation of dashboardData.formationProgress"
+                    class="border border-gray-200 rounded-lg p-4">
+                    <div class="flex justify-between items-center mb-2">
+                        <h4 class="font-medium text-gray-800">{{ formation.formationTitle }}</h4>
+                        <span
+                            [ngClass]="formation.finalQuizPassed ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'"
+                            class="px-2 py-1 rounded text-xs font-medium">
+                            {{ formation.finalQuizPassed ? 'Complété' : 'En cours' }}
+                        </span>
+                    </div>
+
+                    <div class="w-full bg-gray-200 rounded-full h-2.5 mb-2">
+                        <div class="bg-blue-600 h-2.5 rounded-full"
+                            [style.width.%]="(formation.modulesCompleted / formation.totalModules) * 100"></div>
+                    </div>
+
+                    <div class="flex justify-between text-sm text-gray-600">
+                        <span>{{ formation.modulesCompleted }} / {{ formation.totalModules }} modules complétés</span>
+                        <span *ngIf="formation.score !== null">Score final: {{ formation.score }}%</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tentatives de quiz par mois -->
+    <div class="bg-white p-6 rounded-lg shadow-md mb-8">
+        <h3 class="text-lg font-semibold text-gray-700 mb-4">Vos tentatives de quiz</h3>
+
+        <div *ngIf="!dashboardData || !dashboardData.attemptsOverTime || dashboardData.attemptsOverTime.length === 0"
+            class="text-center py-8 text-gray-500">
+            <i class="fas fa-chart-line text-2xl mb-2"></i>
+            <p>Aucune donnée disponible pour le moment.</p>
+        </div>
+
+        <div *ngIf="dashboardData && dashboardData.attemptsOverTime && dashboardData.attemptsOverTime.length > 0"
+            class="h-64">
+            <canvas #attemptsChart></canvas>
+        </div>
+    </div>
+
+    <!-- État de chargement -->
+    <div *ngIf="loading" class="flex justify-center items-center py-12">
+        <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+    </div>
+
+    <!-- Message d'erreur -->
+    <div *ngIf="error" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-8">
+        <strong class="font-bold">Erreur!</strong>
+        <span class="block sm:inline"> Impossible de charger les données du tableau de bord.</span>
+        <button (click)="refreshData()" class="underline ml-2">Réessayer</button>
+    </div>
+</div>

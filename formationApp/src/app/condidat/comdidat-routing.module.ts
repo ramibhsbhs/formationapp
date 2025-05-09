@@ -9,6 +9,7 @@ import { CertificationListComponent } from './certification/certification-list/c
 import { QuizValidationComponent } from './quiz/quiz-validation/quiz-validation.component';
 import { NotificationsComponent } from './notifications/notifications.component';
 import { ModuleViewComponent } from './module/module-view/module-view.component';
+import { SettingsComponent } from '../shared/settings/settings.component';
 
 const routes: Routes = [
   { path: "", component: HomeComponent },
@@ -27,6 +28,7 @@ const routes: Routes = [
   { path: "certification", component: CertificationListComponent },
   { path: "certification/:id", component: CertificationDetailsComponent },
   { path: "notifications", component: NotificationsComponent },
+  { path: "settings", component: SettingsComponent },
 ];
 
 @NgModule({

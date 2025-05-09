@@ -70,7 +70,28 @@ export class AppSidebarComponent implements OnInit, OnDestroy {
   handlePopupAction(item: any): void {
     if (item.action) {
       item.action();
+    } else if (item.name === 'Settings') {
+      // Déterminer la route de paramètres en fonction du rôle de l'utilisateur
+      const user = this.auth.getCurrentUser();
+      if (user) {
+        let settingsPath = '';
+
+        // Déterminer le chemin en fonction du rôle
+        if (user.roles.includes('Administrator')) {
+          settingsPath = '/admin/settings';
+        } else if (user.roles.includes('Manager')) {
+          settingsPath = '/manager/settings';
+        } else if (user.roles.includes('HierarchicalLeader')) {
+          settingsPath = '/supervisor/settings';
+        } else {
+          settingsPath = '/condidat/settings';
+        }
+
+        // Naviguer vers la page de paramètres
+        this.router.navigate([settingsPath]);
+      }
     }
+
     this.showPopup = false; // Close popup after action
   }
 }

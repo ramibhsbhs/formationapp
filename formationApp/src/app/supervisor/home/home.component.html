@@ -1,11 +1,150 @@
 <div class="container mx-auto px-4 py-8">
-    <div class="mb-8" *ngIf="(authService.currentUser$ | async) as user">
-        <h1 class="text-3xl font-bold text-gray-800">Tableau de bord du superviseur</h1>
-        <p class="text-gray-600 mt-2">Bienvenue, {{ user.username }}. Gérez les formations et certifications
-            de votre équipe.</p>
+    <div class="flex justify-between items-center mb-8">
+        <div *ngIf="(authService.currentUser$ | async) as user">
+            <h1 class="text-3xl font-bold text-gray-800">Tableau de bord du superviseur</h1>
+            <p class="text-gray-600 mt-2">Bienvenue, {{ user.username }}. Gérez les formations et certifications
+                de votre équipe.</p>
+        </div>
+        <button (click)="refreshData()" class="px-4 py-2 bg-primary text-white rounded-md flex items-center">
+            <i class="fas fa-sync-alt mr-2"></i> Actualiser
+        </button>
     </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+    <!-- Indicateurs clés -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <div class="stat-card">
+            <div class="flex justify-between items-center mb-2">
+                <h3 class="text-lg font-semibold text-gray-700">Membres</h3>
+                <div class="p-2 bg-blue-100 rounded-full">
+                    <i class="fas fa-users text-blue-600"></i>
+                </div>
+            </div>
+            <p class="stat-value text-blue-600">{{ dashboardData && dashboardData.totalGroupMembers || 0 }}</p>
+            <p class="stat-label">Membres du groupe</p>
+        </div>
+
+        <div class="stat-card">
+            <div class="flex justify-between items-center mb-2">
+                <h3 class="text-lg font-semibold text-gray-700">Formations</h3>
+                <div class="p-2 bg-green-100 rounded-full">
+                    <i class="fas fa-graduation-cap text-green-600"></i>
+                </div>
+            </div>
+            <p class="stat-value text-green-600">{{ dashboardData && dashboardData.totalGroupFormations || 0 }}</p>
+            <p class="stat-label">Formations disponibles</p>
+        </div>
+
+        <div class="stat-card">
+            <div class="flex justify-between items-center mb-2">
+                <h3 class="text-lg font-semibold text-gray-700">Certifications</h3>
+                <div class="p-2 bg-purple-100 rounded-full">
+                    <i class="fas fa-certificate text-purple-600"></i>
+                </div>
+            </div>
+            <p class="stat-value text-purple-600">{{ dashboardData && dashboardData.totalGroupCertifications || 0 }}</p>
+            <p class="stat-label">Certifications obtenues</p>
+        </div>
+
+        <div class="stat-card">
+            <div class="flex justify-between items-center mb-2">
+                <h3 class="text-lg font-semibold text-gray-700">Score moyen</h3>
+                <div class="p-2 bg-yellow-100 rounded-full">
+                    <i class="fas fa-star text-yellow-600"></i>
+                </div>
+            </div>
+            <p class="stat-value text-yellow-600">{{ (dashboardData && dashboardData.averageGroupScore || 0) |
+                number:'1.1-1' }}%</p>
+            <p class="stat-label">Score moyen du groupe</p>
+        </div>
+    </div>
+
+    <!-- Graphiques -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+        <!-- Tentatives de quiz par mois -->
+        <div class="bg-white p-6 rounded-lg shadow-md">
+            <h3 class="text-lg font-semibold text-gray-700 mb-4">Tentatives de quiz par mois</h3>
+            <div *ngIf="!dashboardData || !dashboardData.groupAttemptsOverTime || dashboardData.groupAttemptsOverTime.length === 0"
+                class="text-center py-8 text-gray-500">
+                <i class="fas fa-chart-line text-2xl mb-2"></i>
+                <p>Aucune donnée disponible pour le moment.</p>
+            </div>
+            <div *ngIf="dashboardData && dashboardData.groupAttemptsOverTime && dashboardData.groupAttemptsOverTime.length > 0"
+                class="h-64">
+                <canvas #attemptsChart></canvas>
+            </div>
+        </div>
+
+        <!-- Progression des utilisateurs -->
+        <div class="bg-white p-6 rounded-lg shadow-md">
+            <h3 class="text-lg font-semibold text-gray-700 mb-4">Progression des utilisateurs</h3>
+            <div *ngIf="!dashboardData || !dashboardData.userProgress || dashboardData.userProgress.length === 0"
+                class="text-center py-8 text-gray-500">
+                <i class="fas fa-users text-2xl mb-2"></i>
+                <p>Aucun utilisateur dans le groupe.</p>
+            </div>
+            <div *ngIf="dashboardData && dashboardData.userProgress && dashboardData.userProgress.length > 0"
+                class="h-64">
+                <canvas #userProgressChart></canvas>
+            </div>
+        </div>
+
+        <!-- Formations les plus populaires -->
+        <div class="bg-white p-6 rounded-lg shadow-md">
+            <h3 class="text-lg font-semibold text-gray-700 mb-4">Formations les plus populaires</h3>
+            <div *ngIf="!dashboardData || !dashboardData.topGroupFormations || dashboardData.topGroupFormations.length === 0"
+                class="text-center py-8 text-gray-500">
+                <i class="fas fa-graduation-cap text-2xl mb-2"></i>
+                <p>Aucune formation n'a encore été tentée.</p>
+            </div>
+            <div *ngIf="dashboardData && dashboardData.topGroupFormations && dashboardData.topGroupFormations.length > 0"
+                class="h-64">
+                <canvas #topFormationsChart></canvas>
+            </div>
+        </div>
+
+        <!-- Informations du groupe -->
+        <div class="bg-white p-6 rounded-lg shadow-md">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-lg font-semibold text-gray-700">Informations du groupe</h3>
+                <span class="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium">
+                    {{ dashboardData && dashboardData.groupName || 'Groupe' }}
+                </span>
+            </div>
+
+            <div class="mb-6">
+                <h4 class="font-medium text-gray-700 mb-2">Tentatives de quiz</h4>
+                <div class="w-full bg-gray-200 rounded-full h-2.5 mb-2">
+                    <div class="bg-blue-600 h-2.5 rounded-full" [style.width.%]="100"></div>
+                </div>
+                <p class="text-sm text-gray-600">Total: {{ dashboardData && dashboardData.totalGroupQuizAttempts || 0 }}
+                    tentatives</p>
+            </div>
+
+            <div class="space-y-4">
+                <div *ngFor="let user of dashboardData && dashboardData.userProgress && dashboardData.userProgress.slice(0, 3) || []"
+                    class="flex justify-between items-center">
+                    <div>
+                        <p class="font-medium text-gray-800">{{ user.userName }}</p>
+                        <p class="text-sm text-gray-600">{{ user.formationsCompleted }} formations, {{
+                            user.certificationsEarned }} certifications</p>
+                    </div>
+                    <div class="text-right">
+                        <p class="font-medium text-gray-800">{{ user.averageScore | number:'1.1-1' }}%</p>
+                        <p class="text-sm text-gray-600">Score moyen</p>
+                    </div>
+                </div>
+
+                <button *ngIf="dashboardData && dashboardData.userProgress && dashboardData.userProgress.length > 3"
+                    (click)="navigateTo('/supervisor/group')" class="text-primary hover:underline text-sm">
+                    Voir tous les membres ({{ dashboardData && dashboardData.userProgress &&
+                    dashboardData.userProgress.length || 0 }})
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Actions rapides -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
         <!-- Formations Card -->
         <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
             <div class="p-6">
@@ -15,8 +154,7 @@
                         <i class="fas fa-book text-blue-600"></i>
                     </div>
                 </div>
-                <p class="text-gray-600 mb-6">Consultez les formations disponibles pour votre équipe et suivez leur
-                    progression.</p>
+                <p class="text-gray-600 mb-6">Consultez les formations disponibles pour votre équipe.</p>
                 <button (click)="navigateTo('/supervisor/formations')"
                     class="w-full px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
                     Voir les formations
@@ -33,7 +171,7 @@
                         <i class="fas fa-certificate text-green-600"></i>
                     </div>
                 </div>
-                <p class="text-gray-600 mb-6">Consultez les certifications obtenues par les membres de votre équipe.</p>
+                <p class="text-gray-600 mb-6">Consultez les certifications obtenues par votre équipe.</p>
                 <button (click)="navigateTo('/supervisor/certifications')"
                     class="w-full px-4 py-2 bg-green-600 text-white text-sm font-medium rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
                     Voir les certifications
@@ -50,8 +188,7 @@
                         <i class="fas fa-users text-purple-600"></i>
                     </div>
                 </div>
-                <p class="text-gray-600 mb-6">Consultez les informations de votre groupe et les membres qui le
-                    composent.</p>
+                <p class="text-gray-600 mb-6">Consultez les informations de votre groupe et ses membres.</p>
                 <button (click)="navigateTo('/supervisor/group')"
                     class="w-full px-4 py-2 bg-purple-600 text-white text-sm font-medium rounded-md hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500">
                     Voir mon groupe
@@ -74,13 +211,24 @@
                         <i class="fas fa-bell text-yellow-600"></i>
                     </div>
                 </div>
-                <p class="text-gray-600 mb-6">Consultez vos notifications et restez informé des mises à jour
-                    importantes.</p>
+                <p class="text-gray-600 mb-6">Consultez vos notifications et restez informé.</p>
                 <button (click)="navigateTo('/supervisor/notifications')"
                     class="w-full px-4 py-2 bg-yellow-600 text-white text-sm font-medium rounded-md hover:bg-yellow-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500">
                     Voir les notifications
                 </button>
             </div>
         </div>
+    </div>
+
+    <!-- État de chargement -->
+    <div *ngIf="loading" class="flex justify-center items-center py-12">
+        <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+    </div>
+
+    <!-- Message d'erreur -->
+    <div *ngIf="error" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-8">
+        <strong class="font-bold">Erreur!</strong>
+        <span class="block sm:inline"> Impossible de charger les données du tableau de bord.</span>
+        <button (click)="refreshData()" class="underline ml-2">Réessayer</button>
     </div>
 </div>

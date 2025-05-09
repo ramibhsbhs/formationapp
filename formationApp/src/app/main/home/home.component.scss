@@ -1,3 +1,127 @@
+// Animations
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(30px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+@keyframes slideInRight {
+    from {
+        transform: translateX(50px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes blob {
+    0% {
+        transform: scale(1);
+    }
+
+    33% {
+        transform: scale(1.1);
+    }
+
+    66% {
+        transform: scale(0.9);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
+// Classes d'animation
+.animate-fadeIn {
+    animation: fadeIn 0.8s ease-in-out forwards;
+}
+
+.animate-slideUp {
+    animation: slideUp 0.8s ease-out forwards;
+}
+
+.animate-slideInRight {
+    animation: slideInRight 0.8s ease-out forwards;
+}
+
+.animate-blob {
+    animation: blob 7s infinite;
+}
+
+// Délais d'animation
+.animation-delay-300 {
+    animation-delay: 300ms;
+}
+
+.animation-delay-500 {
+    animation-delay: 500ms;
+}
+
+.animation-delay-700 {
+    animation-delay: 700ms;
+}
+
+.animation-delay-2000 {
+    animation-delay: 2s;
+}
+
+.animation-delay-4000 {
+    animation-delay: 4s;
+}
+
+// Grille de points décorative
+.bg-grid-primary {
+    background-image: radial-gradient(circle, currentColor 1px, transparent 1px);
+}
+
+// Styles de base
 .card {
-    @apply rounded-lg border bg-card text-card-foreground shadow-sm p-4
+    @apply rounded-lg border bg-card text-card-foreground shadow-sm p-4;
+}
+
+// Styles pour les effets de texte
+.text-gradient {
+    @apply text-transparent bg-clip-text bg-gradient-to-r from-primary via-blue-600 to-indigo-600;
+}
+
+// Effet de survol pour les cartes
+.hover-card {
+    @apply transition-all duration-300 transform hover:-translate-y-1 hover:shadow-lg;
+}
+
+// Effet de verre
+.glass-effect {
+    @apply backdrop-blur-md bg-white/70;
+}
+
+// Effet de bordure brillante
+.glow-border {
+    box-shadow: 0 0 15px rgba(59, 130, 246, 0.5);
+    @apply border border-primary/30;
+}
+
+// Effet de texte 3D
+.text-3d {
+    text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.1),
+        2px 2px 0 rgba(0, 0, 0, 0.05);
 }

@@ -21,6 +21,7 @@ import { QuizResultsComponent } from './quiz-results/quiz-results.component';
 import { FormationFeedbacksComponent } from './components/formation-feedbacks/formation-feedbacks.component';
 import { FeedbackDialogComponent } from './components/feedback-dialog/feedback-dialog.component';
 import { CertificationDetailsComponent } from './certification-details/certification-details.component';
+import { SettingsComponent } from './settings/settings.component';
 
 @NgModule({
   declarations: [
@@ -37,6 +38,7 @@ import { CertificationDetailsComponent } from './certification-details/certifica
     FormationFeedbacksComponent,
     FeedbackDialogComponent,
     CertificationDetailsComponent,
+    SettingsComponent,
   ],
   imports: [
     CommonModule,
@@ -48,7 +50,7 @@ import { CertificationDetailsComponent } from './certification-details/certifica
     MatInputModule,
     MatButtonModule,
     MatDatepickerModule,
-    MatNativeDateModule
+    MatNativeDateModule,
   ],
   exports: [
     ButtomComponent,
@@ -61,6 +63,7 @@ import { CertificationDetailsComponent } from './certification-details/certifica
     FormationFeedbacksComponent,
     FeedbackDialogComponent,
     CertificationDetailsComponent,
+    SettingsComponent
   ]
 })
 export class SharedModule { }

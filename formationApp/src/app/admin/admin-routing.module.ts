@@ -4,7 +4,6 @@ import { HomeComponent } from './home/home.component';
 import { TrainingComponent } from './formation/training/training.component';
 import { EmployeesComponent } from './employees/employees.component';
 import { SessionComponent } from './session/session.component';
-import { SettingsComponent } from './settings/settings.component';
 import { QuizsComponent } from './quiz/quizs/quizs.component';
 import { CreateQuizsComponent } from './quiz/create-quizs/create-quizs.component';
 import { QuizDetailsComponent } from './quiz/quiz-details/quiz-details.component';
@@ -15,6 +14,7 @@ import { FormationDetailComponent } from './formation/formation-detail/formation
 import { CreateFormationComponent } from './formation/create-formation/create-formation.component';
 import { AdminCertificationListComponent } from './certification/certification-list/certification-list.component';
 import { CertificationDetailsComponent } from '../shared/certification-details/certification-details.component';
+import { SettingsComponent } from '../shared/settings/settings.component';
 
 const routes: Routes = [
   { path: "", component: HomeComponent },

@@ -1,194 +1,955 @@
-<div class="min-h-screen bg-gradient-to-b from-blue-50 to-white">
-    <!-- Hero Section -->
-    <header class="pt-6 px-4 md:pt-12">
+<div class="min-h-screen overflow-hidden">
+    <!-- Navbar avec effet de verre -->
+    <nav class="fixed top-0 left-0 right-0 z-50 backdrop-blur-md bg-white/70 shadow-sm py-3 px-4">
         <div class="container mx-auto max-w-7xl">
-            <div class="flex justify-between items-center mb-8">
+            <div class="flex justify-between items-center">
                 <div class="flex items-center">
-                    <div class="h-10 w-10 bg-primary rounded-md flex items-center justify-center mr-3">
+                    <div
+                        class="h-12 w-12 bg-gradient-to-br from-primary to-blue-700 rounded-xl flex items-center justify-center mr-3 shadow-md transform hover:rotate-6 transition-transform duration-300">
                         <i class="fa-solid fa-graduation-cap text-white" style="font-size: 24px;"></i>
                     </div>
                     <div>
-                        <h1 class="text-xl font-bold text-gray-800 !mb-0">Formation</h1>
-                        <p class="text-xs text-gray-600 !mb-0">SUMITOMO formation</p>
+                        <h1
+                            class="text-2xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-primary to-blue-700 !mb-0">
+                            FORMATION</h1>
+                        <p class="text-xs font-medium text-gray-600 !mb-0 tracking-wider uppercase">SUMITOMO EXCELLENCE
+                        </p>
                     </div>
+                </div>
+                <div class="hidden md:flex items-center space-x-8">
+                    <a href="#" class="text-gray-700 hover:text-primary font-medium transition-colors">Accueil</a>
+                    <a href="#features"
+                        class="text-gray-700 hover:text-primary font-medium transition-colors">Fonctionnalités</a>
+                    <a href="#testimonials"
+                        class="text-gray-700 hover:text-primary font-medium transition-colors">Témoignages</a>
+                    <a href="#contact"
+                        class="text-gray-700 hover:text-primary font-medium transition-colors">Contact</a>
                 </div>
                 <div>
-                    <app-button variant="outline" [routerLink]="actionLink">
-                        {{ actionText }}
-                    </app-button>
+                    <!-- Bouton personnalisé pour remplacer app-button -->
+                    <button [routerLink]="actionLink"
+                        class="px-6 py-2.5 bg-gradient-to-r from-primary to-blue-700 text-white font-medium rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 hover:from-blue-700 hover:to-primary">
+                        <span class="flex items-center">
+                            <i class="fas fa-sign-in-alt mr-2"></i>
+                            {{ actionText }}
+                        </span>
+                    </button>
                 </div>
             </div>
+        </div>
+    </nav>
 
-            <div class="flex flex-col md:flex-row items-center py-12 md:py-20">
-                <div class="md:w-1/2 mb-8 md:mb-0">
-                    <h1 class="text-4xl md:text-5xl font-bold text-gray-800 mb-4">
-                        Pilotez vos formations avec efficacité
+    <!-- Hero Section avec animation et design moderne -->
+    <header class="pt-32 pb-20 px-4 bg-gradient-to-br from-blue-50 via-white to-indigo-50 relative overflow-hidden">
+        <!-- Éléments décoratifs animés -->
+        <div class="absolute top-0 left-0 w-full h-full overflow-hidden">
+            <div
+                class="absolute top-1/4 left-1/4 w-64 h-64 bg-primary/5 rounded-full mix-blend-multiply filter blur-xl animate-blob">
+            </div>
+            <div
+                class="absolute top-1/3 right-1/4 w-72 h-72 bg-purple-300/10 rounded-full mix-blend-multiply filter blur-xl animate-blob animation-delay-2000">
+            </div>
+            <div
+                class="absolute bottom-1/4 right-1/3 w-80 h-80 bg-blue-300/10 rounded-full mix-blend-multiply filter blur-xl animate-blob animation-delay-4000">
+            </div>
+
+            <!-- Grille de points décorative -->
+            <div class="absolute inset-0 bg-grid-primary/[0.03] bg-[length:20px_20px]"></div>
+        </div>
+
+        <div class="container mx-auto max-w-7xl relative z-10">
+            <div class="flex flex-col md:flex-row items-center">
+                <div class="md:w-1/2 mb-12 md:mb-0">
+                    <div
+                        class="inline-block px-3 py-1 bg-blue-100 text-primary rounded-full text-sm font-semibold mb-6 animate-fadeIn">
+                        <span class="flex items-center">
+                            <span class="h-2 w-2 bg-primary rounded-full mr-2 animate-pulse"></span>
+                            Plateforme de formation innovante
+                        </span>
+                    </div>
+
+                    <h1 class="text-5xl md:text-6xl font-black mb-6 leading-tight animate-slideUp">
+                        <span class="block">Transformez votre</span>
+                        <span class="relative">
+                            <span
+                                class="text-transparent bg-clip-text bg-gradient-to-r from-primary via-blue-600 to-indigo-600">
+                                approche formation
+                            </span>
+                            <svg class="absolute -bottom-2 left-0 w-full" viewBox="0 0 300 12"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <path d="M3 8.5C55 3 150 3 297 8.5" stroke="url(#gradient)" stroke-width="5"
+                                    stroke-linecap="round" fill="none" />
+                                <defs>
+                                    <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                                        <stop offset="0%" stop-color="#3B82F6" />
+                                        <stop offset="100%" stop-color="#6366F1" />
+                                    </linearGradient>
+                                </defs>
+                            </svg>
+                        </span>
                     </h1>
-                    <p class="text-xl text-gray-600 mb-8">
-                        Une plateforme complète pour gérer, suivre et optimiser
-                        les programmes de formation de votre entreprise.
+
+                    <p class="text-xl text-gray-600 mb-8 leading-relaxed max-w-xl animate-fadeIn animation-delay-300">
+                        Une <span class="font-semibold text-gray-800">plateforme intelligente</span> qui révolutionne la
+                        gestion,
+                        le suivi et l'optimisation des programmes de formation de votre entreprise.
                     </p>
-                    <div class="flex flex-col sm:flex-row gap-4">
-                        <button [routerLink]="'/login'" class="btn btn-lg w-full sm:w-auto">
-                            Commencer maintenant
+
+                    <div class="flex flex-col sm:flex-row gap-6 animate-fadeIn animation-delay-500">
+                        <!-- Bouton "Commencer maintenant" amélioré -->
+                        <button [routerLink]="'/login'"
+                            class="px-8 py-4 w-full sm:w-auto bg-gradient-to-r from-primary to-blue-700 hover:from-blue-700 hover:to-primary text-white text-lg font-bold rounded-xl border-0 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 flex items-center justify-center">
+                            <i class="fas fa-rocket mr-3 text-yellow-300"></i>
+                            <span>Commencer maintenant</span>
                         </button>
-                        <button [routerLink]="'/login'" class="btn btn-outline btn-lg w-full sm:w-auto">
-                            Découvrir les fonctionnalités
+
+                        <!-- Bouton "Voir la démo" amélioré -->
+                        <button [routerLink]="'/login'"
+                            class="px-8 py-4 w-full sm:w-auto bg-white text-primary text-lg font-bold rounded-xl border-2 border-primary hover:bg-primary/5 transition-all duration-300 transform hover:-translate-y-1 flex items-center justify-center">
+                            <i class="fas fa-play-circle mr-3 text-primary"></i>
+                            <span>Voir la démo</span>
                         </button>
                     </div>
-                </div>
-                <div class="md:w-1/2 flex justify-center">
-                    <div class="relative w-full max-w-md">
-                        <div class="absolute -top-4 -left-4 w-full h-full bg-primary/10 rounded-xl"></div>
-                        <div class="relative bg-white p-6 rounded-xl shadow-lg border border-gray-200">
-                            <div class="flex items-center mb-4">
-                                <i class="fas fa-chart-bar h-6 w-6 text-primary mr-2"></i>
-                                <h3 class="text-lg font-semibold">Statistiques en temps réel</h3>
+
+                    <!-- Badges de confiance -->
+                    <div class="mt-12 flex flex-wrap items-center gap-6 animate-fadeIn animation-delay-700">
+                        <p class="text-sm font-medium text-gray-500">Ils nous font confiance :</p>
+                        <div class="flex flex-wrap gap-6">
+                            <!-- Logos des clients avec design amélioré -->
+                            <div
+                                class="bg-white rounded-xl shadow-sm px-6 py-3 flex items-center justify-center hover:shadow-md transition-all duration-300 border border-gray-100">
+                                <span
+                                    class="font-bold text-gray-700 bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-blue-800">ENTREPRISE
+                                    1</span>
                             </div>
-                            <div class="grid grid-cols-2 gap-4 mb-4">
-                                <div class="bg-blue-50 p-3 rounded-lg">
-                                    <p class="text-sm text-gray-600">Formations actives</p>
-                                    <p class="text-2xl font-bold text-gray-800">24</p>
+                            <div
+                                class="bg-white rounded-xl shadow-sm px-6 py-3 flex items-center justify-center hover:shadow-md transition-all duration-300 border border-gray-100">
+                                <span
+                                    class="font-bold text-gray-700 bg-clip-text text-transparent bg-gradient-to-r from-green-600 to-green-800">ENTREPRISE
+                                    2</span>
+                            </div>
+                            <div
+                                class="bg-white rounded-xl shadow-sm px-6 py-3 flex items-center justify-center hover:shadow-md transition-all duration-300 border border-gray-100">
+                                <span
+                                    class="font-bold text-gray-700 bg-clip-text text-transparent bg-gradient-to-r from-purple-600 to-purple-800">ENTREPRISE
+                                    3</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Carte de statistiques avec design moderne -->
+                <div class="md:w-1/2 flex justify-center">
+                    <div class="relative w-full max-w-md animate-slideUp animation-delay-300">
+                        <!-- Effet de profondeur -->
+                        <div
+                            class="absolute -top-3 -left-3 w-full h-full bg-gradient-to-br from-blue-600/20 to-indigo-600/20 rounded-2xl transform rotate-2">
+                        </div>
+                        <div
+                            class="absolute -top-1 -left-1 w-full h-full bg-white/50 backdrop-blur-sm rounded-2xl transform rotate-1">
+                        </div>
+
+                        <!-- Carte principale -->
+                        <div class="relative bg-white p-8 rounded-2xl shadow-xl border border-gray-100">
+                            <div class="flex items-center justify-between mb-6">
+                                <div class="flex items-center">
+                                    <div
+                                        class="h-10 w-10 bg-gradient-to-br from-primary to-blue-700 rounded-xl flex items-center justify-center mr-3">
+                                        <i class="fas fa-chart-line text-white"></i>
+                                    </div>
+                                    <h3
+                                        class="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-blue-700">
+                                        Tableau de bord</h3>
                                 </div>
-                                <div class="bg-green-50 p-3 rounded-lg">
-                                    <p class="text-sm text-gray-600">Employés formés</p>
-                                    <p class="text-2xl font-bold text-gray-800">186</p>
+                                <button *ngIf="!loading" (click)="refreshStats()"
+                                    class="h-8 w-8 flex items-center justify-center rounded-full bg-gray-100 hover:bg-primary/10 text-gray-500 hover:text-primary transition-colors">
+                                    <i class="fas fa-sync-alt"></i>
+                                </button>
+                                <div *ngIf="loading" class="h-8 w-8 flex items-center justify-center">
+                                    <div
+                                        class="animate-spin h-5 w-5 border-2 border-primary border-t-transparent rounded-full">
+                                    </div>
                                 </div>
-                                <div class="bg-purple-50 p-3 rounded-lg">
-                                    <p class="text-sm text-gray-600">Sessions ce mois</p>
-                                    <p class="text-2xl font-bold text-gray-800">8</p>
+                            </div>
+
+                            <!-- État de chargement -->
+                            <div *ngIf="loading && !stats" class="flex justify-center items-center py-16">
+                                <div class="flex flex-col items-center">
+                                    <div
+                                        class="animate-spin rounded-full h-16 w-16 border-4 border-primary border-t-transparent mb-4">
+                                    </div>
+                                    <p class="text-gray-500">Chargement des données...</p>
                                 </div>
-                                <div class="bg-orange-50 p-3 rounded-lg">
-                                    <p class="text-sm text-gray-600">Taux de réussite</p>
-                                    <p class="text-2xl font-bold text-gray-800">92%</p>
+                            </div>
+
+                            <!-- Message d'erreur -->
+                            <div *ngIf="error && !stats"
+                                class="bg-red-50 border-l-4 border-red-500 text-red-700 p-4 rounded-md mb-4">
+                                <div class="flex items-center">
+                                    <i class="fas fa-exclamation-circle mr-3 text-red-500 text-xl"></i>
+                                    <div>
+                                        <p class="font-medium">Impossible de charger les statistiques</p>
+                                        <p class="text-sm text-red-600 mt-1">Veuillez vérifier votre connexion et
+                                            réessayer</p>
+                                    </div>
+                                </div>
+                                <button (click)="refreshStats()"
+                                    class="mt-3 px-4 py-2 bg-red-100 hover:bg-red-200 text-red-700 rounded-md text-sm font-medium transition-colors">
+                                    <i class="fas fa-redo mr-2"></i> Réessayer
+                                </button>
+                            </div>
+
+                            <!-- Statistiques -->
+                            <div *ngIf="stats" class="space-y-6">
+                                <!-- Statistiques principales -->
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div
+                                        class="bg-gradient-to-br from-blue-50 to-blue-100 p-4 rounded-xl hover:shadow-md transition-all duration-300 transform hover:-translate-y-1 group">
+                                        <div class="flex items-center mb-2">
+                                            <div
+                                                class="h-8 w-8 bg-blue-100 group-hover:bg-blue-200 rounded-lg flex items-center justify-center mr-2 transition-colors">
+                                                <i class="fas fa-book text-blue-600"></i>
+                                            </div>
+                                            <p class="text-sm font-medium text-blue-800">Formations</p>
+                                        </div>
+                                        <p class="text-3xl font-extrabold text-blue-900">{{ stats.totalFormations }}</p>
+                                        <p class="text-xs text-blue-700 mt-1">Programmes actifs</p>
+                                    </div>
+
+                                    <div
+                                        class="bg-gradient-to-br from-green-50 to-green-100 p-4 rounded-xl hover:shadow-md transition-all duration-300 transform hover:-translate-y-1 group">
+                                        <div class="flex items-center mb-2">
+                                            <div
+                                                class="h-8 w-8 bg-green-100 group-hover:bg-green-200 rounded-lg flex items-center justify-center mr-2 transition-colors">
+                                                <i class="fas fa-users text-green-600"></i>
+                                            </div>
+                                            <p class="text-sm font-medium text-green-800">Utilisateurs</p>
+                                        </div>
+                                        <p class="text-3xl font-extrabold text-green-900">{{ stats.totalUsers }}</p>
+                                        <p class="text-xs text-green-700 mt-1">Apprenants actifs</p>
+                                    </div>
+
+                                    <div
+                                        class="bg-gradient-to-br from-purple-50 to-purple-100 p-4 rounded-xl hover:shadow-md transition-all duration-300 transform hover:-translate-y-1 group">
+                                        <div class="flex items-center mb-2">
+                                            <div
+                                                class="h-8 w-8 bg-purple-100 group-hover:bg-purple-200 rounded-lg flex items-center justify-center mr-2 transition-colors">
+                                                <i class="fas fa-calendar-alt text-purple-600"></i>
+                                            </div>
+                                            <p class="text-sm font-medium text-purple-800">Sessions</p>
+                                        </div>
+                                        <p class="text-3xl font-extrabold text-purple-900">{{ stats.totalSessions }}</p>
+                                        <p class="text-xs text-purple-700 mt-1">Sessions planifiées</p>
+                                    </div>
+
+                                    <div
+                                        class="bg-gradient-to-br from-amber-50 to-amber-100 p-4 rounded-xl hover:shadow-md transition-all duration-300 transform hover:-translate-y-1 group">
+                                        <div class="flex items-center mb-2">
+                                            <div
+                                                class="h-8 w-8 bg-amber-100 group-hover:bg-amber-200 rounded-lg flex items-center justify-center mr-2 transition-colors">
+                                                <i class="fas fa-award text-amber-600"></i>
+                                            </div>
+                                            <p class="text-sm font-medium text-amber-800">Réussite</p>
+                                        </div>
+                                        <div class="flex items-end">
+                                            <p class="text-3xl font-extrabold text-amber-900">{{ stats.successRate }}
+                                            </p>
+                                            <p class="text-xl font-bold text-amber-800 ml-1">%</p>
+                                        </div>
+                                        <p class="text-xs text-amber-700 mt-1">Taux de réussite</p>
+                                    </div>
+                                </div>
+
+                                <!-- Statistiques supplémentaires -->
+                                <div class="bg-gray-50 p-4 rounded-xl">
+                                    <h4 class="text-sm font-semibold text-gray-700 mb-3">Statistiques détaillées</h4>
+                                    <div class="space-y-3">
+                                        <div class="flex justify-between items-center">
+                                            <div class="flex items-center">
+                                                <div
+                                                    class="h-6 w-6 bg-indigo-100 rounded-md flex items-center justify-center mr-2">
+                                                    <i class="fas fa-certificate text-indigo-600 text-xs"></i>
+                                                </div>
+                                                <span class="text-sm text-gray-700">Certifications</span>
+                                            </div>
+                                            <span class="font-bold text-gray-900">{{ stats.totalCertifications }}</span>
+                                        </div>
+
+                                        <div class="flex justify-between items-center">
+                                            <div class="flex items-center">
+                                                <div
+                                                    class="h-6 w-6 bg-teal-100 rounded-md flex items-center justify-center mr-2">
+                                                    <i class="fas fa-cubes text-teal-600 text-xs"></i>
+                                                </div>
+                                                <span class="text-sm text-gray-700">Modules</span>
+                                            </div>
+                                            <span class="font-bold text-gray-900">{{ stats.totalModules }}</span>
+                                        </div>
+
+                                        <div class="flex justify-between items-center">
+                                            <div class="flex items-center">
+                                                <div
+                                                    class="h-6 w-6 bg-rose-100 rounded-md flex items-center justify-center mr-2">
+                                                    <i class="fas fa-tasks text-rose-600 text-xs"></i>
+                                                </div>
+                                                <span class="text-sm text-gray-700">Quiz complétés</span>
+                                            </div>
+                                            <span class="font-bold text-gray-900">{{ stats.totalQuizAttempts }}</span>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
+
+            <!-- Vagues décoratives en bas -->
+            <div class="absolute bottom-0 left-0 right-0 h-16 overflow-hidden">
+                <svg class="absolute bottom-0 w-full h-full" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320">
+                    <path fill="#ffffff" fill-opacity="1"
+                        d="M0,224L48,213.3C96,203,192,181,288,181.3C384,181,480,203,576,224C672,245,768,267,864,261.3C960,256,1056,224,1152,208C1248,192,1344,192,1392,192L1440,192L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z">
+                    </path>
+                </svg>
+            </div>
         </div>
     </header>
 
-    <!-- Features Section -->
-    <section class="py-12 md:py-20 bg-white">
-        <div class="container mx-auto max-w-7xl px-4">
-            <div class="text-center mb-12">
-                <h2 class="text-3xl font-bold text-gray-800 mb-4">Fonctionnalités principales</h2>
-                <p class="text-xl text-gray-600">
+    <!-- Features Section avec design moderne -->
+    <section id="features" class="py-16 md:py-24 bg-white relative overflow-hidden">
+        <!-- Éléments décoratifs -->
+        <div class="absolute inset-0 overflow-hidden opacity-5">
+            <div class="absolute -top-20 -right-20 w-96 h-96 bg-primary rounded-full"></div>
+            <div class="absolute bottom-20 -left-20 w-80 h-80 bg-blue-400 rounded-full"></div>
+        </div>
+
+        <div class="container mx-auto max-w-7xl px-4 relative z-10">
+            <div class="text-center mb-16">
+                <div class="inline-flex items-center justify-center mb-4 animate-fadeIn">
+                    <span class="h-px w-8 bg-primary mr-3"></span>
+                    <span
+                        class="px-4 py-2 bg-primary/10 text-primary rounded-full text-sm font-bold">FONCTIONNALITÉS</span>
+                    <span class="h-px w-8 bg-primary ml-3"></span>
+                </div>
+                <h2
+                    class="text-4xl md:text-5xl font-black mb-6 leading-tight text-3d animate-fadeIn animation-delay-300">
+                    Des outils <span class="text-gradient">puissants</span> pour votre réussite
+                </h2>
+                <p class="text-xl text-gray-600 max-w-3xl mx-auto mb-8 animate-fadeIn animation-delay-500">
                     Notre plateforme offre tous les outils nécessaires pour une gestion
                     efficace des formations au sein de votre entreprise.
                 </p>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                <div class="card border-0 shadow-md hover:shadow-lg transition-shadow">
-                    <div class="card-content pt-6">
-                        <div class="h-12 w-12 bg-blue-100 rounded-lg flex items-center justify-center mb-4">
-                            <i class="fas fa-graduation-cap text-primary text-2xl"></i>
+            <!-- Fonctionnalités avec design moderne et interactif -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
+                <!-- Carte 1 -->
+                <div
+                    class="group bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-500 transform hover:-translate-y-2 overflow-hidden animate-fadeIn animation-delay-300">
+                    <div class="h-3 bg-gradient-to-r from-blue-500 to-blue-700"></div>
+                    <div class="p-8">
+                        <div
+                            class="h-16 w-16 bg-blue-100 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-blue-200 transition-colors duration-300 transform group-hover:rotate-6">
+                            <i class="fas fa-graduation-cap text-blue-600 text-3xl"></i>
                         </div>
-                        <h3 class="text-xl font-semibold mb-2">Gestion des formations</h3>
-                        <p class="text-gray-600">
+                        <h3 class="text-2xl font-bold mb-4 text-gray-800 group-hover:text-blue-600 transition-colors">
+                            Gestion des formations</h3>
+                        <p class="text-gray-600 mb-6 leading-relaxed">
                             Créez, modifiez et organisez vos programmes de formation
                             avec un suivi détaillé du contenu et des objectifs.
                         </p>
+                        <div class="flex items-center justify-between">
+                            <a href="#"
+                                class="text-blue-600 hover:text-blue-800 font-semibold flex items-center transition-all duration-300 group-hover:translate-x-2">
+                                Découvrir <i
+                                    class="fas fa-arrow-right ml-2 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-x-0 group-hover:translate-x-1"></i>
+                            </a>
+                            <span class="text-xs text-gray-400 font-medium">01</span>
+                        </div>
                     </div>
                 </div>
 
-                <div class="card border-0 shadow-md hover:shadow-lg transition-shadow">
-                    <div class="card-content pt-6">
-                        <div class="h-12 w-12 bg-green-100 rounded-lg flex items-center justify-center mb-4">
-                            <i class="fas fa-calendar text-2xl text-green-600"></i>
+                <!-- Carte 2 -->
+                <div
+                    class="group bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-500 transform hover:-translate-y-2 overflow-hidden animate-fadeIn animation-delay-400">
+                    <div class="h-3 bg-gradient-to-r from-green-500 to-green-700"></div>
+                    <div class="p-8">
+                        <div
+                            class="h-16 w-16 bg-green-100 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-green-200 transition-colors duration-300 transform group-hover:rotate-6">
+                            <i class="fas fa-calendar-alt text-green-600 text-3xl"></i>
                         </div>
-                        <h3 class="text-xl font-semibold mb-2">Planification des sessions</h3>
-                        <p class="text-gray-600">
+                        <h3 class="text-2xl font-bold mb-4 text-gray-800 group-hover:text-green-600 transition-colors">
+                            Planification intelligente</h3>
+                        <p class="text-gray-600 mb-6 leading-relaxed">
                             Planifiez et gérez les sessions de formation avec
                             un système de calendrier intuitif et des rappels automatiques.
                         </p>
+                        <div class="flex items-center justify-between">
+                            <a href="#"
+                                class="text-green-600 hover:text-green-800 font-semibold flex items-center transition-all duration-300 group-hover:translate-x-2">
+                                Découvrir <i
+                                    class="fas fa-arrow-right ml-2 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-x-0 group-hover:translate-x-1"></i>
+                            </a>
+                            <span class="text-xs text-gray-400 font-medium">02</span>
+                        </div>
                     </div>
                 </div>
 
-                <div class="card border-0 shadow-md hover:shadow-lg transition-shadow">
-                    <div class="card-content pt-6">
-                        <div class="h-12 w-12 bg-purple-100 rounded-lg flex items-center justify-center mb-4">
-                            <i class="fas fa-users text-2xl text-purple-600"></i>
+                <!-- Carte 3 -->
+                <div
+                    class="group bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-500 transform hover:-translate-y-2 overflow-hidden animate-fadeIn animation-delay-500">
+                    <div class="h-3 bg-gradient-to-r from-purple-500 to-purple-700"></div>
+                    <div class="p-8">
+                        <div
+                            class="h-16 w-16 bg-purple-100 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-purple-200 transition-colors duration-300 transform group-hover:rotate-6">
+                            <i class="fas fa-users text-purple-600 text-3xl"></i>
                         </div>
-                        <h3 class="text-xl font-semibold mb-2">Suivi des employés</h3>
-                        <p class="text-gray-600">
+                        <h3 class="text-2xl font-bold mb-4 text-gray-800 group-hover:text-purple-600 transition-colors">
+                            Suivi personnalisé</h3>
+                        <p class="text-gray-600 mb-6 leading-relaxed">
                             Suivez la progression et les compétences acquises par vos
                             employés à travers différents programmes de formation.
                         </p>
+                        <div class="flex items-center justify-between">
+                            <a href="#"
+                                class="text-purple-600 hover:text-purple-800 font-semibold flex items-center transition-all duration-300 group-hover:translate-x-2">
+                                Découvrir <i
+                                    class="fas fa-arrow-right ml-2 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-x-0 group-hover:translate-x-1"></i>
+                            </a>
+                            <span class="text-xs text-gray-400 font-medium">03</span>
+                        </div>
                     </div>
                 </div>
 
-                <div class="card border-0 shadow-md hover:shadow-lg transition-shadow">
-                    <div class="card-content pt-6">
-                        <div class="h-12 w-12 bg-orange-100 rounded-lg flex items-center justify-center mb-4">
-                            <i class="fas fa-chart-bar text-2xl text-orange-600"></i>
+                <!-- Carte 4 -->
+                <div
+                    class="group bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-500 transform hover:-translate-y-2 overflow-hidden animate-fadeIn animation-delay-600">
+                    <div class="h-3 bg-gradient-to-r from-amber-500 to-amber-700"></div>
+                    <div class="p-8">
+                        <div
+                            class="h-16 w-16 bg-amber-100 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-amber-200 transition-colors duration-300 transform group-hover:rotate-6">
+                            <i class="fas fa-chart-line text-amber-600 text-3xl"></i>
                         </div>
-                        <h3 class="text-xl font-semibold mb-2">Rapports et analyses</h3>
-                        <p class="text-gray-600">
+                        <h3 class="text-2xl font-bold mb-4 text-gray-800 group-hover:text-amber-600 transition-colors">
+                            Analyses avancées</h3>
+                        <p class="text-gray-600 mb-6 leading-relaxed">
                             Générez des rapports détaillés sur les performances et
-                            l'efficacité de vos programmes de formation.
+                            l'efficacité de vos programmes de formation avec des visualisations claires.
                         </p>
+                        <div class="flex items-center justify-between">
+                            <a href="#"
+                                class="text-amber-600 hover:text-amber-800 font-semibold flex items-center transition-all duration-300 group-hover:translate-x-2">
+                                Découvrir <i
+                                    class="fas fa-arrow-right ml-2 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-x-0 group-hover:translate-x-1"></i>
+                            </a>
+                            <span class="text-xs text-gray-400 font-medium">04</span>
+                        </div>
                     </div>
                 </div>
 
-                <div class="card border-0 shadow-md hover:shadow-lg transition-shadow">
-                    <div class="card-content pt-6">
-                        <div class="h-12 w-12 bg-red-100 rounded-lg flex items-center justify-center mb-4">
-                            <i class="fas fa-check-circle text-2xl text-red-600"></i>
+                <!-- Carte 5 -->
+                <div
+                    class="group bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-500 transform hover:-translate-y-2 overflow-hidden animate-fadeIn animation-delay-700">
+                    <div class="h-3 bg-gradient-to-r from-rose-500 to-rose-700"></div>
+                    <div class="p-8">
+                        <div
+                            class="h-16 w-16 bg-rose-100 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-rose-200 transition-colors duration-300 transform group-hover:rotate-6">
+                            <i class="fas fa-award text-rose-600 text-3xl"></i>
                         </div>
-                        <h3 class="text-xl font-semibold mb-2">Évaluation des compétences</h3>
-                        <p class="text-gray-600">
+                        <h3 class="text-2xl font-bold mb-4 text-gray-800 group-hover:text-rose-600 transition-colors">
+                            Certifications digitales</h3>
+                        <p class="text-gray-600 mb-6 leading-relaxed">
                             Évaluez les compétences acquises avec des tests
-                            personnalisables et des certifications intégrées.
+                            personnalisables et délivrez des certifications numériques sécurisées.
                         </p>
+                        <div class="flex items-center justify-between">
+                            <a href="#"
+                                class="text-rose-600 hover:text-rose-800 font-semibold flex items-center transition-all duration-300 group-hover:translate-x-2">
+                                Découvrir <i
+                                    class="fas fa-arrow-right ml-2 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-x-0 group-hover:translate-x-1"></i>
+                            </a>
+                            <span class="text-xs text-gray-400 font-medium">05</span>
+                        </div>
                     </div>
                 </div>
 
-                <div class="card border-0 shadow-md hover:shadow-lg transition-shadow">
-                    <div class="card-content pt-6">
-                        <div class="h-12 w-12 bg-teal-100 rounded-lg flex items-center justify-center mb-4">
-                            <i class="fas fa-bell text-2xl text-teal-600"></i>
+                <!-- Carte 6 -->
+                <div
+                    class="group bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-500 transform hover:-translate-y-2 overflow-hidden animate-fadeIn animation-delay-800">
+                    <div class="h-3 bg-gradient-to-r from-teal-500 to-teal-700"></div>
+                    <div class="p-8">
+                        <div
+                            class="h-16 w-16 bg-teal-100 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-teal-200 transition-colors duration-300 transform group-hover:rotate-6">
+                            <i class="fas fa-bell text-teal-600 text-3xl"></i>
                         </div>
-                        <h3 class="text-xl font-semibold mb-2">Notifications</h3>
-                        <p class="text-gray-600">
-                            Restez informé avec des alertes pour les formations
-                            obligatoires et les échéances importantes.
+                        <h3 class="text-2xl font-bold mb-4 text-gray-800 group-hover:text-teal-600 transition-colors">
+                            Notifications intelligentes</h3>
+                        <p class="text-gray-600 mb-6 leading-relaxed">
+                            Restez informé avec des alertes personnalisées pour les formations
+                            obligatoires et les échéances importantes de votre équipe.
                         </p>
+                        <div class="flex items-center justify-between">
+                            <a href="#"
+                                class="text-teal-600 hover:text-teal-800 font-semibold flex items-center transition-all duration-300 group-hover:translate-x-2">
+                                Découvrir <i
+                                    class="fas fa-arrow-right ml-2 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-x-0 group-hover:translate-x-1"></i>
+                            </a>
+                            <span class="text-xs text-gray-400 font-medium">06</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bannière de fonctionnalité spéciale -->
+            <div class="relative overflow-hidden rounded-3xl shadow-2xl animate-fadeIn animation-delay-900">
+                <div class="absolute inset-0 bg-gradient-to-r from-blue-600 to-indigo-600 opacity-90"></div>
+                <div
+                    class="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1522202176988-66273c2fd55f?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80')] bg-cover bg-center mix-blend-overlay">
+                </div>
+
+                <div class="relative p-8 md:p-12 flex flex-col md:flex-row items-center">
+                    <div class="md:w-2/3 mb-8 md:mb-0 md:pr-8">
+                        <h3 class="text-3xl font-bold text-white mb-4">Découvrez notre nouvelle IA de formation</h3>
+                        <p class="text-white/90 text-lg mb-6">
+                            Notre intelligence artificielle analyse les performances et propose des parcours de
+                            formation personnalisés pour chaque apprenant, optimisant ainsi leur progression et leur
+                            engagement.
+                        </p>
+                        <button
+                            class="px-8 py-4 bg-white text-blue-600 text-lg font-bold rounded-xl hover:bg-blue-50 shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300 flex items-center justify-center">
+                            <i class="fas fa-robot mr-3 text-blue-500"></i>
+                            <span>Demander une démo</span>
+                            <i class="fas fa-arrow-right ml-3"></i>
+                        </button>
+                    </div>
+                    <div class="md:w-1/3 flex justify-center">
+                        <div
+                            class="h-48 w-48 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center">
+                            <i class="fas fa-robot text-white text-6xl"></i>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- CTA Section -->
-    <section class="py-12 md:py-20 bg-gradient-to-r from-primary/10 to-blue-50">
-        <div class="container mx-auto max-w-7xl px-4 text-center">
-            <h2 class="text-3xl font-bold text-gray-800 mb-4">
-                Prêt à optimiser la gestion de vos formations ?
-            </h2>
-            <p class="text-xl text-gray-600 mb-8">
-                Rejoignez les nombreuses entreprises qui améliorent la qualité
-                de leurs formations avec FormationPilot.
-            </p>
-            <app-button [routerLink]="'/login'" size="lg" class="px-8">Commencer maintenant</app-button>
+    <!-- Testimonials Section avec design créatif -->
+    <section id="testimonials" class="py-16 md:py-24 bg-gradient-to-b from-white to-gray-50 relative overflow-hidden">
+        <!-- Éléments décoratifs -->
+        <div class="absolute inset-0 overflow-hidden">
+            <svg class="absolute top-0 left-0 w-full h-full text-gray-100 opacity-50" xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 1440 320">
+                <path fill="currentColor" fill-opacity="1"
+                    d="M0,224L48,213.3C96,203,192,181,288,181.3C384,181,480,203,576,224C672,245,768,267,864,261.3C960,256,1056,224,1152,208C1248,192,1344,192,1392,192L1440,192L1440,0L1392,0C1344,0,1248,0,1152,0C1056,0,960,0,864,0C768,0,672,0,576,0C480,0,384,0,288,0C192,0,96,0,48,0L0,0Z">
+                </path>
+            </svg>
+            <div class="absolute -bottom-16 -right-16 w-64 h-64 bg-blue-100 rounded-full opacity-30"></div>
+            <div class="absolute top-1/3 -left-8 w-24 h-24 bg-primary rounded-full opacity-10"></div>
+        </div>
+
+        <div class="container mx-auto max-w-7xl px-4 relative z-10">
+            <div class="text-center mb-16">
+                <div class="inline-flex items-center justify-center mb-4 animate-fadeIn">
+                    <span class="h-px w-8 bg-primary mr-3"></span>
+                    <span class="px-4 py-2 bg-primary/10 text-primary rounded-full text-sm font-bold">TÉMOIGNAGES</span>
+                    <span class="h-px w-8 bg-primary ml-3"></span>
+                </div>
+                <h2
+                    class="text-4xl md:text-5xl font-black mb-6 leading-tight text-3d animate-fadeIn animation-delay-300">
+                    Ce que nos <span class="text-gradient">clients</span> disent
+                </h2>
+                <p class="text-xl text-gray-600 max-w-3xl mx-auto mb-8 animate-fadeIn animation-delay-500">
+                    Découvrez comment notre plateforme a transformé la gestion des formations
+                    dans différentes entreprises et révolutionné leur approche de l'apprentissage.
+                </p>
+            </div>
+
+            <!-- Carrousel de témoignages -->
+            <div class="relative px-4 md:px-12">
+                <!-- Grandes guillemets décoratifs -->
+                <div class="absolute -top-10 -left-4 text-primary/10 text-9xl font-serif">
+                    <i class="fas fa-quote-left"></i>
+                </div>
+                <div class="absolute -bottom-10 -right-4 text-primary/10 text-9xl font-serif">
+                    <i class="fas fa-quote-right"></i>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <div *ngFor="let testimonial of testimonials; let i = index"
+                        class="bg-white rounded-2xl shadow-lg p-8 relative transform transition-all duration-500 hover:shadow-xl hover:-translate-y-2 animate-fadeIn"
+                        [ngClass]="{'animation-delay-300': i === 0, 'animation-delay-500': i === 1, 'animation-delay-700': i === 2}">
+                        <!-- Badge de position -->
+                        <div
+                            class="absolute -top-4 -right-4 h-12 w-12 bg-gradient-to-br from-primary to-blue-700 rounded-full flex items-center justify-center shadow-lg">
+                            <span class="text-white font-bold">0{{i+1}}</span>
+                        </div>
+
+                        <!-- Contenu du témoignage -->
+                        <div class="mb-6">
+                            <!-- Étoiles de notation -->
+                            <div class="flex mb-4">
+                                <i class="fas fa-star text-yellow-400"></i>
+                                <i class="fas fa-star text-yellow-400 ml-1"></i>
+                                <i class="fas fa-star text-yellow-400 ml-1"></i>
+                                <i class="fas fa-star text-yellow-400 ml-1"></i>
+                                <i class="fas fa-star text-yellow-400 ml-1"></i>
+                            </div>
+
+                            <p class="text-gray-700 text-lg leading-relaxed italic">
+                                "{{ testimonial.quote }}"
+                            </p>
+                        </div>
+
+                        <!-- Informations sur le client -->
+                        <div class="flex items-center border-t border-gray-100 pt-6">
+                            <div class="h-16 w-16 bg-gray-200 rounded-full overflow-hidden mr-4 ring-2 ring-primary/20">
+                                <img [src]="testimonial.avatar || 'https://ui-avatars.com/api/?name=' + testimonial.name + '&background=random'"
+                                    alt="{{ testimonial.name }}" class="h-full w-full object-cover">
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-gray-900 text-lg">{{ testimonial.name }}</h4>
+                                <div class="flex flex-col">
+                                    <span class="text-primary font-medium">{{ testimonial.position }}</span>
+                                    <span class="text-sm text-gray-500">{{ testimonial.company }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bouton d'action -->
+                <div class="text-center mt-12 animate-fadeIn animation-delay-900">
+                    <button
+                        class="px-8 py-3 bg-white border-2 border-primary text-primary font-bold rounded-lg hover:bg-primary hover:text-white shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300">
+                        Voir tous les témoignages <i class="fas fa-arrow-right ml-2"></i>
+                    </button>
+                </div>
+            </div>
         </div>
     </section>
 
-    <!-- Footer -->
-    <footer class="bg-gray-100 py-8">
-        <div class="container mx-auto max-w-7xl px-4">
-            <div class="flex flex-col md:flex-row justify-between items-center">
-                <div class="flex items-center mb-4 md:mb-0">
-                    <div class="h-8 w-8 bg-primary rounded-md flex items-center justify-center mr-2">
-                        <i class="fas fa-graduation-cap text-white" style="font-size: 16px;"></i>
+    <!-- CTA Section avec design créatif -->
+    <section id="contact" class="py-20 md:py-28 relative overflow-hidden">
+        <!-- Arrière-plan avec dégradé et motif -->
+        <div class="absolute inset-0 bg-gradient-to-br from-blue-600 to-indigo-800 opacity-90"></div>
+        <div
+            class="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1557804506-669a67965ba0?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1074&q=80')] bg-cover bg-center mix-blend-overlay">
+        </div>
+
+        <!-- Motif de points -->
+        <div class="absolute inset-0 bg-grid-white/[0.05] bg-[length:20px_20px]"></div>
+
+        <!-- Éléments décoratifs -->
+        <div class="absolute top-0 left-0 w-full h-full overflow-hidden">
+            <div
+                class="absolute top-1/4 left-1/4 w-64 h-64 bg-white/10 rounded-full mix-blend-overlay filter blur-xl animate-blob">
+            </div>
+            <div
+                class="absolute top-1/3 right-1/4 w-72 h-72 bg-blue-300/10 rounded-full mix-blend-overlay filter blur-xl animate-blob animation-delay-2000">
+            </div>
+        </div>
+
+        <div class="container mx-auto max-w-7xl px-4 relative z-10">
+            <!-- Contenu principal -->
+            <div
+                class="max-w-4xl mx-auto bg-white/10 backdrop-blur-lg rounded-3xl p-8 md:p-12 shadow-2xl border border-white/20 animate-fadeIn">
+                <div class="text-center mb-10">
+                    <div class="inline-flex items-center justify-center mb-4">
+                        <span class="h-px w-8 bg-white/50 mr-3"></span>
+                        <span class="px-4 py-2 bg-white/20 text-white rounded-full text-sm font-bold">COMMENCEZ
+                            MAINTENANT</span>
+                        <span class="h-px w-8 bg-white/50 ml-3"></span>
                     </div>
-                    <span class="text-gray-800 font-semibold">FormationPilot</span>
+                    <h2 class="text-4xl md:text-5xl font-black mb-6 leading-tight text-white">
+                        Prêt à <span
+                            class="text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 to-yellow-500">révolutionner</span>
+                        votre approche formation ?
+                    </h2>
+                    <p class="text-xl text-white/90 mb-8 max-w-3xl mx-auto">
+                        Rejoignez les nombreuses entreprises qui transforment leur gestion de formation
+                        et améliorent les compétences de leurs équipes avec notre plateforme innovante.
+                    </p>
+
+                    <div class="flex flex-col sm:flex-row gap-6 justify-center mb-12">
+                        <button [routerLink]="'/login'"
+                            class="px-8 py-4 bg-gradient-to-r from-yellow-400 to-yellow-500 text-gray-900 font-bold rounded-xl hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300 flex items-center justify-center">
+                            <i class="fas fa-rocket mr-2"></i> Commencer gratuitement
+                        </button>
+                        <button [routerLink]="'/login'"
+                            class="px-8 py-4 bg-white/20 text-white font-bold rounded-xl border-2 border-white/30 hover:bg-white/30 transform hover:-translate-y-1 transition-all duration-300 flex items-center justify-center">
+                            <i class="fas fa-calendar-alt mr-2"></i> Planifier une démo
+                        </button>
+                    </div>
+
+                    <!-- Badges de confiance -->
+                    <div class="flex flex-wrap justify-center items-center gap-4 mb-8">
+                        <div class="flex items-center bg-white/10 rounded-full px-4 py-2">
+                            <i class="fas fa-shield-alt text-yellow-400 mr-2"></i>
+                            <span class="text-white text-sm font-medium">Sécurité garantie</span>
+                        </div>
+                        <div class="flex items-center bg-white/10 rounded-full px-4 py-2">
+                            <i class="fas fa-sync-alt text-yellow-400 mr-2"></i>
+                            <span class="text-white text-sm font-medium">Mises à jour régulières</span>
+                        </div>
+                        <div class="flex items-center bg-white/10 rounded-full px-4 py-2">
+                            <i class="fas fa-headset text-yellow-400 mr-2"></i>
+                            <span class="text-white text-sm font-medium">Support 24/7</span>
+                        </div>
+                    </div>
                 </div>
-                <div class="text-gray-600 text-sm">
-                    © 2024 SUMITOMO ELECTRIC BORDNETZE SE. Tous droits réservés.
+
+                <!-- Statistiques avec design moderne -->
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8 animate-fadeIn animation-delay-500">
+                    <div
+                        class="bg-white/10 backdrop-blur-sm rounded-xl p-6 text-center transform transition-all duration-300 hover:bg-white/20 hover:-translate-y-1">
+                        <div class="text-5xl font-black text-white mb-2 flex justify-center">
+                            <span class="relative">
+                                {{ stats?.totalFormations || '24' }}
+                                <span class="absolute -top-1 -right-4 text-yellow-400 text-2xl">+</span>
+                            </span>
+                        </div>
+                        <div class="text-white/80 font-medium">Formations</div>
+                    </div>
+                    <div
+                        class="bg-white/10 backdrop-blur-sm rounded-xl p-6 text-center transform transition-all duration-300 hover:bg-white/20 hover:-translate-y-1">
+                        <div class="text-5xl font-black text-white mb-2 flex justify-center">
+                            <span class="relative">
+                                {{ stats?.totalUsers || '186' }}
+                                <span class="absolute -top-1 -right-4 text-yellow-400 text-2xl">+</span>
+                            </span>
+                        </div>
+                        <div class="text-white/80 font-medium">Utilisateurs</div>
+                    </div>
+                    <div
+                        class="bg-white/10 backdrop-blur-sm rounded-xl p-6 text-center transform transition-all duration-300 hover:bg-white/20 hover:-translate-y-1">
+                        <div class="text-5xl font-black text-white mb-2 flex justify-center">
+                            <span class="relative">
+                                {{ stats?.totalCertifications || '145' }}
+                                <span class="absolute -top-1 -right-4 text-yellow-400 text-2xl">+</span>
+                            </span>
+                        </div>
+                        <div class="text-white/80 font-medium">Certifications</div>
+                    </div>
+                    <div
+                        class="bg-white/10 backdrop-blur-sm rounded-xl p-6 text-center transform transition-all duration-300 hover:bg-white/20 hover:-translate-y-1">
+                        <div class="text-5xl font-black text-white mb-2 flex justify-center">
+                            <span class="relative">
+                                {{ stats?.successRate || '92' }}
+                                <span class="absolute -top-1 -right-4 text-yellow-400 text-2xl">%</span>
+                            </span>
+                        </div>
+                        <div class="text-white/80 font-medium">Taux de réussite</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Vagues décoratives en bas -->
+            <div class="absolute bottom-0 left-0 right-0 h-16 overflow-hidden">
+                <svg class="absolute bottom-0 w-full h-full" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320">
+                    <path fill="#1e293b" fill-opacity="1"
+                        d="M0,224L48,213.3C96,203,192,181,288,181.3C384,181,480,203,576,224C672,245,768,267,864,261.3C960,256,1056,224,1152,208C1248,192,1344,192,1392,192L1440,192L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z">
+                    </path>
+                </svg>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer avec design moderne -->
+    <footer class="bg-gray-900 text-white pt-20 pb-10 relative overflow-hidden">
+        <!-- Éléments décoratifs -->
+        <div class="absolute inset-0 overflow-hidden">
+            <div class="absolute -top-40 -right-40 w-96 h-96 bg-blue-900/20 rounded-full blur-3xl"></div>
+            <div class="absolute -bottom-20 -left-20 w-72 h-72 bg-indigo-900/20 rounded-full blur-3xl"></div>
+        </div>
+
+        <div class="container mx-auto max-w-7xl px-4 relative z-10">
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-10 mb-16">
+                <!-- Logo et description -->
+                <div class="md:col-span-4">
+                    <div class="flex items-center mb-6">
+                        <div
+                            class="h-12 w-12 bg-gradient-to-br from-primary to-blue-700 rounded-xl flex items-center justify-center mr-3 shadow-lg">
+                            <i class="fa-solid fa-graduation-cap text-white" style="font-size: 24px;"></i>
+                        </div>
+                        <div>
+                            <h3
+                                class="text-2xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-400 !mb-0">
+                                FORMATION</h3>
+                            <p class="text-xs font-medium text-gray-400 !mb-0 tracking-wider uppercase">SUMITOMO
+                                EXCELLENCE</p>
+                        </div>
+                    </div>
+                    <p class="text-gray-400 leading-relaxed mb-6">
+                        Une plateforme complète et innovante pour gérer, suivre et optimiser
+                        les programmes de formation de votre entreprise avec une approche centrée sur l'apprenant.
+                    </p>
+
+                    <!-- Newsletter -->
+                    <div class="bg-gray-800/50 rounded-xl p-4 backdrop-blur-sm border border-gray-700/50">
+                        <h4 class="text-white font-semibold mb-3">Restez informé</h4>
+                        <p class="text-gray-400 text-sm mb-4">Recevez nos actualités et nos meilleures ressources de
+                            formation</p>
+                        <div class="flex">
+                            <input type="email" placeholder="Votre email"
+                                class="flex-1 bg-gray-700/50 border border-gray-600 rounded-l-lg px-4 py-2 text-white text-sm focus:outline-none focus:ring-2 focus:ring-primary">
+                            <button
+                                class="bg-primary hover:bg-blue-600 text-white px-4 py-2 rounded-r-lg transition-colors">
+                                <i class="fas fa-paper-plane"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Liens rapides -->
+                <div class="md:col-span-2">
+                    <h4 class="text-lg font-bold mb-6 text-white relative inline-block">
+                        Liens rapides
+                        <span class="absolute -bottom-2 left-0 w-12 h-1 bg-primary rounded-full"></span>
+                    </h4>
+                    <ul class="space-y-3">
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors flex items-center">
+                                <i class="fas fa-chevron-right text-xs text-primary mr-2"></i> Accueil
+                            </a></li>
+                        <li><a href="#features"
+                                class="text-gray-400 hover:text-white transition-colors flex items-center">
+                                <i class="fas fa-chevron-right text-xs text-primary mr-2"></i> Fonctionnalités
+                            </a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors flex items-center">
+                                <i class="fas fa-chevron-right text-xs text-primary mr-2"></i> Tarifs
+                            </a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors flex items-center">
+                                <i class="fas fa-chevron-right text-xs text-primary mr-2"></i> À propos
+                            </a></li>
+                        <li><a href="#contact"
+                                class="text-gray-400 hover:text-white transition-colors flex items-center">
+                                <i class="fas fa-chevron-right text-xs text-primary mr-2"></i> Contact
+                            </a></li>
+                    </ul>
+                </div>
+
+                <!-- Ressources -->
+                <div class="md:col-span-2">
+                    <h4 class="text-lg font-bold mb-6 text-white relative inline-block">
+                        Ressources
+                        <span class="absolute -bottom-2 left-0 w-12 h-1 bg-primary rounded-full"></span>
+                    </h4>
+                    <ul class="space-y-3">
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors flex items-center">
+                                <i class="fas fa-file-alt text-xs text-primary mr-2"></i> Documentation
+                            </a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors flex items-center">
+                                <i class="fas fa-video text-xs text-primary mr-2"></i> Tutoriels
+                            </a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors flex items-center">
+                                <i class="fas fa-question-circle text-xs text-primary mr-2"></i> FAQ
+                            </a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors flex items-center">
+                                <i class="fas fa-headset text-xs text-primary mr-2"></i> Support
+                            </a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors flex items-center">
+                                <i class="fas fa-book text-xs text-primary mr-2"></i> Blog
+                            </a></li>
+                    </ul>
+                </div>
+
+                <!-- Contact -->
+                <div class="md:col-span-4">
+                    <h4 class="text-lg font-bold mb-6 text-white relative inline-block">
+                        Contactez-nous
+                        <span class="absolute -bottom-2 left-0 w-12 h-1 bg-primary rounded-full"></span>
+                    </h4>
+
+                    <div class="space-y-4">
+                        <div class="flex items-start">
+                            <div class="h-10 w-10 bg-gray-800 rounded-lg flex items-center justify-center mr-4 mt-1">
+                                <i class="fas fa-envelope text-primary"></i>
+                            </div>
+                            <div>
+                                <h5 class="text-white font-medium mb-1">Email</h5>
+                                <a href="mailto:contact&#64;sumitomo.com"
+                                    class="text-gray-400 hover:text-white transition-colors">
+                                    contact&#64;sumitomo.com
+                                </a>
+                            </div>
+                        </div>
+
+                        <div class="flex items-start">
+                            <div class="h-10 w-10 bg-gray-800 rounded-lg flex items-center justify-center mr-4 mt-1">
+                                <i class="fas fa-phone text-primary"></i>
+                            </div>
+                            <div>
+                                <h5 class="text-white font-medium mb-1">Téléphone</h5>
+                                <a href="tel:+33123456789" class="text-gray-400 hover:text-white transition-colors">
+                                    +33 1 23 45 67 89
+                                </a>
+                            </div>
+                        </div>
+
+                        <div class="flex items-start">
+                            <div class="h-10 w-10 bg-gray-800 rounded-lg flex items-center justify-center mr-4 mt-1">
+                                <i class="fas fa-map-marker-alt text-primary"></i>
+                            </div>
+                            <div>
+                                <h5 class="text-white font-medium mb-1">Adresse</h5>
+                                <p class="text-gray-400">
+                                    123 Avenue de la Formation<br>
+                                    75008 Paris, France
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Réseaux sociaux -->
+                    <div class="mt-8">
+                        <h5 class="text-white font-medium mb-4">Suivez-nous</h5>
+                        <div class="flex space-x-3">
+                            <a href="#"
+                                class="h-10 w-10 bg-gray-800 hover:bg-blue-600 rounded-lg flex items-center justify-center text-gray-400 hover:text-white transition-colors">
+                                <i class="fab fa-facebook-f"></i>
+                            </a>
+                            <a href="#"
+                                class="h-10 w-10 bg-gray-800 hover:bg-blue-400 rounded-lg flex items-center justify-center text-gray-400 hover:text-white transition-colors">
+                                <i class="fab fa-twitter"></i>
+                            </a>
+                            <a href="#"
+                                class="h-10 w-10 bg-gray-800 hover:bg-blue-700 rounded-lg flex items-center justify-center text-gray-400 hover:text-white transition-colors">
+                                <i class="fab fa-linkedin-in"></i>
+                            </a>
+                            <a href="#"
+                                class="h-10 w-10 bg-gray-800 hover:bg-pink-600 rounded-lg flex items-center justify-center text-gray-400 hover:text-white transition-colors">
+                                <i class="fab fa-instagram"></i>
+                            </a>
+                            <a href="#"
+                                class="h-10 w-10 bg-gray-800 hover:bg-red-600 rounded-lg flex items-center justify-center text-gray-400 hover:text-white transition-colors">
+                                <i class="fab fa-youtube"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Séparateur -->
+            <div class="h-px w-full bg-gradient-to-r from-transparent via-gray-700 to-transparent mb-8"></div>
+
+            <!-- Copyright et liens légaux -->
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <div class="text-gray-500 text-sm mb-4 md:mb-0">
+                    © 2024 <span class="text-primary font-medium">SUMITOMO ELECTRIC BORDNETZE SE</span>. Tous droits
+                    réservés.
+                </div>
+                <div class="flex flex-wrap justify-center gap-6">
+                    <a href="#" class="text-gray-500 hover:text-white text-sm transition-colors">
+                        Politique de confidentialité
+                    </a>
+                    <a href="#" class="text-gray-500 hover:text-white text-sm transition-colors">
+                        Conditions d'utilisation
+                    </a>
+                    <a href="#" class="text-gray-500 hover:text-white text-sm transition-colors">
+                        Mentions légales
+                    </a>
+                    <a href="#" class="text-gray-500 hover:text-white text-sm transition-colors">
+                        Plan du site
+                    </a>
                 </div>
             </div>
         </div>

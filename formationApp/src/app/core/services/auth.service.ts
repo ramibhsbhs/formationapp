@@ -69,4 +69,15 @@ export class AuthService {
       }
     );
   }
+
+  /**
+   * Récupère l'utilisateur actuellement connecté depuis le localStorage
+   */
+  getCurrentUser(): LoggedIn | null {
+    const userJson = localStorage.getItem('user');
+    if (userJson) {
+      return JSON.parse(userJson) as LoggedIn;
+    }
+    return null;
+  }
 }
