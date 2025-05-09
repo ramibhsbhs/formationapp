@@ -1,39 +1,218 @@
-<div class="animate-fade-in container mx-auto p-6">
-    <div class="flex justify-between items-center mb-8">
-        <h1 class="text-3xl font-bold text-gray-800">Gestion des formations</h1>
-        <div class="flex gap-3">
-            <button (click)="fetchFormations()" [disabled]="isLoading"
-                class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg shadow-sm text-sm font-medium hover:bg-gray-200 transition-colors flex items-center disabled:opacity-50 disabled:cursor-not-allowed">
-                <i *ngIf="!isLoading" class="fa-solid fa-rotate-right mr-2"></i>
+<div class="animate-fade-in min-h-screen bg-gradient-to-b from-gray-50 to-white">
+    <div class="container mx-auto px-6 py-6 relative">
+        <div class="flex flex-col md:flex-row justify-between ">
+            <div class="mb-8 md:mb-0 max-w-2xl">
+                <h1 class="text-5xl font-extrabold mb-4 tracking-tight leading-none text-gray-800">
+                    <span class="bg-clip-text text-transparent bg-gradient-to-r from-primary to-indigo-700">
+                        Catalogue de formations
+                    </span>
+                </h1>
+                <p class="text-xl text-gray-600 font-light leading-relaxed">
+                    <span class="border-l-4 border-primary pl-4 italic block">
+                        Découvrez toutes les formations disponibles et développez vos compétences professionnelles
+                    </span>
+                </p>
+            </div>
 
-                <svg *ngIf="isLoading" class="animate-spin h-4 w-4 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none"
-                    viewBox="0 0 24 24">
-                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                    <path class="opacity-75" fill="currentColor"
-                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
-                    </path>
-                </svg>
-
-                {{ isLoading ? 'Actualisation...' : 'Actualiser' }}
-            </button>
-        </div>
-
-       
-
-    </div>
-    <div class="space-y-6">
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <div *ngFor="let formation of formations" class="col-span-1">
-                <app-condidat-formation-card [formation]="formation"
-                    (viewDetails)="onViewDetails($event)"></app-condidat-formation-card>
+            <!-- Bouton d'actualisation avec effet de dégradé et animation -->
+            <div class="flex">
+                <button (click)="fetchFormations()"
+                    class="px-8 py-4 bg-gradient-to-r from-primary to-indigo-600 text-white font-medium rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 hover:from-indigo-600 hover:to-primary flex items-center h-10">
+                    <i class="fas fa-sync-alt mr-3 text-lg" [ngClass]="{'animate-spin': isLoading}"></i>
+                    <span class="font-semibold">Actualiser</span>
+                </button>
             </div>
         </div>
-    
-        <div *ngIf="formations.length === 0 && !isLoading" class="text-center py-10">
-            <p class="text-gray-500 text-lg">Aucune formation ne correspond à votre recherche.</p>
+    </div>
+
+    <!-- Filtres et recherche améliorés -->
+    <div class="container mx-auto px-6 -mt-6 mb-8 relative z-20">
+        <div class="bg-white rounded-xl shadow-lg p-6 border border-gray-100">
+            <div class="flex flex-col md:flex-row gap-6">
+                <div class="flex-1">
+                    <label for="searchInput" class="block text-sm font-medium text-gray-700 mb-1">Rechercher</label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <i class="fas fa-search text-blue-500"></i>
+                        </div>
+                        <input id="searchInput" type="text" [(ngModel)]="searchTerm" (input)="filterFormations()"
+                            class="block w-full pl-10 pr-10 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-sm"
+                            placeholder="Rechercher par titre ou description..." autocomplete="off">
+                        <button *ngIf="searchTerm" (click)="searchTerm=''; filterFormations()"
+                            class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="w-full md:w-64">
+                    <label for="categorySelect" class="block text-sm font-medium text-gray-700 mb-1">Catégorie</label>
+                    <div class="relative">
+                        <select id="categorySelect" [(ngModel)]="selectedCategory" (change)="filterFormations()"
+                            class="block w-full px-3 py-3 pr-10 border border-gray-300 rounded-lg appearance-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-sm bg-white">
+                            <option value="">Toutes les catégories</option>
+                            <option *ngFor="let category of categories" [value]="category">
+                                {{getCategoryLabel(category)}}
+                            </option>
+                        </select>
+                        <div class="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
+                            <i class="fas fa-chevron-down text-gray-500"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Affichage des résultats de recherche -->
+            <div *ngIf="searchTerm || selectedCategory"
+                class="mt-4 pt-4 border-t border-gray-100 flex justify-between items-center">
+                <div class="text-sm text-gray-600">
+                    <span *ngIf="filteredFormations.length > 0">
+                        <span class="font-medium">{{ filteredFormations.length }}</span> formation(s) trouvée(s)
+                    </span>
+                    <span *ngIf="filteredFormations.length === 0">
+                        Aucune formation ne correspond à votre recherche
+                    </span>
+                </div>
+                <button *ngIf="searchTerm || selectedCategory" (click)="resetFilters()"
+                    class="text-sm text-blue-600 hover:text-blue-800 flex items-center">
+                    <i class="fas fa-times-circle mr-1"></i> Effacer les filtres
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Contenu principal -->
+    <div class="container mx-auto px-6 pb-16">
+        <!-- Statistiques avec design amélioré et cohérence visuelle -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
+            <!-- Formations disponibles -->
+            <div
+                class="bg-white rounded-xl shadow-lg overflow-hidden border border-gray-100 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 group">
+                <div class="h-2 bg-gradient-to-r from-primary to-indigo-600"></div>
+                <div class="p-8 flex items-center">
+                    <div
+                        class="w-20 h-20 rounded-xl bg-gradient-to-br from-blue-50 to-indigo-50 flex items-center justify-center mr-5 transform transition-transform duration-500 group-hover:rotate-6 shadow-inner">
+                        <i
+                            class="fas fa-graduation-cap text-primary text-3xl group-hover:scale-110 transition-transform"></i>
+                    </div>
+                    <div>
+                        <p class="text-gray-500 text-sm font-medium uppercase tracking-wider mb-1">Formations
+                            disponibles</p>
+                        <div class="flex items-end">
+                            <p
+                                class="text-5xl font-extrabold text-gray-800 leading-none bg-clip-text text-transparent bg-gradient-to-r from-primary to-indigo-700">
+                                {{formations.length}}
+                            </p>
+                            <p class="text-primary ml-3 mb-1 text-sm font-medium">formations</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Formations complétées -->
+            <div
+                class="bg-white rounded-xl shadow-lg overflow-hidden border border-gray-100 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 group">
+                <div class="h-2 bg-gradient-to-r from-green-500 to-teal-500"></div>
+                <div class="p-8 flex items-center">
+                    <div
+                        class="w-20 h-20 rounded-xl bg-gradient-to-br from-green-50 to-teal-50 flex items-center justify-center mr-5 transform transition-transform duration-500 group-hover:rotate-6 shadow-inner">
+                        <i
+                            class="fas fa-check-circle text-green-600 text-3xl group-hover:scale-110 transition-transform"></i>
+                    </div>
+                    <div>
+                        <p class="text-gray-500 text-sm font-medium uppercase tracking-wider mb-1">Formations complétées
+                        </p>
+                        <div class="flex items-end">
+                            <p
+                                class="text-5xl font-extrabold text-gray-800 leading-none bg-clip-text text-transparent bg-gradient-to-r from-green-500 to-teal-500">
+                                {{getCompletedFormationsCount()}}
+                            </p>
+                            <p class="text-green-600 ml-3 mb-1 text-sm font-medium">terminées</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sessions actives -->
+            <div
+                class="bg-white rounded-xl shadow-lg overflow-hidden border border-gray-100 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 group">
+                <div class="h-2 bg-gradient-to-r from-purple-500 to-indigo-500"></div>
+                <div class="p-8 flex items-center">
+                    <div
+                        class="w-20 h-20 rounded-xl bg-gradient-to-br from-purple-50 to-indigo-50 flex items-center justify-center mr-5 transform transition-transform duration-500 group-hover:rotate-6 shadow-inner">
+                        <i
+                            class="fas fa-calendar-alt text-purple-600 text-3xl group-hover:scale-110 transition-transform"></i>
+                    </div>
+                    <div>
+                        <p class="text-gray-500 text-sm font-medium uppercase tracking-wider mb-1">Sessions actives</p>
+                        <div class="flex items-end">
+                            <p
+                                class="text-5xl font-extrabold text-gray-800 leading-none bg-clip-text text-transparent bg-gradient-to-r from-purple-500 to-indigo-500">
+                                {{getActiveSessionsCount()}}
+                            </p>
+                            <p class="text-purple-600 ml-3 mb-1 text-sm font-medium">en cours</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Message de chargement amélioré -->
+        <div *ngIf="isLoading" class="flex flex-col justify-center items-center py-20">
+            <div class="relative">
+                <div class="animate-spin rounded-full h-20 w-20 border-4 border-gray-200"></div>
+                <div class="animate-spin rounded-full h-20 w-20 border-t-4 border-blue-600 absolute top-0 left-0"></div>
+            </div>
+            <p class="mt-4 text-gray-600 font-medium">Chargement des formations...</p>
+        </div>
+
+        <!-- Liste des formations -->
+        <div *ngIf="!isLoading" class="space-y-8">
+            <div *ngIf="filteredFormations.length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div *ngFor="let formation of filteredFormations" class="col-span-1 animate-fadeIn"
+                    [style.animation-delay]="(filteredFormations.indexOf(formation) * 0.1) + 's'">
+                    <app-condidat-formation-card [formation]="formation"
+                        (viewDetails)="onViewDetails($event)"></app-condidat-formation-card>
+                </div>
+            </div>
+
+            <!-- Message si aucune formation trouvée - design amélioré -->
+            <div *ngIf="filteredFormations.length === 0 && !isLoading"
+                class="text-center py-20 px-8 bg-gradient-to-b from-white to-gray-50 rounded-2xl shadow-lg border border-gray-100 animate-fadeIn max-w-3xl mx-auto">
+                <!-- Icône stylisée -->
+                <div class="mb-8 relative">
+                    <div
+                        class="absolute -top-4 left-1/2 transform -translate-x-1/2 w-32 h-1 bg-gradient-to-r from-blue-300 to-indigo-500 rounded-full opacity-70">
+                    </div>
+                    <div
+                        class="inline-flex items-center justify-center w-24 h-24 rounded-full bg-gradient-to-br from-blue-50 to-indigo-50 text-blue-600 shadow-inner">
+                        <i class="fas fa-search text-5xl"></i>
+                    </div>
+                </div>
+
+                <!-- Titre avec effet de dégradé -->
+                <h3
+                    class="text-3xl font-extrabold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-600 text-center">
+                    Aucune formation trouvée
+                </h3>
+
+                <!-- Message avec style amélioré -->
+                <p class="text-gray-600 max-w-lg mx-auto mb-8 leading-relaxed text-lg font-light text-center">
+                    Nous n'avons trouvé aucune formation correspondant à vos critères de recherche.
+                    <span class="block mt-2 font-medium text-gray-700">Essayez de modifier vos filtres ou d'utiliser des
+                        termes de recherche différents.</span>
+                </p>
+
+                <!-- Bouton avec effet de dégradé et animation -->
+                <button (click)="resetFilters()"
+                    class="px-8 py-4 bg-gradient-to-r from-primary to-indigo-600 text-white rounded-xl hover:from-indigo-600 hover:to-blue-600 shadow-md hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300 flex items-center mx-auto font-medium">
+                    <i class="fas fa-redo-alt mr-3 animate-spin-slow"></i> Réinitialiser les filtres
+                </button>
+
+                <!-- Élément décoratif en bas -->
+                <div class="mt-10 flex justify-center">
+                    <div class="w-16 h-1 bg-gray-200 rounded-full"></div>
+                </div>
+            </div>
         </div>
     </div>
 </div>
-
-<!-- <app-condidat-formation-card [formation]="candidateFormation"
-    (viewDetails)="onViewDetails($event)"></app-condidat-formation-card> -->

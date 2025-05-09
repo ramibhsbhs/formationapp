@@ -38,14 +38,17 @@
 
         --radius: 0.5rem;
 
-        --sidebar-background: 217 91% 60%;
+        /* Couleurs de la sidebar correspondant au bouton "Commencer maintenant" */
+        --sidebar-background: 211 37% 21%;
         --sidebar-foreground: 210 40% 98%;
-        --sidebar-primary: 217 91% 60%;
+        --sidebar-primary: 211 37% 21%;
         --sidebar-primary-foreground: 210 40% 98%;
-        --sidebar-accent: 213 94% 68%;
+        --sidebar-accent: 224 76% 48%;
+        /* blue-700 */
         --sidebar-accent-foreground: 210 40% 98%;
-        --sidebar-border: 213 94% 68%;
-        --sidebar-ring: 217 91% 60%;
+        --sidebar-border: 224 76% 48%;
+        /* blue-700 */
+        --sidebar-ring: 211 37% 21%;
     }
 }
 

@@ -80,4 +80,30 @@ export class AuthService {
     }
     return null;
   }
+
+  /**
+   * Met à jour les informations de l'utilisateur connecté
+   * @param userData Les nouvelles données utilisateur (username, email, imageUrl)
+   */
+  updateCurrentUser(userData: { username?: string, email?: string, imageUrl?: string }): void {
+    const currentUser = this.getCurrentUser();
+
+    if (currentUser) {
+      // Mettre à jour les propriétés si elles sont fournies
+      if (userData.username) {
+        currentUser.username = userData.username;
+      }
+
+      if (userData.email) {
+        currentUser.email = userData.email;
+      }
+
+      if (userData.imageUrl) {
+        currentUser.imageUrl = userData.imageUrl;
+      }
+
+      // Mettre à jour le localStorage et le ReplaySubject
+      this.setCurrentUser(currentUser);
+    }
+  }
 }

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Data;
@@ -10,25 +10,132 @@ using formationApi.dtos.request;
 using Microsoft.AspNetCore.Identity;
 using System.Security.Cryptography;
 using formationApi.data.Repositories;
+using Microsoft.EntityFrameworkCore;
+using formationApi.services.CloudService;
 
 namespace formationApi.Controllers
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    [Authorize]
-    public class UsersController : ControllerBase
-    {
 
+    [Authorize]
+    public class UsersController : BaseApiController
+    {
         private readonly IEmailService _emailService;
         private readonly UserManager<AppUser> _userManager;
         private readonly IRepositoryWrapper _repositoryWrapper;
+        private readonly ICloudService _cloudService;
 
-        public UsersController(IEmailService emailService, UserManager<AppUser> userManager, IRepositoryWrapper repositoryWrapper)
+        public UsersController(
+            IEmailService emailService,
+            UserManager<AppUser> userManager,
+            IRepositoryWrapper repositoryWrapper,
+            ICloudService cloudService)
         {
             _emailService = emailService;
             _userManager = userManager;
             _repositoryWrapper = repositoryWrapper;
+            _cloudService = cloudService;
         }
+
+        /// <summary>
+        /// Récupère les informations d'un utilisateur par son ID
+        /// </summary>
+        [HttpGet("current")]
+        public async Task<IActionResult> GetUserById()
+        {
+
+
+            var user = await _userManager.Users
+                .Include(u => u.Group)
+                .Include(u => u.UserRoles)
+                .ThenInclude(ur => ur.Role)
+                .FirstOrDefaultAsync(u => u.Id == User.GetUserId());
+
+            if (user == null)
+            {
+                return NotFound("Utilisateur non trouvé.");
+            }
+
+            return Ok(user.ToDto());
+        }
+
+        /// <summary>
+        /// Met à jour le profil d'un utilisateur, y compris son image de profil
+        /// </summary>
+        [HttpPut("current")]
+        public async Task<IActionResult> UpdateUserProfile( [FromForm] UpdateUserProfileRequest request)
+        {
+
+            var user = await _userManager.FindByIdAsync(User.GetUserId().ToString());
+            if (user == null)
+            {
+                return NotFound("Utilisateur non trouvé.");
+            }
+
+            // Mettre à jour les informations de base
+            user.UserName = request.UserName;
+            user.Email = request.Email;
+
+            // Mettre à jour l'image de profil si fournie
+            if (request.ProfileImage != null && request.ProfileImage.Length > 0)
+            {
+                try
+                {
+                    using var stream = request.ProfileImage.OpenReadStream();
+                    string imageUrl = await _cloudService.UploadFileAsync(
+                        stream,
+                        request.ProfileImage.FileName,
+                        "profile_images"
+                    );
+                    user.ImageUrl = imageUrl;
+                }
+                catch (Exception ex)
+                {
+                    return StatusCode(500, $"Échec du téléchargement de l'image : {ex.Message}");
+                }
+            }
+
+            // Enregistrer les modifications
+            var result = await _userManager.UpdateAsync(user);
+            if (!result.Succeeded)
+            {
+                var errors = string.Join(", ", result.Errors.Select(e => e.Description));
+                return BadRequest($"Échec de la mise à jour du profil : {errors}");
+            }
+
+            return Ok(user.ToDto());
+        }
+
+        /// <summary>
+        /// Change le mot de passe d'un utilisateur
+        /// </summary>
+        [HttpPost("change-password")]
+        public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordRequest request)
+        {
+            var userId = User.GetUserId();
+            var user = await _userManager.FindByIdAsync(userId.ToString());
+            if (user == null)
+            {
+                return NotFound("Utilisateur non trouvé.");
+            }
+
+            // Vérifier l'ancien mot de passe
+            var checkPassword = await _userManager.CheckPasswordAsync(user, request.CurrentPassword);
+            if (!checkPassword)
+            {
+                return BadRequest("Le mot de passe actuel est incorrect.");
+            }
+
+            // Changer le mot de passe
+            var result = await _userManager.ChangePasswordAsync(user, request.CurrentPassword, request.NewPassword);
+            if (!result.Succeeded)
+            {
+                var errors = string.Join(", ", result.Errors.Select(e => e.Description));
+                return BadRequest($"Échec du changement de mot de passe : {errors}");
+            }
+
+            return Ok(new { message = "Mot de passe modifié avec succès." });
+        }
+
         /// <summary>
         /// Creates a new user with the specified username, email, and role, and sends them a welcome email with credentials.
         /// </summary>
@@ -135,11 +242,5 @@ namespace formationApi.Controllers
             }
             return "Pa$$w0rd";
         }
-
-
-
-
-
     }
 }
-
