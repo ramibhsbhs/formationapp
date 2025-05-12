@@ -31,9 +31,7 @@ export class AppSidebarComponent implements OnInit, OnDestroy {
     { name: 'Get Help', icon: 'fas fa-question-circle' },
     { name: 'Search', icon: 'fas fa-search' },
     { name: 'Account', icon: 'fas fa-user' },
-    { name: 'Billing', icon: 'fas fa-credit-card' },
     { name: 'Notifications', icon: 'fas fa-bell' },
-    { name: 'Log out', icon: 'fas fa-sign-out-alt', action: () => { this.auth.logout() } },
   ];
   constructor(private router: Router) {
     // Subscribe to route changes to update active state (optional)

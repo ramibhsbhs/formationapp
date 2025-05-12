@@ -81,9 +81,9 @@
         </div>
     </div>
 
-    <!-- Improved Popup Menu with better positioning -->
+    <!-- Improved Popup Menu with fixed positioning -->
     <div *ngIf="showPopup"
-        class="absolute z-50 bottom-20 left-4 md:left-auto md:right-[-240px] bg-white dark:bg-gray-800 rounded-xl shadow-2xl p-3 w-64 border border-gray-200 dark:border-gray-700 transition-all duration-300"
+        class="fixed z-50 bottom-20 left-20 md:absolute md:bottom-16 md:left-auto md:right-4 bg-white dark:bg-gray-800 rounded-xl shadow-2xl p-3 w-64 border border-gray-200 dark:border-gray-700 transition-all duration-300"
         (click)="$event.stopPropagation()">
 
         <!-- Header -->
