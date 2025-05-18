@@ -7,6 +7,7 @@ using formationApi.Extensions;
 using formationApi.services.EmailService;
 using formationApi.data.models;
 using formationApi.dtos.request;
+using formationApi.dtos.response;
 using Microsoft.AspNetCore.Identity;
 using System.Security.Cryptography;
 using formationApi.data.Repositories;
@@ -55,14 +56,14 @@ namespace formationApi.Controllers
                 return NotFound("Utilisateur non trouvé.");
             }
 
-            return Ok(user.ToDto());
+            return Ok(UserMapper.ToDto(user));
         }
 
         /// <summary>
         /// Met à jour le profil d'un utilisateur, y compris son image de profil
         /// </summary>
         [HttpPut("current")]
-        public async Task<IActionResult> UpdateUserProfile( [FromForm] UpdateUserProfileRequest request)
+        public async Task<IActionResult> UpdateUserProfile([FromForm] UpdateUserProfileRequest request)
         {
 
             var user = await _userManager.FindByIdAsync(User.GetUserId().ToString());
@@ -102,7 +103,7 @@ namespace formationApi.Controllers
                 return BadRequest($"Échec de la mise à jour du profil : {errors}");
             }
 
-            return Ok(user.ToDto());
+            return Ok(UserMapper.ToDto(user));
         }
 
         /// <summary>
@@ -215,7 +216,7 @@ namespace formationApi.Controllers
                 };
 
                 await _emailService.SendWithTemplate(emailRequest);
-                return Ok(newUser.ToDto());
+                return Ok(UserMapper.ToDto(newUser));
             }
             catch (Exception ex)
             {
@@ -225,13 +226,155 @@ namespace formationApi.Controllers
         }
 
         /// <summary>
+        /// Désactive un utilisateur (Admin seulement)
+        /// </summary>
+        /// <param name="userId">ID de l'utilisateur à désactiver</param>
+        [HttpPut("{userId:int}/disable")]
+        [Authorize(Roles = "Administrator")]
+        public async Task<IActionResult> DisableUser(int userId)
+        {
+            var user = await _userManager.FindByIdAsync(userId.ToString());
+            if (user == null)
+            {
+                return NotFound("Utilisateur non trouvé.");
+            }
+
+            // Désactiver l'utilisateur
+            user.LockoutEnabled = true;
+            user.LockoutEnd = DateTimeOffset.MaxValue; // Verrouillage permanent jusqu'à réactivation
+
+            var result = await _userManager.UpdateAsync(user);
+            if (!result.Succeeded)
+            {
+                var errors = string.Join(", ", result.Errors.Select(e => e.Description));
+                return BadRequest($"Échec de la désactivation de l'utilisateur : {errors}");
+            }
+
+            return Ok(new { message = "Utilisateur désactivé avec succès." });
+        }
+
+        /// <summary>
+        /// Active un utilisateur (Admin seulement)
+        /// </summary>
+        /// <param name="userId">ID de l'utilisateur à activer</param>
+        [HttpPut("{userId:int}/enable")]
+        [Authorize(Roles = "Administrator")]
+        public async Task<IActionResult> EnableUser(int userId)
+        {
+            var user = await _userManager.FindByIdAsync(userId.ToString());
+            if (user == null)
+            {
+                return NotFound("Utilisateur non trouvé.");
+            }
+
+            // Réactiver l'utilisateur
+            user.LockoutEnd = null;
+
+            var result = await _userManager.UpdateAsync(user);
+            if (!result.Succeeded)
+            {
+                var errors = string.Join(", ", result.Errors.Select(e => e.Description));
+                return BadRequest($"Échec de l'activation de l'utilisateur : {errors}");
+            }
+
+            return Ok(new { message = "Utilisateur activé avec succès." });
+        }
+
+        /// <summary>
+        /// Supprime un utilisateur (Admin seulement)
+        /// </summary>
+        /// <param name="userId">ID de l'utilisateur à supprimer</param>
+        [HttpDelete("{userId}")]
+        [Authorize(Roles = "Administrator")]
+        public async Task<IActionResult> DeleteUser(int userId)
+        {
+            var user = await _userManager.Users
+                .Include(u => u.Group)
+                .Include(u => u.UserRoles)
+                .Include(u => u.Notifications)
+                .Include(u => u.Feedbacks)
+                .FirstOrDefaultAsync(u => u.Id == userId);
+
+            if (user == null)
+            {
+                return NotFound("Utilisateur non trouvé.");
+            }
+
+            // Supprimer les relations
+            // 1. Supprimer les notifications
+            foreach (var notification in user.Notifications.ToList())
+            {
+                _repositoryWrapper.Notification.Delete(notification.Id);
+            }
+
+            // 2. Supprimer les feedbacks
+            foreach (var feedback in user.Feedbacks.ToList())
+            {
+                _repositoryWrapper.Feedback.Delete(feedback.Id);
+            }
+
+            // 3. Supprimer l'utilisateur du groupe
+            if (user.Group != null)
+            {
+                user.Group.Users.Remove(user);
+                await _repositoryWrapper.Group.Update(user.Group);
+            }
+
+            // 4. Supprimer l'utilisateur
+            var result = await _userManager.DeleteAsync(user);
+            if (!result.Succeeded)
+            {
+                var errors = string.Join(", ", result.Errors.Select(e => e.Description));
+                return BadRequest($"Échec de la suppression de l'utilisateur : {errors}");
+            }
+
+            return Ok(new { message = "Utilisateur supprimé avec succès." });
+        }
+
+        /// <summary>
+        /// Récupère tous les utilisateurs (Admin seulement)
+        /// </summary>
+        [HttpGet]
+        [Authorize(Roles = "Administrator")]
+        public async Task<IActionResult> GetAllUsers()
+        {
+            var users = await _userManager.Users
+                .Include(u => u.Group)
+                .Include(u => u.UserRoles)
+                .ThenInclude(ur => ur.Role)
+                .ToListAsync();
+
+            var userDtos = users.Select(u => UserMapper.ToDto(u)).ToList();
+
+            return Ok(userDtos);
+        }
+
+        /// <summary>
+        /// Récupère les utilisateurs par groupe (Admin et superviseurs)
+        /// </summary>
+        [HttpGet("group/{groupId}")]
+        [Authorize(Roles = "Administrator,Manager,TeamLeader")]
+        public async Task<IActionResult> GetUsersByGroup(int groupId)
+        {
+            var users = await _userManager.Users
+                .Include(u => u.Group)
+                .Include(u => u.UserRoles)
+                .ThenInclude(ur => ur.Role)
+                .Where(u => u.GroupId == groupId)
+                .ToListAsync();
+
+            var userDtos = users.Select(u => UserMapper.ToDto(u)).ToList();
+
+            return Ok(userDtos);
+        }
+
+        /// <summary>
         /// Generates a random password with a mix of letters, numbers, and special characters.
         /// </summary>
         /// <returns>A randomly generated password.</returns>
-        private string GenerateRandomPassword(int length = 12)
+        private static string GenerateRandomPassword(int length = 12)
         {
             const string validChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*";
-            var random = new Random();
             var bytes = new byte[length];
             RandomNumberGenerator.Fill(bytes);
 

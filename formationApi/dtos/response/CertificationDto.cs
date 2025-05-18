@@ -1,5 +1,4 @@
 using formationApi.data.Entities;
-using static formationApi.dtos.response.GroupDto;
 
 namespace formationApi.dtos.response
 {

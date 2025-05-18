@@ -39,7 +39,7 @@ namespace formationApi.dtos.response
         public int? ModuleId { get; set; }
 
         // Informations sur l'utilisateur, le quiz et la session
-        public GroupDto.UserDto User { get; set; }
+        public UserDto User { get; set; }
         public QuizBasicDto Quiz { get; set; }
         public SessionBasicDto Session { get; set; }
         public ModuleBasicDto Module { get; set; }

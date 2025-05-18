@@ -9,7 +9,7 @@ namespace formationApi.dtos.response
         public string Description { get; set; }
         public double Value { get; set; }
         public int UserId { get; set; }
-        public GroupDto.UserDto User { get; set; }
+        public UserDto User { get; set; }
         public int FormationId { get; set; }
         public FormationInfoDto Formation { get; set; }
         public DateTime CreatedAt { get; set; }

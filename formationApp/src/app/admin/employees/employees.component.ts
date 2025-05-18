@@ -1,11 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { Group } from '../../core/models/group.model';
 import { User } from '../../core/models/user.model';
-import { Role } from '../../core/models/role.model';
-import { HttpClient } from '@angular/common/http';
-import { environment } from '../../../environments/environment';
 import { GroupService } from 'src/app/core/services/group.service';
+import { UserService } from 'src/app/core/services/user.service';
 import { MatDialog } from '@angular/material/dialog';
+import { ToasterService } from 'src/app/core/services/toaster.service';
 import { CreateGroupDialogComponent } from 'src/app/shared/components/create-group-dialog/create-group-dialog.component';
 import { CreateUserDialogComponent } from 'src/app/shared/components/create-user-dialog/create-user-dialog.component';
 
@@ -24,7 +23,9 @@ export class EmployeesComponent implements OnInit {
 
   constructor(
     private groupService: GroupService,
-    private dialog: MatDialog
+    private userService: UserService,
+    private dialog: MatDialog,
+    private toaster: ToasterService
   ) { }
 
   ngOnInit() {
@@ -78,11 +79,63 @@ export class EmployeesComponent implements OnInit {
     });
   }
 
-  createUser() {
+  /**
+   * Bascule l'état actif/inactif d'un utilisateur
+   * @param user L'utilisateur à activer/désactiver
+   */
+  toggleUserStatus(user: User) {
+    const action = user.isActive ? 'désactiver' : 'activer';
+    const confirmMessage = `Êtes-vous sûr de vouloir ${action} cet utilisateur ?`;
 
+    if (confirm(confirmMessage)) {
+      if (user.isActive) {
+        this.userService.disableUser(user.id).subscribe({
+          next: () => {
+            user.isActive = false;
+            this.toaster.showSuccess('Succès', `L'utilisateur a été désactivé avec succès.`);
+          },
+          error: (err) => {
+            console.error('Erreur lors de la désactivation de l\'utilisateur:', err);
+            this.toaster.showError('Erreur', `Erreur lors de la désactivation de l'utilisateur.`);
+          }
+        });
+      } else {
+        this.userService.enableUser(user.id).subscribe({
+          next: () => {
+            user.isActive = true;
+            this.toaster.showSuccess('Succès', `L'utilisateur a été activé avec succès.`);
+          },
+          error: (err) => {
+            console.error('Erreur lors de l\'activation de l\'utilisateur:', err);
+            this.toaster.showError('Erreur', `Erreur lors de l'activation de l'utilisateur.`);
+          }
+        });
+      }
+    }
   }
 
+  /**
+   * Supprime un utilisateur
+   * @param user L'utilisateur à supprimer
+   */
+  deleteUser(user: User) {
+    if (confirm(`Êtes-vous sûr de vouloir supprimer définitivement l'utilisateur ${user.userName} ?`)) {
+      this.userService.deleteUser(user.id).subscribe({
+        next: () => {
+          // Supprimer l'utilisateur de la liste des utilisateurs du groupe
+          if (this.selectedGroup) {
+            this.selectedGroup.users = this.selectedGroup.users.filter(u => u.id !== user.id);
+          }
 
+          this.toaster.showSuccess('Succès', `L'utilisateur a été supprimé avec succès.`);
+        },
+        error: (err) => {
+          console.error('Erreur lors de la suppression de l\'utilisateur:', err);
+          this.toaster.showError('Erreur', `Erreur lors de la suppression de l'utilisateur.`);
+        }
+      });
+    }
+  }
 
 }
 

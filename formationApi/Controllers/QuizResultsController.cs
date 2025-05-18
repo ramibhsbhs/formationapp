@@ -4,7 +4,6 @@ using formationApi.Extensions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using static formationApi.dtos.response.GroupDto;
 
 namespace formationApi.Controllers
 {

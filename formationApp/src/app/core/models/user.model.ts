@@ -9,5 +9,5 @@ export interface User {
     groupId?: number;
     group?: Group;
     roles?: string[];
-
-} 
+    isActive?: boolean;
+}

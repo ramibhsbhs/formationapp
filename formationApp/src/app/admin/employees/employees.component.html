@@ -94,6 +94,12 @@
                                 <th
                                     class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                     Role</th>
+                                <th
+                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Status</th>
+                                <th
+                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Actions</th>
                             </tr>
                         </thead>
                         <tbody class="bg-white divide-y divide-gray-200">
@@ -133,6 +139,43 @@
                                         {{user.roles?.[0]}}
                                     </span>
                                 </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <span [ngClass]="{
+                                        'bg-green-100 text-green-800': user.isActive,
+                                        'bg-red-100 text-red-800': !user.isActive
+                                    }"
+                                        class="px-3 py-1.5 inline-flex items-center text-xs leading-4 font-medium rounded-full">
+                                        <span class="w-2 h-2 mr-1.5 rounded-full" [ngClass]="{
+                                            'bg-green-500': user.isActive,
+                                            'bg-red-500': !user.isActive
+                                        }"></span>
+                                        {{user.isActive ? 'Actif' : 'Inactif'}}
+                                    </span>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                    <div class="flex space-x-2">
+                                        <button (click)="toggleUserStatus(user)" [ngClass]="{
+                                                'text-green-600 hover:text-green-900': !user.isActive,
+                                                'text-red-600 hover:text-red-900': user.isActive
+                                            }" class="px-2 py-1 rounded-md border border-gray-300 hover:bg-gray-50">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none"
+                                                viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    [attr.d]="user.isActive ?
+                                                    'M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636' :
+                                                    'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z'" />
+                                            </svg>
+                                        </button>
+                                        <button (click)="deleteUser(user)"
+                                            class="text-red-600 hover:text-red-900 px-2 py-1 rounded-md border border-gray-300 hover:bg-gray-50">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none"
+                                                viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                            </svg>
+                                        </button>
+                                    </div>
+                                </td>
                             </tr>
                             <tr *ngIf="selectedGroup.users.length === 0">
                                 <td colspan="3" class="px-6 py-4 text-center text-gray-500">
@@ -153,4 +196,3 @@
         </div>
     </div>
 </div>
-
