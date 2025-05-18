@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="80px" height="80px" viewBox="0 0 80 80" version="1.1" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+        <radialGradient id="goldGradient" cx="50%" cy="50%" r="50%" fx="50%" fy="50%">
+            <stop offset="0%" style="stop-color:#f9e287" />
+            <stop offset="50%" style="stop-color:#d4af37" />
+            <stop offset="100%" style="stop-color:#996515" />
+        </radialGradient>
+    </defs>
+    <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <circle cx="40" cy="40" r="38" fill="url(#goldGradient)" stroke="#996515" stroke-width="1" />
+        <circle cx="40" cy="40" r="32" fill="none" stroke="#f9e287" stroke-width="1" />
+        <circle cx="40" cy="40" r="28" fill="none" stroke="#d4af37" stroke-width="1" />
+        <path d="M40,10 L42,36 L68,40 L42,44 L40,70 L38,44 L12,40 L38,36 Z" fill="#f9e287" fill-rule="nonzero" />
+    </g>
+</svg>

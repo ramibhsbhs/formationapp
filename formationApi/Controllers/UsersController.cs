@@ -288,47 +288,61 @@ namespace formationApi.Controllers
         [Authorize(Roles = "Administrator")]
         public async Task<IActionResult> DeleteUser(int userId)
         {
-            var user = await _userManager.Users
-                .Include(u => u.Group)
-                .Include(u => u.UserRoles)
-                .Include(u => u.Notifications)
-                .Include(u => u.Feedbacks)
-                .FirstOrDefaultAsync(u => u.Id == userId);
-
-            if (user == null)
+            try
             {
-                return NotFound("Utilisateur non trouvé.");
-            }
+                // 1. Récupérer l'utilisateur avec ses relations
+                var user = await _userManager.Users
+                    .Include(u => u.Group)
+                    .Include(u => u.UserRoles)
+                    .Include(u => u.Notifications)
+                    .Include(u => u.Feedbacks)
+                    .FirstOrDefaultAsync(u => u.Id == userId);
 
-            // Supprimer les relations
-            // 1. Supprimer les notifications
-            foreach (var notification in user.Notifications.ToList())
+                if (user == null)
+                {
+                    return NotFound("Utilisateur non trouvé.");
+                }
+
+                // 2. Supprimer les notifications
+                var notificationIds = user.Notifications.Select(n => n.Id).ToList();
+                foreach (var notificationId in notificationIds)
+                {
+                    await _repositoryWrapper.Notification.Delete(notificationId);
+                }
+
+                // 3. Supprimer les feedbacks
+                var feedbackIds = user.Feedbacks.Select(f => f.Id).ToList();
+                foreach (var feedbackId in feedbackIds)
+                {
+                    await _repositoryWrapper.Feedback.Delete(feedbackId);
+                }
+
+                // 4. Détacher l'utilisateur du groupe
+                if (user.GroupId.HasValue)
+                {
+                    user.GroupId = null;
+                    await _userManager.UpdateAsync(user);
+                }
+
+                // 5. Supprimer l'utilisateur
+                var result = await _userManager.DeleteAsync(user);
+                if (!result.Succeeded)
+                {
+                    var errors = string.Join(", ", result.Errors.Select(e => e.Description));
+                    return BadRequest($"Échec de la suppression de l'utilisateur : {errors}");
+                }
+
+                return Ok(new { message = "Utilisateur supprimé avec succès." });
+            }
+            catch (Exception ex)
             {
-                _repositoryWrapper.Notification.Delete(notification.Id);
+                return StatusCode(500, new
+                {
+                    message = "Une erreur s'est produite lors de la suppression de l'utilisateur.",
+                    details = ex.Message,
+                    stackTrace = ex.StackTrace
+                });
             }
-
-            // 2. Supprimer les feedbacks
-            foreach (var feedback in user.Feedbacks.ToList())
-            {
-                _repositoryWrapper.Feedback.Delete(feedback.Id);
-            }
-
-            // 3. Supprimer l'utilisateur du groupe
-            if (user.Group != null)
-            {
-                user.Group.Users.Remove(user);
-                await _repositoryWrapper.Group.Update(user.Group);
-            }
-
-            // 4. Supprimer l'utilisateur
-            var result = await _userManager.DeleteAsync(user);
-            if (!result.Succeeded)
-            {
-                var errors = string.Join(", ", result.Errors.Select(e => e.Description));
-                return BadRequest($"Échec de la suppression de l'utilisateur : {errors}");
-            }
-
-            return Ok(new { message = "Utilisateur supprimé avec succès." });
         }
 
         /// <summary>

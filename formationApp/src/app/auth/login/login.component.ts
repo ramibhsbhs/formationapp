@@ -21,6 +21,7 @@ export class LoginComponent implements OnInit {
 
   isLoading = false;
   error = '';
+  isAccountDisabled = false;
   loginForm!: FormGroup;
   inDev = !environment.production;
   showUserSelector = false;
@@ -155,6 +156,13 @@ export class LoginComponent implements OnInit {
       error: (error) => {
         this.error = error.error;
         this.isLoading = false;
+
+        // Vérifier si l'erreur concerne un compte désactivé
+        if (this.error && this.error.includes('désactivé')) {
+          this.isAccountDisabled = true;
+        } else {
+          this.isAccountDisabled = false;
+        }
       }
     });
   }

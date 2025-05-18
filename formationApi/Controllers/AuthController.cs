@@ -96,6 +96,12 @@ namespace formationApi.Controllers
                 return Unauthorized("Invalid username/email or password.");
             }
 
+            // Vérifier si l'utilisateur est désactivé
+            if (user.LockoutEnabled && user.LockoutEnd != null && user.LockoutEnd > DateTimeOffset.UtcNow)
+            {
+                return Unauthorized("Votre compte a été désactivé. Veuillez contacter l'administrateur.");
+            }
+
             // Get user roles
             var roles = await _userManager.GetRolesAsync(user);
             var redirectUrl = GetRedirectUrlByRole(roles.FirstOrDefault());
@@ -121,7 +127,7 @@ namespace formationApi.Controllers
                 "QualityAgent" => "/condidat",
                 "TeamLeader" => "/condidat",
                 "PostLeader" => "/condidat",
-                _ => "/condidat" 
+                _ => "/condidat"
             };
         }
 
